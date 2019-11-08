@@ -1,7 +1,9 @@
+
 <template>
   <div :class = "[computedStatusClasses.initHolder]">
     <coc-form-atom
       ref = "atom"
+      v-bind = "atom"
       :coc-event-controller = "eventController"
       :validate = "computedRules"
       :val = "inputFieldModel"
@@ -16,7 +18,21 @@
       v-model = "autocompleteRetriever"
       @success = "handleAutocompleteSuccess"
       @catch = "handleAutocompleteError"/>
-    <Input
+    <label
+      v-if = "labeled"
+      :class = "labelClasses">{{ placeholder }}
+      <slot
+        v-if = "!hideErrors && !isValid.valid && isValid.message && isFired && rules && Object.keys(rules).length && labeled"
+        :error = "isValid"
+        name = "error">
+        <span
+          class = "animated fadeIn coc-text-sm right">
+          <span :class = "[isValid.icon]"/>
+          {{ isValid.message }}
+        </span>
+      </slot>
+    </label>
+    <i-input
       v-if = "!allowAutocomplete"
       ref = "input"
       v-model = "inputFieldModel"
@@ -44,19 +60,19 @@
       @on-change = "handleInput"
       @on-clear = "handleClear"
       @on-enter = "handleEnter">
-    <slot 
-      slot = "prepend" 
-      name = "prepend"/>
-    <slot 
-      slot = "suffix" 
-      name = "suffix"/>
-    <slot 
-      slot = "append" 
-      name = "append"/>
-    <slot 
-      slot = "prefix" 
-      name = "prefix"/>
-    </Input> <!-- eslint-disable-line -->
+      <slot 
+        slot = "prepend" 
+        name = "prepend"/>
+      <slot 
+        slot = "suffix" 
+        name = "suffix"/>
+      <slot 
+        slot = "append" 
+        name = "append"/>
+      <slot 
+        slot = "prefix" 
+        name = "prefix"/>
+    </i-input>
     <AutoComplete
       v-if = "allowAutocomplete"
       ref = "input"
@@ -88,8 +104,9 @@
       @on-focus = "handleFocus"
       @on-blur = "handleBlur"
       @input = "handleInput"
+      @on-change = "handleInput"
       @on-clear = "handleClear"
-      @on-select = "$emit('coc-select', $event)">
+      @on-select = "handleSelect">
       <slot
         slot = "default"
         :options = "autocompleteMapResponse"
@@ -110,12 +127,12 @@
     </AutoComplete>
 
     <slot
+      v-if = "!hideErrors && !isValid.valid && isValid.message && isFired && rules && Object.keys(rules).length && !labeled"
       :error = "isValid"
       name = "error">
       <p
-        v-if = "!isValid.valid && isValid.message && isFired"
-        class = "coc-error-text animated fadeIn">
-        <span :class = "isValid.icon"/>
+        class = "coc-error-text animated fadeIn coc-absolute coc-text-sm">
+        <span :class = "[isValid.icon]"/>
         {{ isValid.message }}
       </p>
     </slot>
@@ -130,6 +147,29 @@ const oneOf = (val, array) => {
 export default {
   name: 'CocInput',
   props: {
+    labeled: {
+      type: Boolean,
+      default: false
+    },
+    labelStatusClasses: {
+      type: Object,
+      default() {
+        return {
+          mount: 'coc-content-text',
+          focus: 'coc-primary-text',
+          success: 'coc-success-shade-3-text',
+          error: 'coc-error-shade-3-text'
+        }
+      }
+    },
+    trim: {
+      type: Boolean,
+      default: false
+    },
+    atom: {
+      type: Object,
+      default: null
+    },
     type: {
       validator(value) {
         return oneOf(value, [
@@ -313,6 +353,14 @@ export default {
     filters: {
       type: [String, Function, Array],
       default: null
+    },
+    hideStatus: {
+      type: Boolean,
+      default: false
+    },
+    hideErrors: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -418,6 +466,20 @@ export default {
       }
       return { ...defaults, ...this.statusClasses }
     },
+    labelClasses() {
+      if (!this.labeled) return null
+      let status = 'mount'
+      if (!this.isFired && !this.isFocused) {
+        status = 'mount'
+      } else if (!this.isFired && this.isFocused) {
+        status = 'focus'
+      } else if (this.isValid.valid) {
+        status = 'success'
+      } else if (!this.isValid.valid && this.rules) {
+        status = 'error'
+      }
+      return this.labelStatusClasses[status]
+    },
     inputRef() {
       if (!this.allowAutocomplete) {
         return () =>
@@ -451,6 +513,9 @@ export default {
     },
     inputFieldModel() {
       this.isFired = true
+      if (this.trim) {
+        this.inputFieldModel = this.inputFieldModel.trim()
+      }
       if (this.rules) {
         this.loaders.validation = true
       }
@@ -466,10 +531,14 @@ export default {
       if (val && !this.watchingEnterOnAutocomplete) {
         this.handleEnterOnAutocomplete()
       }
+    },
+    hideStatus() {
+      this.handleStyles()
     }
   },
   mounted() {
     // On Mount Code
+    const vm = this
     this.handleStyles()
     if (this.allowAutocomplete) this.handleEnterOnAutocomplete()
   },
@@ -546,8 +615,14 @@ export default {
         this.autocompleteRetriever.retrieve()
       }
     },
+    handleSelect(e) {
+      this.$emit('coc-select', e)
+      this.inputFieldModel = e
+    },
     handleClear() {
       this.isFired = true
+      this.inputFieldModel = ''
+      this.$emit('coc-clear')
       // some code
     },
     // After Events Methods
@@ -611,11 +686,18 @@ export default {
           if (i !== status) {
             container.RemoveClass(this.computedStatusClasses[i])
             input.RemoveClass(this.computedStatusClasses[i])
+          } else {
+            if (this.hideStatus) {
+              container.RemoveClass(this.computedStatusClasses[status])
+              input.RemoveClass(this.computedStatusClasses[status])
+            }
           }
         }
       })
-      container.AddClass(this.computedStatusClasses[status])
-      input.AddClass(this.computedStatusClasses[status])
+      if (!this.hideStatus) {
+        container.AddClass(this.computedStatusClasses[status])
+        input.AddClass(this.computedStatusClasses[status])
+      }
     },
     handleEnterOnAutocomplete() {
       const vm = this

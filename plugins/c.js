@@ -1,5 +1,6 @@
 import COC from './c/index.js'
 import moment from 'moment'
+import 'moment-timezone'
 import lodash from 'lodash'
 import pkg from '~/package'
 import Vue from 'vue'

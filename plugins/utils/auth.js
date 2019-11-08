@@ -9,7 +9,7 @@ export default {
       path: '/',
       maxAge: 60 * 60 * 24 * 7
     })
-    app.$axios.defaults.headers.common['x-auth-token'] = null
+    app.$axios.defaults.headers.common['Authorization'] = null
     app.$store.dispatch('setAuth', null)
   }
 }

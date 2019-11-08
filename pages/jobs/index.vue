@@ -1,6 +1,10 @@
 <template>
   <master>
     <div class="row">
+      <span class = "coc-text-bold coc-text-md-2">
+        Jobs
+        <span v-if = "jobs && jobs.length">({{ jobs.length }})</span>
+      </span>
       <Button
         icon = "ios-funnel-outline"
         class = "right"
@@ -199,7 +203,7 @@
       <div class="col s12 l4">
         <h3 class = "coc-info-text">Running</h3>
         <div class = "div col s6 coc-info-border coc-border-3" />
-        <CellGroup class = "coc-background-bg">
+        <CellGroup class = "coc-background-bg job-status-section coc-full-width">
           <Cell 
             v-for = "(job, j) in jobs.filter(j => j.status === 'running')" 
             :key = "j" 
@@ -233,10 +237,10 @@
           </p>
         </div>
       </div>
-      <div class="col s12 l4">
+      <div class="col s12 l4 ">
         <h3 class = "coc-success-text">Finished</h3>
-        <div class = "div col s6 coc-success-border coc-border-3" />
-        <CellGroup class = "coc-background-bg">
+        <div class = "div col s6 coc-success-border coc-border-3 " />
+        <CellGroup class = "coc-background-bg job-status-section coc-full-width">
           <Cell 
             v-for = "(job, j) in jobs.filter(j => j.status === 'finished')" 
             :key = "j" 
@@ -273,7 +277,7 @@
       <div class="col s12 l4">
         <h3 class = "coc-warning-text">Postponed</h3>
         <div class = "div col s6 coc-warning-text coc-border-3" />
-        <CellGroup class = "coc-background-bg">
+        <CellGroup class = "coc-background-bg job-status-section coc-full-width">
           <Cell 
             v-for = "(job, j) in jobs.filter(j => j.status === 'postponed')" 
             :key = "j" 
@@ -308,8 +312,8 @@
         </div>
       </div>
       <div 
-        style = "bottom: 0; position: absolute; padding-top: 20px;" 
-        class="col s12 coc-margin-y-20px">
+        style = " padding-top: 10px !important; margin-top: 5px; margin-bottom: 10px;" 
+        class="col s12 ">
         <Page
           v-if = "pagination && jobs && jobs.length && input.page >= 0"
           :total="pagination.pages"
@@ -404,4 +408,8 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.job-status-section {
+  max-height: 70vh;
+  overflow-y: scroll
+}
 </style>

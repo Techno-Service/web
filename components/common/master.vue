@@ -1,5 +1,11 @@
 <template>
   <div class="layout">
+    <drawer
+      v-model = "addStockModal"
+      width = "90%"
+      footer-hide>
+      <add-stock class = "coc-margin-top-25px" />
+    </drawer>
     <Modal
       v-model = "authModal"
       footer-hide>
@@ -37,6 +43,7 @@
           ref="side1" 
           v-model="isCollapsed"
           :collapsed-width="78" 
+          :class = "[{hidden: onPrint}]"
           class = "coc-secondary-bg "
           hide-trigger 
           collapsible>
@@ -47,12 +54,12 @@
             width="auto" 
             @on-select = "handleSidebarSelect">
             <menu-item name="jobs">
-              <Icon type="ios-build"/>
+              <i class="tcsc-transportation-icon" />
               <span>Running</span>
             </menu-item>
-            <menu-item name="1-2">
-              <Icon type="ios-search"/>
-              <span>Option 2</span>
+            <menu-item name="stock">
+              <i class="tcsc-inventory-1-icon" />
+              <span>Add Stock</span>
             </menu-item>
             <menu-item name="1-3">
               <Icon type="ios-settings"/>
@@ -63,6 +70,7 @@
             v-if = "jobs.length && !isCollapsed && sidebarActive === 'jobs'" 
             class = "row coc-margin-top-30px">
             <Card 
+              v-if = "user"
               :padding="0" 
               title="Running Jobs" 
               icon="ios-options" 
@@ -77,7 +85,7 @@
                     class = "coc-divider-bg" ></Input> <!-- eslint-disable-line -->  
                 </div>
               </div>
-              <CellGroup>
+              <CellGroup v-if = "user">
                 <Cell 
                   v-for = "(job, j) in jobs" 
                   :key = "j" 
@@ -101,7 +109,7 @@
           </div>
         </Sider>
         <Layout>
-          <Header>
+          <Header :class = "[{hidden: onPrint}]">
             <Menu 
               mode="horizontal" 
               theme="dark" 
@@ -185,6 +193,7 @@
           </Header>
           <Content :style="{padding: '0 50px'}">
             <Breadcrumb
+              v-if = "!onPrint"
               :style="{margin: '20px 0'}">
               <BreadcrumbItem 
                 v-for = "(crumb, c) in analysisBreadcrump()" 
@@ -193,6 +202,22 @@
                 {{ crumb | CocCapitalizeName }}
               </BreadcrumbItem>
             </Breadcrumb>
+            <Card 
+              v-else 
+              class = "row coc-margin-top-5px animated fadeIn">
+              <p class="coc-text-lg-1 coc-text-bold coc-margin-y-0 coc-padding-y-0">
+                <coc-avatar
+                  :source = "$coc.App.logo.primary"
+                  scale = "50px"
+                  class = "col coc-margin-right-10px coc-margin-y-0 coc-padding-y-0"/>
+                Techno-Service
+                <small class="right coc-text-body"> {{ $moment().format('D/M/YYYY h:m A') }} </small>
+              </p>
+              <p class="left">
+                <span class="coc-text-md-2"><Icon type= "ios-call"/> 01008645544</span><br>
+                <span class="coc-text-md-1"><Icon type= "ios-navigate"/> 9 Mohamed Refaat, El nozha el gededa</span>
+              </p>
+            </Card>
             <Card>
               <div style="min-height: 70vh;">
                 <slot />
@@ -201,6 +226,12 @@
           </Content>
           <Footer class="layout-footer-center">
             <span class = "">{{ $coc.App.brandName }} by {{ $coc.App.author }} {{ $moment().format('YYYY') }} &copy; </span>
+            <span v-if = "onPrint">
+              <br>
+              <icon 
+                type = "logo-twitter" 
+                class = "blue-text" /> @mamr_moussa
+            </span>
           </Footer>
         </Layout>
       </Layout>
@@ -211,17 +242,26 @@
 import config from '~/config'
 import Login from '../auth/Login.vue'
 import Register from '../auth/Register.vue'
+import AddStock from '~/components/stock/add.vue'
 export default {
   name: 'Master',
   components: {
     Login,
-    Register
+    Register,
+    AddStock
+  },
+  props: {
+    onPrint: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
       events: new this.$coc.Event({ api: this.$root }),
       authMode: 'login',
       authModal: false,
+      addStockModal: false,
       isCollapsed: false,
       sidebarActive: 'jobs',
       input: {
@@ -282,6 +322,11 @@ export default {
       },
       updateRunningJobs() {
         vm.getJobs()
+      },
+      LoggedIn() {
+        setTimeout(() => {
+          vm.getJobs()
+        }, 3000)
       }
     })
   },
@@ -300,6 +345,8 @@ export default {
       this.isCollapsed = false
       if (e === 'jobs') {
         this.getJobs()
+      } else if (e === 'stock') {
+        this.addStockModal = true
       }
     },
     collapsedSider() {
@@ -317,7 +364,7 @@ export default {
         path: '/',
         maxAge: 60 * 60 * 24 * 7
       })
-      this.$axios.defaults.headers.common['x-auth-token'] = null
+      this.$axios.defaults.headers.common['Authorization'] = null
       this.$store.dispatch('setAuth', null)
     },
     analysisBreadcrump(appendDashboard = true) {
@@ -366,7 +413,7 @@ export default {
   transform: translateX(0px);
   transition: font-size 0.2s ease, transform 0.2s ease;
   vertical-align: middle;
-  font-size: 16px;
+  font-size: 23px;
 }
 .collapsed-menu span {
   width: 0px;

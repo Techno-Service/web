@@ -12,18 +12,21 @@ module.exports = {
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/snaps/tservice.png' }]
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/snaps/tservice.png' },
+      { rel: 'stylesheet', href: '/tcsc/style.css' }
+    ]
   },
 
   /*
    ** Customize the progress-bar color
    */
-  loading: { color: '#ff4081' },
+  loading: { color: '#2d8cf0' },
 
   /*
    ** Global CSS
    */
-  css: ['iview/dist/styles/iview.css'],
+  css: ['view-design/dist/styles/iview.css'],
 
   /*
    ** Plugins to load before mounting the App

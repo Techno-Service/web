@@ -111,7 +111,7 @@ export default {
                 maxAge: 60 * 60 * 24 * 7
               })
               this.$root.$emit('LoggedIn', res.data)
-              this.$axios.defaults.headers.common['x-auth-token'] =
+              this.$axios.defaults.headers.common['Authorization'] =
                 res.data.token
               this.$store.dispatch('setAuth', res.data)
               this.$emit('success')

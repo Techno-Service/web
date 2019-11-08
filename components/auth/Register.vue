@@ -146,7 +146,7 @@ export default {
         path: '/',
         maxAge: 60 * 60 * 24 * 7
       })
-      this.$axios.defaults.headers.common['x-auth-token'] = response.token
+      this.$axios.defaults.headers.common['Authorization'] = response.token
       this.$store.dispatch('setAuth', response)
       this.$emit('success')
     }

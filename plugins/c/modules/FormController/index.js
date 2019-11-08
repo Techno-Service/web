@@ -7,18 +7,26 @@ export default class FormControl extends Event {
     this.type = event.type
     this.model = event.model
     if (!event.scope || !Array.isArray(event.scope)) {
-      this.scope = []
+      this.SetScope([])
     } else {
-      this.scope = event.scope
+      this.SetScope(event.scope)
     }
     this.scopeArray = new Arrays(this.scope, {
       logger: 'Coc Arrays: CEFC Scope'
     })
     this.component = event.component || null
     this.registered = {}
-    this.isReciever = event.isReciever
+    this.isReciever = event.isReciever || false
     this.pennding = false
     this.Logger = new Logger(`COC ${this.type} | CEFC`)
+  }
+
+  SetScope(scope) {
+    if (!scope) {
+      this.scope = []
+      return
+    }
+    this.scope = scope
   }
 
   SetPennding(state = true) {
@@ -74,7 +82,6 @@ export default class FormControl extends Event {
                 : 'Unknown'
             }`
           )
-          console.log(this)
         }
       } else return
     })
@@ -88,7 +95,15 @@ export default class FormControl extends Event {
   }
 
   Register() {
-    this.Send({ component: this.component }, 'COCFormItemRegister')
+    this.ReceiveScope('COCFormAskForRegister', () => {
+      this.Send(
+        {
+          id: this.component.domId,
+          valid: undefined
+        },
+        'COCFormItemRegister'
+      )
+    })
   }
 
   RegisterChild(child) {

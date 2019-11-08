@@ -13,6 +13,7 @@ export default class Validator {
     label = 'root'
   ) {
     // Init Values
+    this.LastError = null
     this.Val = val
     this.Options = {}
     this.Attemps = 0
@@ -204,7 +205,7 @@ export default class Validator {
 
   DeliverError(reject, error, round = false, attemp) {
     this.Attemps += 1
-    return reject({
+    this.LastError = {
       error,
       valid: false,
       message: this.GenerateErrorMessage(error, round).message,
@@ -215,7 +216,8 @@ export default class Validator {
       path: this.Path,
       val: this.Val,
       instance: 'coc-validator'
-    })
+    }
+    return reject(this.LastError)
   }
 
   GenerateErrorMessage(key, round) {
@@ -304,6 +306,12 @@ export default class Validator {
       return false
     }
     if (typeof this.Val === 'string' && !this.Val.length) {
+      return false
+    }
+    if (
+      typeof this.Val === 'string' &&
+      !this.Val.split(' ').filter(m => m.length).length
+    ) {
       return false
     }
     return true

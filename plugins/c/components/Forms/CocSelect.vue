@@ -14,6 +14,20 @@
       v-model = "autocompleteRetriever"
       @success = "handleAutocompleteSuccess"
       @catch = "handleAutocompleteError"/>
+    <label
+      v-if = "labeled"
+      :class = "labelClasses">{{ placeholder }}
+      <slot
+        v-if = "!hideErrors && !isValid.valid && isValid.message && isFired && rules && Object.keys(rules).length && labeled"
+        :error = "isValid"
+        name = "error">
+        <span
+          class = "animated fadeIn coc-text-sm right">
+          <span :class = "[isValid.icon]"/>
+          {{ isValid.message }}
+        </span>
+      </slot>
+    </label>
     <Select
       ref = "input"
       v-model = "inputFieldModel"
@@ -60,12 +74,12 @@
     </Select>
 
     <slot
+      v-if = "!hideErrors && !isValid.valid && isValid.message && isFired && rules && Object.keys(rules).length && !labeled"
       :error = "isValid"
       name = "error">
       <p
-        v-if = "!isValid.valid && isValid.message && isFired"
-        class = "coc-error-text">
-        <span :class = "isValid.icon"/>
+        class = "coc-error-text animated fadeIn coc-absolute coc-text-sm">
+        <span :class = "[isValid.icon]"/>
         {{ isValid.message }}
       </p>
     </slot>
@@ -79,6 +93,21 @@ const oneOf = (val, array) => {
 export default {
   name: 'CocSelect',
   props: {
+    labeled: {
+      type: Boolean,
+      default: false
+    },
+    labelStatusClasses: {
+      type: Object,
+      default() {
+        return {
+          mount: 'coc-content-text',
+          focus: 'coc-primary-text',
+          success: 'coc-success-shade-3-text',
+          error: 'coc-error-shade-3-text'
+        }
+      }
+    },
     value: {
       type: [String, Number, Array, Object],
       default() {
@@ -227,6 +256,14 @@ export default {
     autocompleteFetchOnce: {
       type: Boolean,
       default: false
+    },
+    hideStatus: {
+      type: Boolean,
+      default: false
+    },
+    hideErrors: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -253,7 +290,7 @@ export default {
         model: this.model,
         component: {
           placeholder: this.placeholder,
-          domId: this._uid,
+          domId: this.componentId,
           type: 'input',
           val: this.inputFieldModel
         }
@@ -332,6 +369,20 @@ export default {
       }
       return { ...defaults, ...this.statusClasses }
     },
+    labelClasses() {
+      if (!this.labeled) return null
+      let status = 'mount'
+      if (!this.isFired && !this.isFocused) {
+        status = 'mount'
+      } else if (!this.isFired && this.isFocused) {
+        status = 'focus'
+      } else if (this.isValid.valid) {
+        status = 'success'
+      } else if (!this.isValid.valid && this.rules) {
+        status = 'error'
+      }
+      return this.labelStatusClasses[status]
+    },
     inputRef() {
       return () =>
         new this.$coc.$(this.$refs.input.$el).domer.querySelector(
@@ -368,6 +419,9 @@ export default {
       handler(val) {
         this.$emit('input', this.lightModel ? val.val : val)
       }
+    },
+    hideStatus() {
+      this.handleStyles()
     }
   },
   mounted() {
@@ -543,11 +597,18 @@ export default {
           if (i !== status) {
             container.RemoveClass(this.computedStatusClasses[i])
             input.RemoveClass(this.computedStatusClasses[i])
+          } else {
+            if (this.hideStatus) {
+              container.RemoveClass(this.computedStatusClasses[status])
+              input.RemoveClass(this.computedStatusClasses[status])
+            }
           }
         }
       })
-      container.AddClass(this.computedStatusClasses[status])
-      input.AddClass(this.computedStatusClasses[status])
+      if (!this.hideStatus) {
+        container.AddClass(this.computedStatusClasses[status])
+        input.AddClass(this.computedStatusClasses[status])
+      }
     }
   }
 }

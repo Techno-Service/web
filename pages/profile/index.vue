@@ -32,7 +32,7 @@
               border-radius = "circle"/>
           </div>
           <div class = "col s12 l9">
-            <div style = "margin-top: 20px">
+            <div style = "margin-top: 40px">
               <p class = "coc-primary-text coc-text-heading">
                 <Icon
                   type = "ios-person-outline"
@@ -54,10 +54,6 @@
                     class = "email-wrapper">{{ user.email }}</span>
                 </Tooltip>
               </p>
-              <p class = "coc-primary-text coc-text-heading">
-                <span class = "coc-primary-tint-3-text">Points: </span>
-                {{ user.points }}
-              </p>
             </div>
           </div>
         </div>
@@ -73,21 +69,24 @@
                   :rules = "{
                     HasValue: { active: true }
                   }"
-                  placeholder = "Name.."/>
+                  placeholder = "Name.."
+                  labeled/>
                 <coc-input
                   v-model = "input.phone"
                   :rules = "{
                     MatchesRegex: { args: /(\+2|002)?(01)[0-9]{9}/, message: 'Invalid Phone Number' }
                   }"
                   :scope = "['user-form']"
-                  placeholder = "Phone.."/>
+                  placeholder = "Phone.."
+                  labeled/>
                 <coc-select
                   v-model = "input.gender"
                   :scope = "['user-form']"
                   :rules = "{
                     HasValue: { active: true }
                   }"
-                  placeholder = "Gender..">
+                  placeholder = "Gender.."
+                  labeled>
                   <Option
                     label = "Male"
                     value = "male"/>

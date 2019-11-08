@@ -1,18 +1,23 @@
 const TrimExtraZeros = num => (num % 1 === 0 ? parseInt(num, 10) : num)
 export default {
   ToInt(val) {
+    if (!val) return 0
     return parseInt(val, 10)
   },
   ToFloat(val) {
+    if (!val) return 0
     return parseFloat(val, 10)
   },
   ToUpperCase(val) {
+    if (!val) return null
     return val.toUpperCase()
   },
   ToLowerCase(val) {
+    if (!val) return null
     return val.toLowerCase()
   },
   CapitalizeName(val) {
+    if (!val) return null
     if (!typeof val === 'string' || !val.length) {
       return val
     }
@@ -34,15 +39,18 @@ export default {
     return splitted.join('-')
   },
   CapitalizeFirst(val) {
+    if (!val) return null
     if (!typeof val === 'string' || !val.length) {
       return val
     }
     return `${val.charAt(0).toUpperCase()}${val.slice(1)}`
   },
   TrimExtraZeros(num) {
+    if (!num) return null
     return TrimExtraZeros(num)
   },
   MigaNumber(num) {
+    if (!num) return null
     if (num / 10000000 > 1) {
       return `${TrimExtraZeros((num / 10000000).toFixed(2))}M`
     }

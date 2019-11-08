@@ -1,10 +1,23 @@
 <template>
   <div v-if = "dev">
-    <pre>
-    	<code>
-    		foo
-    	</code>
-    </pre>
+    <coc-collapse title = "Validator">
+      <pre
+        slot = "content"
+        class = "coc-background-text coc-standard-border-radius coc-primary-bg">
+      <code class="">
+        {{ $_.omit(validator, ['Rules', 'DefaultMessages', 'ErrorMessages', 'DefaultErrorIcon', 'Logger']) }}
+      </code>
+      </pre>
+    </coc-collapse>
+    <coc-collapse title = "FormController">
+      <pre
+        slot = "content"
+        class = "coc-background-text coc-standard-border-radius coc-primary-bg">
+      <code class="">
+        {{ $_.pick(eventController, ['component']) }}
+      </code>
+      </pre>
+    </coc-collapse>
   </div>
 </template>
 
@@ -68,6 +81,13 @@ export default {
     val: {
       deep: true,
       handler(val) {
+        this.eventController.SetScope(val)
+        this.validateValue()
+      }
+    },
+    val: {
+      deep: true,
+      handler(val) {
         if (this.filters) {
           this.$emit('filter', this.applyFilters(this.filters))
         }
@@ -83,6 +103,7 @@ export default {
       immediate: true,
       handler(val) {
         if (val && typeof val === 'object') this.validator.SetOptions(val)
+        else this.validator.SetOptions({})
       }
     }
   },

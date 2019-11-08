@@ -22,7 +22,7 @@ export default {
     }
     if (this.$store.state.core.auth) {
       this.$axios.defaults.headers.common[
-        'x-auth-token'
+        'Authorization'
       ] = this.$store.state.core.auth.token
     }
   }

@@ -16,6 +16,7 @@
               :rules = "{ HasValue: { active: true } }"
               :autocomplete-remote = "model => ({ method: 'get', url: '/job', params: { phone: model.val, limit: 5 }})"
               :autocomplete-map-response = "res => $_.uniqBy(res.jobs, j => j.client.phone).map(o => o.client.phone)"
+              labeled
               placeholder = "Client Phone"
               icon = "ios-phone-portrait"
               size = "large"
@@ -29,6 +30,7 @@
               v-model = "input.client.name"
               :scope = "['create-job']"
               :rules = "{ HasValue: { active: true } }"
+              labeled
               placeholder = "Client Name"
               icon = "ios-person"
               size = "large"
@@ -36,12 +38,14 @@
           </div>
           <div class="col l4 m6 s12">
             <coc-input
+              v-if = "brands && brands.length && isMounted"
               v-model = "input.car.brand"
               :scope = "['create-job']"
               :rules = "{ HasValue: true }"
               :data = "brands"
               :icon = "input.car.brand && input.car.brand.length ? null : 'ios-color-filter'"
               :style = "input.car.brand && input.car.brand.length ? 'width: calc( 100% - 40px )' : 'width: 100%'"
+              labeled
               placeholder = "Car Brand"
               size = "large"
               class = "col"
@@ -52,13 +56,14 @@
               slot = "suffix"
               :source = "`/snaps/brands/png/${input.car.brand.split(' ').join('-').toLowerCase()}.png`"
               scale = "30px"
-              class = "col coc-margin-left-4px coc-margin-top-5px"/>
+              class = "col coc-margin-left-4px coc-margin-top-25px"/>
           </div>
           <div class="col l4 m6 s12">
             <coc-input
               v-model = "input.car.model"
               :scope = "['create-job']"
               :rules = "{ HasValue: true }"
+              labeled
               placeholder = "Car Model"
               icon = "ios-car"
               size = "large"
@@ -70,6 +75,7 @@
               :scope = "['create-job']"
               :rules = "{ HasValue: true }"
               :data = "generateYears()"
+              labeled
               placeholder = "Release Year"
               icon = "ios-calendar"
               size = "large"
@@ -82,38 +88,41 @@
               v-model = "input.car.kilometers"
               :scope = "['create-job']"
               :rules = "{ HasValue: true, IsNumericString: true, NumberGreaterThan: 0 }"
+              labeled
               placeholder = "Kilometers"
               icon = "ios-speedometer"
               size = "large"
               light-model />
           </div>
-          <div class="col l4 m6 s12">
+          <!-- <div class="col l4 m6 s12">
             <coc-input
               v-model = "input.car.chase"
               :scope = "['create-job']"
               :rules = "{ HasValue: true }"
+              labeled
               placeholder = "Chase Number"
               icon = "ios-barcode"
               size = "large"
               light-model />
-          </div>
+          </div> -->
           <div class="col l4 m6 s12">
             <coc-input
               v-model = "input.reciptionist"
               :scope = "['create-job']"
               :rules = "{ HasValue: true }"
+              labeled
               placeholder = "Reciptionist"
               icon = "ios-ionitron"
               size = "large"
               light-model />
           </div>
-          <div class="col l4 m6 s12">
+          <div class="col l4 m6 s12 right">
             <coc-button
               :scope = "['create-job']"
               :request = "{ xdata: input, url: '/job' }"
               placeholder = "Create"
               icon = "ios-add-circle"
-              class = "right coc-margin-top-3px"
+              class = "right coc-margin-top-25px"
               size = "large"
               reset
               @coc-submit-accepted = "handleResult"/>
@@ -153,6 +162,7 @@ export default {
   },
   data() {
     return {
+      isMounted: false,
       brands,
       input: {
         reciptionist: '',
@@ -160,7 +170,7 @@ export default {
           brand: '',
           model: '',
           release: '',
-          chase: '',
+          chase: '--',
           kilometers: ''
         },
         client: {
@@ -176,6 +186,9 @@ export default {
     }
   },
   mounted() {
+    setTimeout(() => {
+      this.isMounted = true
+    }, 1000)
     setTimeout(() => {
       if (this.user) {
         this.input.reciptionist = this.user.name
@@ -212,6 +225,7 @@ export default {
       return result
     },
     handleAutocompleteSelect(e) {
+      if (!e || !e.length) return
       const response = this.$refs.clientPhone.autocompleteRetriever.response.jobs.filter(
         c => c.client.phone === e
       )
