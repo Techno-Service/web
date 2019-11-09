@@ -1,6 +1,6 @@
 <template>
   <master>
-    <div v-if = "user">
+    <div>
       <div class="row">
         <span class = "coc-text-bold coc-text-md-2">
           Stock
@@ -326,7 +326,7 @@
         </tr>
       </table>
     </div>
-    <Card v-else>
+    <!-- <Card v-else>
       <p class = "coc-text-title coc-error-text center">
         <Icon type = "ios-alert-outline"/>
         You Are Not Logged In
@@ -344,7 +344,7 @@
           </Button>
         </button-group>
       </p>
-    </Card>
+    </Card> -->
   </master>
 </template>
 
