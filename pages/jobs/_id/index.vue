@@ -513,23 +513,7 @@ export default {
         })
         .catch(err => {
           this.fetchError = err
-          this.job = {
-            job_no: '1',
-            reciptionist: 'Kerolos',
-            car: {
-              brand: 'Skoda',
-              model: 'Octavia',
-              release: '2010',
-              chase: '123',
-              kilometers: '73000'
-            },
-            client: {
-              name: 'Amr',
-              phone: '01011133122'
-            },
-            status: 'running',
-            operations: []
-          }
+          this.job = null
         })
     },
     deleteJob() {
@@ -575,15 +559,15 @@ export default {
     },
     formatInput() {
       const temp = this.$_.cloneDeep(this.input)
-      // temp.operations = temp.operations.map(o => this.processExternalInput(o))
+      temp.operations = temp.operations.map(o => this.processExternalInput(o))
       return this.$_.pick(temp, [
         'car',
         'client',
         'reciptionist',
         'complain',
         'notes',
-        'status'
-        // 'operations'
+        'status',
+        'operations'
       ])
     },
     handleAutocompleteSelect(e) {

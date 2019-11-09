@@ -1,6 +1,6 @@
 <template>
   <master>
-    <div>
+    <div v-if = "user">
       <div class="row">
         <span class = "coc-text-bold coc-text-md-2">
           Stock
@@ -255,7 +255,7 @@
           style = "width: 100%" />
       </Drawer>
       <table
-        v-if = "isMounted"
+        v-if = "isMounted && stock && stock.stock.length"
         class = "coc-full-width">
         <tr>
           <th 
@@ -325,8 +325,13 @@
           <td />
         </tr>
       </table>
+      <div
+        v-else
+        class = "coc-text-title center">
+        No Stock Available
+      </div>
     </div>
-    <!-- <Card v-else>
+    <Card v-else>
       <p class = "coc-text-title coc-error-text center">
         <Icon type = "ios-alert-outline"/>
         You Are Not Logged In
@@ -344,7 +349,7 @@
           </Button>
         </button-group>
       </p>
-    </Card> -->
+    </Card>
   </master>
 </template>
 
