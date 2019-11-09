@@ -1,6 +1,6 @@
 const defaults = {
   port: '8080',
   host: 'localhost',
-  baseURL: 'https://6070-dot-9728892-dot-devshell.appspot.com/api/'
+  baseURL: 'http://127.0.0.1:6070/api/'
 }
 module.exports = defaults
