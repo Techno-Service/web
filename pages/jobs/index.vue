@@ -379,6 +379,40 @@ export default {
         })
         .catch(res => {
           this.isLoading = false
+          this.jobs = [
+            {
+              reciptionist: 'Kerolos',
+              car: {
+                brand: 'Skoda',
+                model: 'Octavia',
+                release: '2010',
+                chase: '123',
+                kilometers: '73000'
+              },
+              client: {
+                name: 'Amr',
+                phone: '01011133122'
+              },
+              status: 'running',
+              operations: []
+            },
+            {
+              reciptionist: 'Kerolos',
+              car: {
+                brand: 'Toyota',
+                model: 'Corola',
+                release: '2014',
+                chase: '123',
+                kilometers: '73000'
+              },
+              client: {
+                name: 'Shenoda',
+                phone: '01011133121'
+              },
+              status: 'finished',
+              operations: []
+            }
+          ]
         })
     },
     encodedQuery(input = this.input) {

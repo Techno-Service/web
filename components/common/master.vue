@@ -336,9 +336,30 @@ export default {
         method: 'get',
         url: '/job',
         params: { status: 'running', stats: 'yes' }
-      }).then(({ data: { jobs } }) => {
-        this.$store.dispatch('setRunningJobs', jobs)
       })
+        .then(({ data: { jobs } }) => {
+          this.$store.dispatch('setRunningJobs', jobs)
+        })
+        .catch(() => {
+          this.$store.dispatch('setRunningJobs', [
+            {
+              reciptionist: 'Kerolos',
+              car: {
+                brand: 'Skoda',
+                model: 'Octavia',
+                release: '2010',
+                chase: '123',
+                kilometers: '73000'
+              },
+              client: {
+                name: 'Amr',
+                phone: '01011133122'
+              },
+              status: 'running',
+              operations: []
+            }
+          ])
+        })
     },
     handleSidebarSelect(e) {
       this.sidebarActive = e

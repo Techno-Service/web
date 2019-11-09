@@ -1,7 +1,7 @@
 <template>
   <master>
     <div class="row">
-      <Card v-if = "user">
+      <Card>
         <p 
           slot = "title">
           <icon type = "ios-add"/>
@@ -129,7 +129,7 @@
           </div>
         </div>
       </Card>
-      <Card v-else>
+      <!-- <Card v-else>
         <p class = "coc-text-title coc-error-text center">
           <Icon type = "ios-alert-outline"/>
           You Are Not Logged In
@@ -147,7 +147,7 @@
             </Button>
           </button-group>
         </p>
-      </Card>
+      </Card> -->
     </div>
   </master>
 </template>
