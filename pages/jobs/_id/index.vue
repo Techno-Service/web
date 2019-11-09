@@ -575,7 +575,7 @@ export default {
     },
     formatInput() {
       const temp = this.$_.cloneDeep(this.input)
-      temp.operations = temp.operations.map(o => this.processExternalInput(o))
+      // temp.operations = temp.operations.map(o => this.processExternalInput(o))
       return this.$_.pick(temp, [
         'car',
         'client',
