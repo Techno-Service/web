@@ -343,6 +343,7 @@ export default {
         .catch(() => {
           this.$store.dispatch('setRunningJobs', [
             {
+              job_no: '1',
               reciptionist: 'Kerolos',
               car: {
                 brand: 'Skoda',

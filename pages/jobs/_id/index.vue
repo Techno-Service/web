@@ -513,7 +513,23 @@ export default {
         })
         .catch(err => {
           this.fetchError = err
-          this.job = null
+          this.job = {
+            job_no: '1',
+            reciptionist: 'Kerolos',
+            car: {
+              brand: 'Skoda',
+              model: 'Octavia',
+              release: '2010',
+              chase: '123',
+              kilometers: '73000'
+            },
+            client: {
+              name: 'Amr',
+              phone: '01011133122'
+            },
+            status: 'running',
+            operations: []
+          }
         })
     },
     deleteJob() {

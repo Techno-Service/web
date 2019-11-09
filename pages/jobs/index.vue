@@ -381,6 +381,7 @@ export default {
           this.isLoading = false
           this.jobs = [
             {
+              job_no: '1',
               reciptionist: 'Kerolos',
               car: {
                 brand: 'Skoda',
@@ -397,6 +398,7 @@ export default {
               operations: []
             },
             {
+              job_no: '2',
               reciptionist: 'Kerolos',
               car: {
                 brand: 'Toyota',
