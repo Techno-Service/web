@@ -582,8 +582,8 @@ export default {
         'reciptionist',
         'complain',
         'notes',
-        'status',
-        'operations'
+        'status'
+        // 'operations'
       ])
     },
     handleAutocompleteSelect(e) {
