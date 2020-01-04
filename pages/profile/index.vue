@@ -58,6 +58,9 @@
           </div>
         </div>
         <div class="col s12 coc-section">
+          <i-button
+            v-if = "$utils.roles.dashboarder(user)"
+            to = "/users">Manage Users</i-button>
           <Tabs v-model = "activeTab">
             <TabPane 
               label="My Info" 

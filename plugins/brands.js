@@ -78,5 +78,10 @@ export default [
   'Volkswagen',
   'Volvo',
   'Yugo',
-  'smart'
+  'Smart',
+  'Lada',
+  'SsangYong',
+  'Gelly',
+  'Speranza',
+  'Chery'
 ]

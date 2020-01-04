@@ -58,6 +58,10 @@ export default {
     disableOnMount: {
       type: Boolean,
       default: false
+    },
+    disablePlaceholderErrors: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -78,11 +82,11 @@ export default {
     }
   },
   watch: {
-    val: {
+    scope: {
       deep: true,
+      immediate: false,
       handler(val) {
         this.eventController.SetScope(val)
-        this.validateValue()
       }
     },
     val: {
@@ -118,8 +122,28 @@ export default {
     if (!this.disableOnMount) {
       this.validateValue()
     }
+    if (!this.disablePlaceholderErrors) {
+      const defaultErrors = this.$_.cloneDeep(
+        this.$coc.App.Defaults.Validator.ErrorMessages
+      )
+      this.validator.SetDefaultErrorMessages(
+        this.$_.mapValues(defaultErrors, i => ({
+          ...i,
+          message: i.message.replace(
+            /[a-zA-z]* [a-zA-Z]* /,
+            `${this.cocEventController.component.placeholder} `
+          )
+        }))
+      )
+    }
   },
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.$root.$off([
+      'COCFormController',
+      'COCFormMeta',
+      'COCFormAskForRegister'
+    ])
+  },
   methods: {
     applyFilters(filters = this.filters) {
       if (filters) {

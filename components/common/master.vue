@@ -4,7 +4,10 @@
       v-model = "addStockModal"
       width = "90%"
       footer-hide>
-      <add-stock class = "coc-margin-top-25px" />
+      <add-stock
+        v-bind = "stockData"
+        class = "coc-margin-top-25px"
+        @success = "handleAddSuccess" />
     </drawer>
     <Modal
       v-model = "authModal"
@@ -44,7 +47,7 @@
           v-model="isCollapsed"
           :collapsed-width="78" 
           :class = "[{hidden: onPrint}]"
-          class = "coc-secondary-bg "
+          class = "coc-secondary-bg coc-border-0 coc-border-right-1 coc-border-border"
           hide-trigger 
           collapsible>
           <Menu 
@@ -61,16 +64,15 @@
               <i class="tcsc-inventory-1-icon" />
               <span>Add Stock</span>
             </menu-item>
-            <menu-item name="1-3">
-              <Icon type="ios-settings"/>
-              <span>Option 3</span>
+            <menu-item name="moves">
+              <i class="tcsc-stock-icon" />
+              <span>Moves</span>
             </menu-item>
           </Menu>
           <div 
-            v-if = "jobs.length && !isCollapsed && sidebarActive === 'jobs'" 
+            v-if = "!isCollapsed && sidebarActive === 'jobs' && user" 
             class = "row coc-margin-top-30px">
             <Card 
-              v-if = "user"
               :padding="0" 
               title="Running Jobs" 
               icon="ios-options" 
@@ -85,7 +87,10 @@
                     class = "coc-divider-bg" ></Input> <!-- eslint-disable-line -->  
                 </div>
               </div>
-              <CellGroup v-if = "user">
+              <CellGroup
+                v-coc-loading = "loaders.jobs"
+                v-if = "jobs.length"
+                class = "side-jobs">
                 <Cell 
                   v-for = "(job, j) in jobs" 
                   :key = "j" 
@@ -104,6 +109,12 @@
                     </span>
                   </div>
                 </Cell>
+              </CellGroup>
+              <CellGroup
+                v-coc-loading = "loaders.jobs"
+                v-if = "!jobs.length"
+                class = "side-jobs">
+                <Cell title = "No Matching Jobs Found"/>
               </CellGroup>
             </Card>
           </div>
@@ -150,8 +161,12 @@
                   </nuxt-link>
                 </menu-item>
                 <menu-item name="3">
-                  <Icon type="ios-analytics" />
-                  Genuine
+                  <nuxt-link
+                    to = "/analytics"
+                    class = "coc-secondary-text">
+                    <Icon type="ios-analytics" />
+                    Analytics
+                  </nuxt-link>
                 </menu-item>
                 <menu-item name="4">
                   <span 
@@ -251,6 +266,10 @@ export default {
     AddStock
   },
   props: {
+    crumbs: {
+      type: Array,
+      default: null
+    },
     onPrint: {
       type: Boolean,
       default: false
@@ -258,6 +277,11 @@ export default {
   },
   data() {
     return {
+      stockData: {
+        mode: 'post',
+        init: null
+      },
+      loaders: { jobs: false },
       events: new this.$coc.Event({ api: this.$root }),
       authMode: 'login',
       authModal: false,
@@ -308,6 +332,12 @@ export default {
       return ['menu-item', this.isCollapsed ? 'collapsed-menu' : '']
     }
   },
+  watch: {
+    isCollapsed(e) {
+      this.$emit('collapse', e)
+      this.$emit(e ? 'sider-on' : 'sider-off')
+    }
+  },
   mounted() {
     const vm = this
     this.getJobs()
@@ -327,18 +357,30 @@ export default {
         setTimeout(() => {
           vm.getJobs()
         }, 3000)
+      },
+      addStock(e) {
+        if (e) {
+          vm.stockData = e
+        } else stockData = null
+        vm.addStockModal = true
       }
     })
   },
   methods: {
     getJobs() {
+      this.loaders.jobs = true
       this.$axios({
         method: 'get',
         url: '/job',
         params: { status: 'running', stats: 'yes' }
-      }).then(({ data: { jobs } }) => {
-        this.$store.dispatch('setRunningJobs', jobs)
       })
+        .then(({ data: { jobs } }) => {
+          this.loaders.jobs = false
+          this.$store.dispatch('setRunningJobs', jobs)
+        })
+        .catch(() => {
+          this.loaders.jobs = false
+        })
     },
     handleSidebarSelect(e) {
       this.sidebarActive = e
@@ -346,7 +388,13 @@ export default {
       if (e === 'jobs') {
         this.getJobs()
       } else if (e === 'stock') {
+        this.stockData = {
+          mode: 'post',
+          init: null
+        }
         this.addStockModal = true
+      } else if (e === 'moves') {
+        this.$router.push('/moves')
       }
     },
     collapsedSider() {
@@ -367,13 +415,23 @@ export default {
       this.$axios.defaults.headers.common['Authorization'] = null
       this.$store.dispatch('setAuth', null)
     },
+    handleAddSuccess(e) {
+      this.stockData = {
+        mode: 'post',
+        init: null
+      }
+      this.addStockModal = false
+      this.$root.$emit('addStockSuccess', e)
+    },
     analysisBreadcrump(appendDashboard = true) {
       const psudoAppend = []
       if (appendDashboard) psudoAppend.push('Dashboard')
-      return [
-        ...psudoAppend,
-        ...this.$route.path.split('/').filter(c => c !== '/' && c.length)
-      ]
+      {
+        const parts =
+          this.crumbs ||
+          this.$route.path.split('/').filter(c => c !== '/' && c.length)
+        return [...psudoAppend, ...parts]
+      }
     }
   }
 }
@@ -442,5 +500,10 @@ export default {
 }
 .layout-footer-center {
   text-align: center;
+}
+.side-jobs {
+  min-height: 50vh;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 </style>

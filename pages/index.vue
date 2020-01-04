@@ -1,16 +1,19 @@
 <template>
   <master>
     <div class="row">
-      <Card v-if = "user">
+      <Card 
+        v-if = "user"
+        id = "jobs-create">
         <p 
           slot = "title">
-          <icon type = "ios-add"/>
+          <icon type = " tcsc-transportation-icon coc-text-md-2"/>
           <span class="coc-subcolor-text">Create Job</span>
         </p>
         <div class="row">
           <div class="col l4 m6 s12">
             <coc-input
-              ref = "clientPhone"
+              :disabled = "!($utils.roles.hasRole('jobs', user))"
+              :ref = "`${_uid}-phone`"
               v-model = "input.client.phone"
               :scope = "['create-job']"
               :rules = "{ HasValue: { active: true } }"
@@ -22,23 +25,31 @@
               size = "large"
               light-model
               allow-autocomplete
-              @coc-enter = "handleAutocompleteSelect"
-              @coc-select = "handleAutocompleteSelect" />
+              @coc-enter = "handleAutocompleteSelect($event, 'phone')"
+              @coc-select = "handleAutocompleteSelect($event, 'phone')" />
           </div>
           <div class="col l4 m6 s12">
             <coc-input
+              :disabled = "!($utils.roles.hasRole('jobs', user))"
+              :ref = "`${_uid}-name`"
               v-model = "input.client.name"
               :scope = "['create-job']"
               :rules = "{ HasValue: { active: true } }"
+              :autocomplete-remote = "model => ({ method: 'get', url: '/job', params: { name: model.val, limit: 5 }})"
+              :autocomplete-map-response = "res => $_.uniqBy(res.jobs, j => j.client.name).map(o => o.client.name)"
               labeled
               placeholder = "Client Name"
               icon = "ios-person"
               size = "large"
-              light-model />
+              light-model
+              allow-autocomplete
+              @coc-enter = "handleAutocompleteSelect($event, 'name')"
+              @coc-select = "handleAutocompleteSelect($event, 'name')" />
           </div>
           <div class="col l4 m6 s12">
             <coc-input
               v-if = "brands && brands.length && isMounted"
+              :disabled = "!($utils.roles.hasRole('jobs', user))"
               v-model = "input.car.brand"
               :scope = "['create-job']"
               :rules = "{ HasValue: true }"
@@ -54,12 +65,14 @@
             <coc-avatar
               v-if = "input.car.brand && input.car.brand.length"
               slot = "suffix"
+              :disabled = "!($utils.roles.hasRole('jobs', user))"
               :source = "`/snaps/brands/png/${input.car.brand.split(' ').join('-').toLowerCase()}.png`"
               scale = "30px"
               class = "col coc-margin-left-4px coc-margin-top-25px"/>
           </div>
           <div class="col l4 m6 s12">
             <coc-input
+              :disabled = "!($utils.roles.hasRole('jobs', user))"
               v-model = "input.car.model"
               :scope = "['create-job']"
               :rules = "{ HasValue: true }"
@@ -71,6 +84,7 @@
           </div>
           <div class="col l4 m6 s12">
             <coc-select
+              :disabled = "!($utils.roles.hasRole('jobs', user))"
               v-model = "input.car.release"
               :scope = "['create-job']"
               :rules = "{ HasValue: true }"
@@ -85,6 +99,7 @@
           </div>
           <div class="col l4 m6 s12">
             <coc-input
+              :disabled = "!($utils.roles.hasRole('jobs', user))"
               v-model = "input.car.kilometers"
               :scope = "['create-job']"
               :rules = "{ HasValue: true, IsNumericString: true, NumberGreaterThan: 0 }"
@@ -96,6 +111,7 @@
           </div>
           <!-- <div class="col l4 m6 s12">
             <coc-input
+              :disabled = "!($utils.roles.hasRole('jobs', user))"
               v-model = "input.car.chase"
               :scope = "['create-job']"
               :rules = "{ HasValue: true }"
@@ -107,6 +123,7 @@
           </div> -->
           <div class="col l4 m6 s12">
             <coc-input
+              :disabled = "!($utils.roles.hasRole('jobs', user))"
               v-model = "input.reciptionist"
               :scope = "['create-job']"
               :rules = "{ HasValue: true }"
@@ -117,19 +134,41 @@
               light-model />
           </div>
           <div class="col l4 m6 s12 right">
-            <coc-button
-              :scope = "['create-job']"
-              :request = "{ xdata: input, url: '/job' }"
-              placeholder = "Create"
-              icon = "ios-add-circle"
-              class = "right coc-margin-top-25px"
-              size = "large"
-              reset
-              @coc-submit-accepted = "handleResult"/>
+            <button-group class = "coc-margin-top-25px right">
+              <Button
+                v-if = "pullable"
+                type = "success"
+                icon = "ios-time"
+                size = "large"
+                @click = "getHistory">Pull History</Button>
+              <coc-button
+                :disabled = "!($utils.roles.hasRole('jobs', user))"
+                v-model = "btnModel"
+                :scope = "['create-job']"
+                :request = "{ xdata: input, url: '/job' }"
+                :resolve-success-message = "res => `Job #${res.job_no} Created Successfully`"
+                :type = "btnModel && btnModel.meta && btnModel.meta.retriever && btnModel.meta.retriever.errors && btnModel.meta.retriever.errors.response.status === 400 && btnModel.meta.retriever.errors.response.data.includes('#') ? 'error': 'primary'"
+                placeholder = "Create"
+                icon = "ios-add-circle right coc-margin-x-5px"
+                size = "large"
+                reset
+                @coc-submit-accepted = "handleResult"/>
+            </button-group>
+          </div>
+          <div 
+            v-if = "btnModel && btnModel.meta && btnModel.meta.retriever && btnModel.meta.retriever.errors && btnModel.meta.retriever.errors.response.status === 400 && btnModel.meta.retriever.errors.response.data.includes('#')"
+            class = "right coc-house-keeper" >
+            <i-button 
+              :to = "`/jobs/${btnModel.meta.retriever.errors.response.data.match(/[1-9]/g).join('')}`"
+              type = "text"
+              class = "coc-error-text  ">
+              {{ btnModel.meta.retriever.errors.response.data }}
+            </i-button>
           </div>
         </div>
       </Card>
-      <Card v-else>
+      <jobs-history />
+      <Card v-if = "!user">
         <p class = "coc-text-title coc-error-text center">
           <Icon type = "ios-alert-outline"/>
           You Are Not Logged In
@@ -154,14 +193,18 @@
 
 <script>
 import Master from '~/components/common/master'
+import JobsHistory from '~/components/jobs/history.vue'
 import brands from '~/plugins/brands'
 export default {
   name: 'Index',
   components: {
-    Master
+    Master,
+    JobsHistory
   },
   data() {
     return {
+      pullable: false,
+      btnModel: null,
       isMounted: false,
       brands,
       input: {
@@ -185,6 +228,9 @@ export default {
       return this.$store.state.core.auth
     }
   },
+  beforeDestroy() {
+    this.$root.$off(['createJob', 'LoggedIn'])
+  },
   mounted() {
     setTimeout(() => {
       this.isMounted = true
@@ -199,6 +245,23 @@ export default {
         if (this.user) {
           this.input.reciptionist = p.name
         }
+      }, 500)
+    })
+    this.$root.$on('createJob', p => {
+      setTimeout(() => {
+        this.input = this.$_.cloneDeep(p)
+        this.input.reciptionist = this.user.name
+        setTimeout(() => {
+          if (this.btnModel) {
+            this.btnModel.control.click()
+            setTimeout(() => {
+              const eTarget = document.getElementById('jobs-create')
+              if (eTarget) {
+                eTarget.scrollIntoView()
+              }
+            }, 500)
+          }
+        }, 1500)
       }, 500)
     })
   },
@@ -224,14 +287,19 @@ export default {
       }
       return result
     },
-    handleAutocompleteSelect(e) {
+    getHistory() {
+      this.$root.$emit('getHistory', this.input)
+    },
+    handleAutocompleteSelect(e, ref = 'phone') {
+      this.pullable = false
       if (!e || !e.length) return
-      const response = this.$refs.clientPhone.autocompleteRetriever.response.jobs.filter(
-        c => c.client.phone === e
-      )
+      const response = this.$refs[
+        `${this._uid}-${ref}`
+      ].autocompleteRetriever.response.jobs.filter(c => c.client[ref] === e)
       if (response.length) {
         this.input.client = response[response.length - 1].client
         this.input.car = response[response.length - 1].car
+        this.pullable = true
       }
     }
   }
