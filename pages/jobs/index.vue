@@ -127,15 +127,19 @@
             <div class="row coc-house-keeper">
               <div class = "col s12 l6">
                 <p class = "coc-content-text coc-text-normal-2">Car Brand</p>
-                <coc-input
-                  v-model = "input.brand"
-                  :autocomplete-remote = "model => ({ method: 'get', url: '/job', params: { brand: model.val, limit: 5 } } )"
-                  :autocomplete-map-response = "(res) => $_.uniqBy(res.jobs, j => j.car.brand).map(j => j.car.brand)"
+                <coc-select
+                  v-model = "input.brandmlt"
+                  :autocomplete-remote = "model => ({ method: 'get', url: '/job', params: { brand: model.meta.query, limit: 5, select: 'car' } } )"
+                  :autocomplete-map-response = "res => $_.uniq(res.jobs.map(r => r.car.brand))"
+                  :data = "brands"
                   icon = "ios-search"
-                  placeholder = "Search by Phone.."
+                  placeholder = "Search by Car Brand.."
                   class = "coc-house-keeper"
                   allow-autocomplete
                   clearable
+                  filterable
+                  allow-create
+                  multiple
                   light-model />
               </div>
               <div class = "col s12 l6">
@@ -151,62 +155,75 @@
                   clearable
                   light-model />
               </div>
-            </div>
-            <div class="row">
               <div class = "col s12 l6">
-                <p class = "coc-content-text coc-text-normal-2">Price Range</p>
-                <Slider 
-                  v-model="input.price"
-                  :step = "config.price.step"
-                  :max = "config.price.max" 
-                  range 
-                  show-stops/>
+                <p class = "coc-content-text coc-text-normal-2">Job Requirements</p>
+                <coc-select
+                  v-model = "input.requirementsmlt"
+                  :autocomplete-remote = "model => ({ method: 'get', url: '/job', params: { requirements: model.meta.query, limit: 5 } } )"
+                  :autocomplete-map-response = "(res) => $_.uniqBy( $coc.CielChilds(res.jobs, r => r.requirements) , j => j.name).map(j => j.name)"
+                  icon = "ios-search"
+                  placeholder = "Search by Phone.."
+                  class = "coc-house-keeper"
+                  allow-autocomplete
+                  filterable
+                  multiple
+                  clearable
+                  light-model />
               </div>
-              <div class = "col s12 l6 right">
-                <p class = "coc-content-text coc-text-normal-2">Arrangement</p>
-                <button-group
-                  shape = "circle"
-                  class = "coc-full-width"
-                  long>
-                  <Button
-                    :type = "input.desc === 'no' ? 'info' : 'default'"
-                    icon = "md-arrow-round-up"
-                    style = "width:50%"
-                    @click = "input.desc = 'no'"/>
-                  <Button
-                    :type = "input.desc === 'yes' ? 'info' : 'default'"
-                    icon = "md-arrow-round-down"
-                    style = "width:50%"
-                    @click = "input.desc = 'yes'"/>
-                </button-group>
+              <div class="row">
+                <div class = "col s12 l6">
+                  <p class = "coc-content-text coc-text-normal-2">Price Range</p>
+                  <Slider 
+                    v-model="input.price"
+                    :step = "config.price.step"
+                    :max = "config.price.max" 
+                    range 
+                    show-stops/>
+                </div>
+                <div class = "col s12 l6 right">
+                  <p class = "coc-content-text coc-text-normal-2">Arrangement</p>
+                  <button-group
+                    shape = "circle"
+                    class = "coc-full-width"
+                    long>
+                    <Button
+                      :type = "input.desc === 'no' ? 'info' : 'default'"
+                      icon = "md-arrow-round-up"
+                      style = "width:50%"
+                      @click = "input.desc = 'no'"/>
+                    <Button
+                      :type = "input.desc === 'yes' ? 'info' : 'default'"
+                      icon = "md-arrow-round-down"
+                      style = "width:50%"
+                      @click = "input.desc = 'yes'"/>
+                  </button-group>
+                </div>
               </div>
-            </div>
-            <div class = "col s12">
-              <Button 
-                type = "primary" 
-                icon = "ios-funnel-outline coc-text-lg"
-                long 
-                @click = "formatQuery()">
-                <span class="coc-text-lg">Filter Jobs</span>
-              </Button>
+              <div class = "col s12">
+                <Button 
+                  type = "primary" 
+                  icon = "ios-funnel-outline coc-text-lg"
+                  long 
+                  @click = "formatQuery()">
+                  <span class="coc-text-lg">Filter Jobs</span>
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-      <Divider orientation = "right">Search Settings</Divider>
-      <p class = "coc-text-md-2">Price Range Maximum</p>
-      <input-number 
-        v-model = "config.price.max" 
-        placeholder = "Price Range Maximum" 
-        size = "large"
-        style = "width: 100%" />
-      <p class = "coc-text-md-2">Price Range Step</p>
-      <input-number 
-        v-model = "config.price.step" 
-        placeholder = "Price Range Step" 
-        size = "large"
-        style = "width: 100%" />
-    </Drawer>
+          <Divider orientation = "right">Search Settings</Divider>
+          <p class = "coc-text-md-2">Price Range Maximum</p>
+          <input-number 
+            v-model = "config.price.max" 
+            placeholder = "Price Range Maximum" 
+            size = "large"
+            style = "width: 100%" />
+          <p class = "coc-text-md-2">Price Range Step</p>
+          <input-number 
+            v-model = "config.price.step" 
+            placeholder = "Price Range Step" 
+            size = "large"
+            style = "width: 100%" />
+    </div></div></Drawer>
     <div
       v-coc-loading = "isLoading"
       v-if = "list" 
@@ -231,6 +248,7 @@
             <div class = "row coc-house-keeper">
               <coc-avatar
                 :source = "`/snaps/brands/png/${job.car.brand.split(' ').join('-').toLowerCase()}.png`"
+                fallback-icon = "tcsc-car-icon"
                 scale = "40px"
                 class = "col"/>
               <nuxt-link
@@ -326,7 +344,13 @@
               </dropdown><br>
               <nuxt-link
                 :to = "`/jobs/${job.job_no}`"
-                class="right coc-content-text">{{ $moment(job.timein).fromNow() }}</nuxt-link><br>
+                class="right coc-content-text">
+                <tooltip 
+                  :content = "$moment(job.timein).format('D/M/YYYY')" 
+                  placement = "left">
+                  {{ $moment(job.timein).fromNow() }}
+                </tooltip>
+              </nuxt-link><br>
             </div>
           </Cell>
         </CellGroup>
@@ -361,6 +385,7 @@
             <div class = "row  coc-house-keeper">
               <coc-avatar
                 :source = "`/snaps/brands/png/${job.car.brand.split(' ').join('-').toLowerCase()}.png`"
+                fallback-icon = "tcsc-car-icon"
                 scale = "40px"
                 class = "col"/>
               <nuxt-link
@@ -440,7 +465,13 @@
               </dropdown><br>
               <nuxt-link
                 :to = "`/jobs/${job.job_no}`"
-                class="right coc-content-text">{{ $moment(job.timein).fromNow() }}</nuxt-link><br>
+                class="right coc-content-text">
+                <tooltip 
+                  :content = "$moment(job.timein).format('D/M/YYYY')" 
+                  placement = "left">
+                  {{ $moment(job.timein).fromNow() }}
+                </tooltip>
+              </nuxt-link><br>
             </div>
           </Cell>
         </CellGroup>
@@ -470,6 +501,7 @@
             <div class = "row coc-house-keeper">
               <coc-avatar
                 :source = "`/snaps/brands/png/${job.car.brand.split(' ').join('-').toLowerCase()}.png`"
+                fallback-icon = "tcsc-car-icon"
                 scale = "40px"
                 class = "col"/>
               <nuxt-link
@@ -549,7 +581,13 @@
               </dropdown><br>
               <nuxt-link
                 :to = "`/jobs/${job.job_no}`"
-                class="right coc-content-text">{{ $moment(job.timein).fromNow() }}</nuxt-link><br>
+                class="right coc-content-text">
+                <tooltip 
+                  :content = "$moment(job.timein).format('D/M/YYYY')" 
+                  placement = "left">
+                  {{ $moment(job.timein).fromNow() }}
+                </tooltip>
+              </nuxt-link><br>
             </div>
           </Cell>
         </CellGroup>
@@ -579,6 +617,7 @@
             <div class = "row coc-house-keeper">
               <coc-avatar
                 :source = "`/snaps/brands/png/${job.car.brand.split(' ').join('-').toLowerCase()}.png`"
+                fallback-icon = "tcsc-car-icon"
                 scale = "40px"
                 class = "col"/>
               <nuxt-link
@@ -658,7 +697,13 @@
               </dropdown><br>
               <nuxt-link
                 :to = "`/jobs/${job.job_no}`"
-                class="right coc-content-text">{{ $moment(job.timein).fromNow() }}</nuxt-link><br>
+                class="right coc-content-text">
+                <tooltip 
+                  :content = "$moment(job.timein).format('D/M/YYYY')" 
+                  placement = "left">
+                  {{ $moment(job.timein).fromNow() }}
+                </tooltip>
+              </nuxt-link><br>
             </div>
           </Cell>
         </CellGroup>
@@ -690,6 +735,7 @@
 
 <script>
 import Master from '~/components/common/master'
+import brands from '~/plugins/brands'
 export default {
   name: 'AllJobsIndex',
   components: {
@@ -697,6 +743,7 @@ export default {
   },
   data() {
     return {
+      brands,
       list: false,
       loaders: {},
       flashers: null,
@@ -774,6 +821,12 @@ export default {
       }
       if (final.price) {
         final.price = final.price.join(',')
+      }
+      if (final.requirementsmlt) {
+        final.requirementsmlt = final.requirementsmlt.join(',')
+      }
+      if (final.brandmlt) {
+        final.brandmlt = final.brandmlt.join(',')
       }
       return final
     },

@@ -1,10 +1,13 @@
 <template>
   <master 
     v-coc-loading = "onRender || drawing"
+    :on-print = "onPrint"
     coc-loader-bg = "rgba(255,255,255,0.9)"
     coc-loader-text = "Rendering..."
     @collapse = "boundLogos(1000)">
-    <div v-if = "user">
+    <div 
+      v-if = "user"
+      :style = "{ width: onPrint ? '600px' : '100%' }">
       <div class="row">
         <span class = "coc-text-bold coc-text-md-2">
           Jobs
@@ -18,6 +21,11 @@
           icon = "ios-refresh"
           class = "right coc-margin-x-5px"
           @click = "formatQuery"/>
+          <!--         <Button   
+          :type = "onPrint ? 'primary' : 'default'"         
+          icon = "ios-print-outline"
+          class = "right coc-margin-x-5px"
+          @click = "print" /> -->
       </div>
       <Drawer 
         v-model="config.drawer" 
@@ -126,6 +134,7 @@
                     v-model = "input.brandmlt"
                     :autocomplete-remote = "model => ({ method: 'get', url: '/job', params: { brand: model.meta.query, limit: 5, select: 'car' } } )"
                     :autocomplete-map-response = "res => $_.uniq(res.jobs.map(r => r.car.brand))"
+                    :data = "brands"
                     icon = "ios-search"
                     placeholder = "Search by Car Brand.."
                     class = "coc-house-keeper"
@@ -148,6 +157,21 @@
                     clearable
                     light-model />
                 </div>
+              </div>
+              <div class = "col s12 l6">
+                <p class = "coc-content-text coc-text-normal-2">Job Requirements</p>
+                <coc-select
+                  v-model = "input.requirementsmlt"
+                  :autocomplete-remote = "model => ({ method: 'get', url: '/job', params: { requirements: model.meta.query, limit: 5 } } )"
+                  :autocomplete-map-response = "(res) => $_.uniqBy( $coc.CielChilds(res.jobs, r => r.requirements) , j => j.name).map(j => j.name)"
+                  icon = "ios-search"
+                  placeholder = "Search by Phone.."
+                  class = "coc-house-keeper"
+                  allow-autocomplete
+                  filterable
+                  multiple
+                  clearable
+                  light-model />
               </div>
               <div class="row">
                 <div class = "col s12 l6">
@@ -291,9 +315,20 @@
         <div 
           id = "requirements-analytics" 
           class="row">
-          <p class = "coc-text-title coc-text-bold">Requirements</p>
+          <p class = "coc-text-title coc-text-bold">Requirements Status</p>
           <divider />
           <div id="requirements-jobs" />
+          <br>
+          <div id="requirements-radar" />
+        </div>
+        <div 
+          id = "requirements-analytics" 
+          class="row">
+          <p class = "coc-text-title coc-text-bold">Requirements Time Consumption</p>
+          <divider />
+          <div id="requirements-time" />
+          <br>
+          <div id="requirements-time-bar" />
         </div>
         <divider class = "coc-margin-y-10px" />
         <div 
@@ -344,9 +379,9 @@
                   </tooltip>
                   ~
                   {{ 
-                    ($_.sumBy(jobs.filter(j => j.car.brand === make && j.timeleave), o => $moment(o.timeleave).diff($moment(o.timein),'hours')))
+                    (($_.sumBy(jobs.filter(j => j.car.brand === make && j.timeleave), o => $moment(o.timeleave).diff($moment(o.timein),'hours')))
                       / 
-                      jobs.filter(j => j.car.brand === make).length | CocToFixedTwo 
+                      jobs.filter(j => j.car.brand === make).length).toFixed(2) 
                   }} H
                 </p>
                 <p class = "coc-padding-top-5px">
@@ -354,10 +389,10 @@
                     <icon type = "ios-timer-outline" />
                   </tooltip>
                   {{ 
-                    $_.sumBy(jobs.filter(j => j.car.brand === make), o => o.price)
+                    ($_.sumBy(jobs.filter(j => j.car.brand === make), o => o.price)
                       / 
-                      ($_.sumBy(jobs.filter(j => j.car.brand === make && j.timeleave), o => $moment(o.timeleave).diff($moment(o.timein),'hours')))
-                      | CocToFixedTwo 
+                    ($_.sumBy(jobs.filter(j => j.car.brand === make && j.timeleave), o => $moment(o.timeleave).diff($moment(o.timein),'hours')))).toFixed(2)
+                       
                   }} LE/H
                 </p>
               </div>
@@ -391,6 +426,7 @@
 <script>
 import Master from '~/components/common/master'
 import JobsStatsCharts from '~/components/jobs/JobsStatsCharts'
+import brands from '~/plugins/brands'
 export default {
   name: 'JobsAnalyticsIndex',
   components: {
@@ -399,6 +435,8 @@ export default {
   },
   data() {
     return {
+      brands,
+      onPrint: false,
       apx: null,
       list: false,
       loaders: {},
@@ -448,6 +486,12 @@ export default {
     }
   },
   mounted() {
+    if (window) {
+      const vm = this
+      window.onfocus = () => {
+        vm.onPrint = false
+      }
+    }
     setTimeout(() => {
       this.formatQuery()
       if (process.client) {
@@ -513,6 +557,9 @@ export default {
       if (final.brandmlt) {
         final.brandmlt = final.brandmlt.join(',')
       }
+      if (final.requirementsmlt) {
+        final.requirementsmlt = final.requirementsmlt.join(',')
+      }
       return final
     },
     formatQuery(cb = null) {
@@ -538,9 +585,11 @@ export default {
           enabled: false
         },
         dataLabel: args.dataLabel,
-        stroke: {
+        dataLabels: args.dataLabels || {},
+        stroke: args.stroke || {
           curve: 'smooth'
         },
+        markers: args.markers || {},
         yaxis: args.yaxis || {
           opposite: true
         },
@@ -581,13 +630,43 @@ export default {
           this.jobs,
           j => j.requirements
         )
-        const requirementsNames = allRequirements.map(j => j.name)
-        const requirementsDone = this.$_.sumBy(allRequirements, j => j.done)
-        // console.log(allRequirements)
+        const requirementsNames = this.$_.uniqBy(allRequirements, j =>
+          j.name.toLowerCase()
+        ).map(r => r.name.toLowerCase())
+        const requirementsDone = []
+        const requirementsRunning = []
+        const requirementsTimeConsumption = []
         const daylyJobsPrices = []
         const monthlyJobsPrices = []
         const annualyJobsPrices = []
         let i
+        let j
+        let sum = {}
+        // Requirements
+        for (i = 0; i < requirementsNames.length; i += 1) {
+          sum = {
+            finished: 0,
+            running: 0,
+            time: 0
+          }
+          for (j = 0; j < allRequirements.length; j += 1) {
+            if (
+              requirementsNames[i] === allRequirements[j].name.toLowerCase()
+            ) {
+              sum.finished += allRequirements[j].done ? 1 : 0
+              sum.running += allRequirements[j].done ? 0 : 1
+              sum.time += allRequirements[j].updated_at
+                ? this.$moment(allRequirements[j].updated_at).diff(
+                    this.$moment(allRequirements[j].created_at),
+                    'hours'
+                  )
+                : 0
+            }
+          }
+          requirementsDone.push(sum.finished)
+          requirementsRunning.push(sum.running)
+          requirementsTimeConsumption.push(sum.time)
+        }
         // Days
         for (i = 0; i < jobsDays.length; i += 1) {
           daylyJobsPrices.push(
@@ -672,9 +751,82 @@ export default {
 
           this.createPricesChart({
             id: '#requirements-jobs',
+            subtitle: 'Jobs Requirements Count (Running / Finished)',
+            labels: requirementsNames,
+            type: 'line',
+
+            stroke: {
+              width: [5, 7, 5],
+              curve: 'smooth',
+              dashArray: [0, 0]
+            },
+            markers: {
+              discrete: [
+                {
+                  seriesIndex: 0,
+                  dataPointIndex: 7,
+                  fillColor: '#e3e3e3',
+                  strokeColor: '#fff',
+                  size: 5
+                },
+                {
+                  seriesIndex: 2,
+                  dataPointIndex: 11,
+                  fillColor: '#f7f4f3',
+                  strokeColor: '#eee',
+                  size: 4
+                }
+              ]
+            },
+            series: [
+              {
+                name: 'Running Requirements',
+                data: requirementsRunning,
+                type: 'line'
+              },
+              {
+                name: 'Finished Requirements',
+                data: requirementsDone
+              }
+            ]
+          })
+          this.createPricesChart({
+            id: '#requirements-radar',
+            subtitle: 'Jobs Requirements',
+            labels: requirementsNames,
+            type: 'radar',
+            series: [
+              {
+                name: 'Running Requirements',
+                data: requirementsRunning
+              },
+              {
+                name: 'Finished Requirements',
+                data: requirementsDone
+              }
+            ]
+          })
+          const vm = this
+          this.createPricesChart({
+            id: '#requirements-time',
+            subtitle: 'Jobs Time Consumption in Hours',
             labels: requirementsNames,
             type: 'pie',
-            series: requirementsDone
+            series: requirementsTimeConsumption
+          })
+          this.createPricesChart({
+            id: '#requirements-time-bar',
+            subtitle: 'Jobs Time Consumption in Hours',
+            labels: requirementsNames,
+            type: 'line',
+            series: [
+              {
+                data: requirementsTimeConsumption,
+                name: 'all',
+                type: 'column'
+              }
+              // { data: requirementsTimeConsumption, name: 'all', type: 'line' }
+            ]
           })
           this.renders += 1
           this.drawing = false
@@ -746,6 +898,20 @@ export default {
           this.flashers = null
         }, args.time || 1000)
       }, 700)
+    },
+    print() {
+      if (this.onPrint) {
+        this.onPrint = false
+        return
+      }
+      this.onPrint = true
+      setTimeout(() => {
+        this.boundLogos()
+        this.renderAllCharts()
+        setTimeout(() => {
+          window.print()
+        }, 3000)
+      }, 1000)
     },
     deleteJob(job) {
       this.loaders[job._id] = true

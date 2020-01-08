@@ -24,6 +24,7 @@
           size = "large"
           light-model
           allow-autocomplete
+          clearable
           @coc-enter = "handleAutocompleteSelect($event, 'phone')"
           @coc-select = "handleAutocompleteSelect($event, 'phone')" />
       </div>
@@ -41,6 +42,7 @@
           icon = "ios-person"
           size = "large"
           light-model
+          clearable
           allow-autocomplete
           @coc-enter = "handleAutocompleteSelect($event, 'name')"
           @coc-select = "handleAutocompleteSelect($event, 'name')" />
@@ -71,15 +73,19 @@
       </div>
       <div class="col l4 m6 s12">
         <coc-input
-          :disabled = "!($utils.roles.hasRole('jobs', $store.state.core.auth))"
+          :disabled = "!($utils.roles.hasRole('jobs', user))"
           v-model = "input.car.model"
           :scope = "['search-for-jobs']"
+          :rules = "{ HasValue: true }"
+          :autocomplete-remote = "model => ({ method: 'get', url: '/job', params: { brand: input && input.car && input.car.brand ? input.car.brand : '' ,model: model.val, limit: 5 }})"
+          :autocomplete-map-response = "res => $_.uniqBy(res.jobs, j => j.car.model).map(o => o.car.model)"
           labeled
           placeholder = "Car Model"
           icon = "ios-car"
           size = "large"
           light-model
-          clearable />
+          clearable
+          allow-autocomplete />
       </div>
       <div class="col l4 m6 s12">
         <coc-select
@@ -123,8 +129,8 @@
         class="col s12">
         <div class="col l8 animated slideInLeft">
           <p class="coc-text-bold coc-text-subtitle">Jobs ({{ jobs.length }})</p>
-          <CellGroup class = "coc-background-bg job-status-section coc-border-border coc-border-1 coc-standard-border-radius coc-full-width">
-            <Cell 
+          <cell-group class = "coc-background-bg job-status-section coc-border-border coc-border-1 coc-standard-border-radius coc-full-width">
+            <cell 
               v-for = "(job, j) in jobs" 
               :key = "j" 
               :to = "`/jobs/${job.job_no}`"
@@ -151,15 +157,17 @@
                 <small>{{ job.client.name }} , Phone: {{ job.client.phone }} </small>
               </div>
               <div slot = "extra">
-                <small class="right">{{ $moment(job.timein).fromNow() }}</small>
+                <tooltip :content = "$moment(job.timein).format('D/M/YYYY')">
+                  <small class="right">{{ $moment(job.timein).fromNow() }}</small>
+                </tooltip>
               </div>
-            </Cell>
-          </CellGroup>
+            </cell>
+          </cell-group>
         </div>
         <div class="col l4 animated slideInRight">
           <p class="coc-text-bold coc-text-subtitle">Requirements ({{ jobs[ jobs.length - 1 ].requirements.filter(r => r.done).length }}/{{ jobs[ jobs.length - 1 ].requirements.length }})</p>
-          <CellGroup class = "coc-background-bg job-status-section coc-border-border coc-padding-y-5px coc-border-1 coc-standard-border-radius coc-full-width">
-            <Cell
+          <cell-group class = "coc-background-bg job-status-section coc-border-border coc-padding-y-5px coc-border-1 coc-standard-border-radius coc-full-width">
+            <cell
               v-for = "(req, r) in jobs[ jobs.length - 1 ].requirements"
               :to = "`/jobs/${ jobs[ jobs.length - 1 ].job_no}?scroll=requirements`"
               :key = "r">
@@ -172,9 +180,11 @@
                 <span class="col coc-margin-top-5px">{{ req.name | CocCapitalizeName }}</span>
               </div>
               <div slot = "extra">
-                <small class="">
-                  {{ $moment(req.created_at).fromNow() }}
-                </small>
+                <tooltip
+                  :content = "$moment(req.created_at).format('D/M/YYYY')"
+                  placement = "left">
+                  <small class="right">{{ $moment(req.created_at).fromNow() }}</small>
+                </tooltip>
                 <icon 
                   v-if = "req.done"
                   type = "md-checkmark"
@@ -184,8 +194,8 @@
                   type = "md-close"
                   class = "coc-error-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
               </div>
-            </Cell>
-            <Cell
+            </cell>
+            <cell
               v-if = "!jobs[ jobs.length - 1 ].requirements.length">
               <div class = "row coc-house-keeper">
                 <coc-avatar
@@ -195,8 +205,8 @@
                   class = "col"/>
                 <span class="col coc-margin-top-5px">No Requirements To Show</span>
               </div>
-            </Cell>
-          </CellGroup>
+            </cell>
+          </cell-group>
         </div>
       </div>
     </div>

@@ -87,6 +87,8 @@ export default {
       immediate: false,
       handler(val) {
         this.eventController.SetScope(val)
+        // this.stopListening()
+        // this.eventController.Start()
       }
     },
     val: {
@@ -138,13 +140,17 @@ export default {
     }
   },
   beforeDestroy() {
-    this.$root.$off([
-      'COCFormController',
-      'COCFormMeta',
-      'COCFormAskForRegister'
-    ])
+    this.stopListening()
   },
   methods: {
+    stopListening() {
+      this.$root.$off([
+        'COCFormController',
+        'COCFormMeta',
+        'COCFormAskForRegister',
+        'COCFormItemRegister'
+      ])
+    },
     applyFilters(filters = this.filters) {
       if (filters) {
         let result = this.val

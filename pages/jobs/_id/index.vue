@@ -1,5 +1,6 @@
 <template>
-  <master :on-print = "onPrint">
+  <master
+    :on-print = "onPrint">
     <div 
       v-coc-loading = "(!job && !fetchError)" 
       class="row"
@@ -275,7 +276,7 @@
                     true-color = "green"
                     false-color = "red"
                     class = "right coc-margin-x-5px coc-margin-top-5px"
-                    @input = "input.requirements[i].created_at = $moment()">
+                    @input = "handleRequirementChange(i)">
                     <icon 
                       slot="open" 
                       type = "md-checkmark" />
@@ -442,7 +443,9 @@
                 </div>
                 <div class = "col l4 s12">
                   <br>
-                  <i-switch v-model = "externalInput.makeMove" />
+                  <i-switch
+                    v-model = "externalInput.makeMove"
+                    :disabled = "!importFromStockEnabled" />
                   <label class="coc-text-sm">Export From Stock</label>
                 </div>
                 <div 
@@ -450,7 +453,9 @@
                   class="col l4 s12">
                   <coc-button
                     :scope = "['add-part']"
-                    :class = "{ hidden: onPrint }"
+                    :precondition = "externalInput.count && typeof externalInput.count === 'number' && externalInput.count > 0 ? true : false"
+                    :class = "{ hidden: onPrint }"                    
+                    :precondition-message = "{ title: 'Whoops!', body: 'Count is required and must be greater than zero' }"
                     type = "default"
                     placeholder = "Add"
                     icon = "ios-add-circle"
@@ -507,7 +512,18 @@
                     <td> {{ ((operation.price + operation.fees) * operation.count) | CocTrimExtraZeros }} LE</td>
                     <td v-if = "!onPrint">
                       <Button
-                        icon = "ios-remove-circle-outline coc-error-text coc-text-lg"
+                        icon = "ios-add-circle-outline coc-success-text coc-text-lg"
+                        class = "coc-margin-y-3px"
+                        type = "text"
+                        @click = "operation.count += 1"/>
+                      <Button
+                        :disabled = "operation.count === 1"
+                        icon = "ios-remove-circle-outline coc-warning-text coc-text-lg"
+                        class = "coc-margin-y-3px"
+                        type = "text"
+                        @click = "operation.count -= 1"/>
+                      <Button
+                        icon = "ios-trash-outline coc-error-text coc-text-lg"
                         class = "coc-margin-y-3px"
                         type = "text"
                         @click = "input.operations.splice( o, 1)"/>
@@ -550,6 +566,9 @@
               icon = "ios-checkmark-circle"
               class = "right coc-margin-top-3px"
               @coc-submit-accepted = "handleResult"/>
+            <checkbox
+              v-model = "printSwitch"
+              class = "right">Print</checkbox>
           </div>
           <div 
             :class = "{ hidden: onPrint }" 
@@ -588,6 +607,7 @@ export default {
   },
   data() {
     return {
+      printSwitch: false,
       brands,
       partAutocompleteResponse: null,
       onPrint: false,
@@ -623,6 +643,25 @@ export default {
       }
     }
   },
+  computed: {
+    importFromStockEnabled() {
+      const ename = this.externalInput.name
+      if (
+        !this.$refs.partInput ||
+        !this.$refs.partInput.autocompleteRetriever.response
+      )
+        return
+      const response = this.$refs.partInput.autocompleteRetriever.response.stock.filter(
+        c => c.name === ename
+      )
+      return !!response.length
+    }
+  },
+  watch: {
+    importFromStockEnabled(val) {
+      if (!val) this.externalInput.makeMove = false
+    }
+  },
   mounted() {
     this.getJob()
     if (window) {
@@ -633,6 +672,9 @@ export default {
     }
   },
   methods: {
+    handleStatusChange(e) {
+      this.printSwitch = e && e.toLowerCase() === 'finished'
+    },
     getJob() {
       this.$axios
         .get(`/job/${this.$route.params.id}`)
@@ -668,7 +710,7 @@ export default {
     handleResult(e) {
       this.$root.$emit('updateRunningJobs')
       this.job = e.meta.response
-      if (this.job.status.toLowerCase() === 'finished') {
+      if (this.printSwitch) {
         this.$Message.destroy()
         this.$Notice.destroy()
         window.focus()
@@ -815,6 +857,13 @@ export default {
           this.$refs.partInput.focus()
         }, 700)
       })
+    },
+    handleRequirementChange(i) {
+      if (this.input.requirements[i].created_at) {
+        this.input.requirements[i].updated_at = this.$moment()
+      } else {
+        this.input.requirements[i].created_at = this.$moment()
+      }
     }
     // mapPartsAutoComplete(res) {
     //   const allOperations = this.merge(res.jobs.map(j => j.operations))

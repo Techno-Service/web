@@ -321,7 +321,12 @@ export default {
   beforeDestroy() {
     // console.log('btn des')
     this.exists = false
-    this.$root.$off(['COCFormController', 'COCFormItemRegister', 'COCFormMeta'])
+    this.$root.$off([
+      'COCFormController',
+      'COCFormItemRegister',
+      'COCFormMeta',
+      'COCFormAskForRegister'
+    ])
     this.checkedFormMembers = null
   },
   methods: {
@@ -407,6 +412,7 @@ export default {
         this.$Notice.error({
           title: message.title === undefined ? 'Whoops!' : message.title,
           render: message.render,
+          duration: 6000,
           desc:
             message.body === undefined
               ? 'There`re some messing fields.'

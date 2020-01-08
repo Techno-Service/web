@@ -42,6 +42,33 @@
           </cell-group>
         </Card>
       </div>
+      <div class="col s12">
+        <nuxt-link
+          :class = "[
+            'coc-padding-y-3rem',
+            'coc-text-massive',
+            'coc-success-bg',
+            'col',
+            's12',
+            'center',
+            'coc-background-text',
+            'coc-success-hover-tint-1-bg',
+            'coc-background-hover-text',
+            'coc-standard-border-radius',
+          ]"
+          to = "/analytics/finance">
+          <div class="col s3">
+            <span class = "knocks-moneybag coc-text-lg-2 coc-border-3 coc-padding-4px coc-success-shade-1-bg coc-circle-border-radius"/>
+          </div>
+          <div class="col s9">
+            <span>
+              <span class="coc-text-bold">Where's My Money</span>
+              <divider class = "coc-margin-y-0"/>
+              <small>Financial Status</small>
+            </span>
+          </div>
+        </nuxt-link>
+      </div>
       <div style="max-height: 300px; overflow-y: scroll; width: 100%">
         <div
           v-for = "(card, c) in cards"
@@ -113,6 +140,18 @@ export default {
               url: '/analytics/jobs?scroll=annual-count',
               keywords: ['profit', 'annual', 'year', 'count'],
               icon: ' knocks-calendar10'
+            },
+            {
+              label: 'Requirements Status',
+              url: '/analytics/jobs?scroll=requirements-analytics',
+              keywords: ['requirements', 'running', 'finished', 'status'],
+              icon: ' knocksapp-toggle-right'
+            },
+            {
+              label: 'Requirements Time Consumption',
+              url: '/analytics/jobs?scroll=requirements-time',
+              keywords: ['profit', 'annual', 'year', 'count'],
+              icon: ' knocksapp-alarm-clock'
             },
             {
               label: 'Car Makes',

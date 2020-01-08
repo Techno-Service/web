@@ -25,6 +25,7 @@
               size = "large"
               light-model
               allow-autocomplete
+              clearable
               @coc-enter = "handleAutocompleteSelect($event, 'phone')"
               @coc-select = "handleAutocompleteSelect($event, 'phone')" />
           </div>
@@ -43,6 +44,7 @@
               size = "large"
               light-model
               allow-autocomplete
+              clearable
               @coc-enter = "handleAutocompleteSelect($event, 'name')"
               @coc-select = "handleAutocompleteSelect($event, 'name')" />
           </div>
@@ -61,7 +63,8 @@
               size = "large"
               class = "col"
               light-model
-              allow-autocomplete />
+              allow-autocomplete
+              clearable />
             <coc-avatar
               v-if = "input.car.brand && input.car.brand.length"
               slot = "suffix"
@@ -76,11 +79,15 @@
               v-model = "input.car.model"
               :scope = "['create-job']"
               :rules = "{ HasValue: true }"
+              :autocomplete-remote = "model => ({ method: 'get', url: '/job', params: { brand: input && input.car && input.car.brand ? input.car.brand : '' ,model: model.val, limit: 5 }})"
+              :autocomplete-map-response = "res => $_.uniqBy(res.jobs, j => j.car.model).map(o => o.car.model)"
               labeled
               placeholder = "Car Model"
               icon = "ios-car"
               size = "large"
-              light-model />
+              light-model
+              allow-autocomplete
+              clearable />
           </div>
           <div class="col l4 m6 s12">
             <coc-select
@@ -107,7 +114,8 @@
               placeholder = "Kilometers"
               icon = "ios-speedometer"
               size = "large"
-              light-model />
+              light-model
+              clearable />
           </div>
           <!-- <div class="col l4 m6 s12">
             <coc-input
@@ -131,7 +139,8 @@
               placeholder = "Reciptionist"
               icon = "ios-ionitron"
               size = "large"
-              light-model />
+              light-model
+              clearable />
           </div>
           <div class="col l4 m6 s12 right">
             <button-group class = "coc-margin-top-25px right">
@@ -152,6 +161,7 @@
                 icon = "ios-add-circle right coc-margin-x-5px"
                 size = "large"
                 reset
+                clearable
                 @coc-submit-accepted = "handleResult"/>
             </button-group>
           </div>

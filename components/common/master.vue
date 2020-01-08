@@ -104,7 +104,7 @@
                       :source = "`/snaps/brands/png/${job.car.brand.split(' ').join('-').toLowerCase()}.png`"
                       scale = "25px"
                       class = "col coc-padding-x-2px"/>
-                    <span class="col coc-margin-x-0px">
+                    <span class="col coc-margin-x-0px show-item-name">
                       {{ job.car.brand | CocCapitalizeName }}
                     </span>
                   </div>
@@ -505,5 +505,11 @@ export default {
   min-height: 50vh;
   max-height: 70vh;
   overflow-y: auto;
+}
+.show-item-name {
+  width: 100px;
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
 }
 </style>

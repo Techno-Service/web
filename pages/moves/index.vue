@@ -250,79 +250,91 @@
           size = "large"
           style = "width: 100%" />
       </Drawer>
-      <table
-        v-if = "isMounted && move && move.move.length"
-        class = "coc-full-width">
-        <tr>
-          <th 
-            v-for = "(col, c) in columns" 
-            :key = "c"
-            class = "coc-primary-bg coc-padding-y-10px coc-background-text">
-            {{ col.title }}
-          </th>
-        </tr>
-        <tr 
-          v-for = "(move, s) in move.move" 
-          :key = "s"
-          class = "coc-border-border center coc-info-hover-tint-8-bg">
-          <td>
-            <icon 
-              v-if = "move.count > 0"
-              type = "md-arrow-up"
-              class = "coc-success-text coc-text-lg" />
-            <icon 
-              v-else
-              type = "md-arrow-down"
-              class = "coc-error-text coc-text-lg" />
-          </td>
-          <td class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px">
-            <nuxt-link
-              :to = "`/stock/${move.item._id}`">
-              {{ move.item.name }}
-            </nuxt-link>
-          </td>
-          <td class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px">
-            {{ $moment(move.created_at).format('D/M/YYYY h:m A') }}<br>
-            {{ $moment(move.created_at).fromNow() }}
-          </td>
-          <td class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px">{{ move.price }}</td>
-          <td class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px">{{ move.count }}</td>
-          <td
-            class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px center">
-            <Tooltip content = "Export">
-              <Button
-                icon = "md-arrow-down coc-error-text"
-                class = "coc-border-0"
-                @click = "importMove(move)" />
-            </Tooltip>
-            <Tooltip content = "Import">
-              <Button
-                icon = "md-arrow-up coc-success-text"
-                class = "coc-border-0"
-                @click = "importMove(move, -1)" />
-            </Tooltip>
-            <!--             <Tooltip content = "Trash">
+      <div v-if = "isMounted && move && move.move.length">
+        <table
+          class = "coc-full-width">
+          <tr>
+            <th 
+              v-for = "(col, c) in columns" 
+              :key = "c"
+              class = "coc-primary-bg coc-padding-y-10px coc-background-text">
+              {{ col.title }}
+            </th>
+          </tr>
+          <tr 
+            v-for = "(move, s) in move.move" 
+            :key = "s"
+            class = "coc-border-border center coc-info-hover-tint-8-bg">
+            <td>
+              <icon 
+                v-if = "move.count > 0"
+                type = "md-arrow-up"
+                class = "coc-success-text coc-text-lg" />
+              <icon 
+                v-else
+                type = "md-arrow-down"
+                class = "coc-error-text coc-text-lg" />
+            </td>
+            <td class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px">
+              <nuxt-link
+                :to = "`/stock/${move.item._id}`">
+                {{ move.item.name }}
+              </nuxt-link>
+            </td>
+            <td class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px">
+              {{ $moment(move.created_at).format('D/M/YYYY h:m A') }}<br>
+              {{ $moment(move.created_at).fromNow() }}
+            </td>
+            <td class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px">{{ move.price }}</td>
+            <td class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px">{{ move.count }}</td>
+            <td
+              class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px center">
+              <Tooltip content = "Export">
+                <Button
+                  icon = "md-arrow-down coc-error-text"
+                  class = "coc-border-0"
+                  @click = "importMove(move)" />
+              </Tooltip>
+              <Tooltip content = "Import">
+                <Button
+                  icon = "md-arrow-up coc-success-text"
+                  class = "coc-border-0"
+                  @click = "importMove(move, -1)" />
+              </Tooltip>
+              <!--             <Tooltip content = "Trash">
               <Button
                 icon = "ios-trash coc-error-text"
                 class = "coc-border-0"
                 @importMove = "(move, -1)" />
             </Tooltip> -->
-            <div class="coc-full-width coc-margin-top-5px">
-              <Tooltip content = "Count">
-                <input-number
-                  v-model = "moveCount"
-                  :min = "1"/>
-              </Tooltip>
-            </div>
-          </td>
-        </tr>
-        <tr v-if = "move.move && move.move.length">
-          <td />
-          <td />
-          <td class="center coc-text-bold">Total {{ $_.sumBy(move.move, o => o.price) }} LE</td>
-          <td />
-        </tr>
-      </table>
+              <div class="coc-full-width coc-margin-top-5px">
+                <Tooltip content = "Count">
+                  <input-number
+                    v-model = "moveCount"
+                    :min = "1"/>
+                </Tooltip>
+              </div>
+            </td>
+          </tr>
+          <tr v-if = "move.move && move.move.length">
+            <td />
+            <td />
+            <td class="center coc-text-bold">Total {{ $_.sumBy(move.move, o => o.price) }} LE</td>
+            <td />
+          </tr>
+        </table>
+        <div 
+          v-if = "pagination && move && move.move.length && input.page >= 0"
+          style = " padding-top: 10px !important; margin-top: 5px; margin-bottom: 10px;" 
+          class="col s12 ">
+          <Page
+            :total="pagination.pages"
+            :page-size = "1"
+            :current="pagination.page + 1"
+            :styles = "{margin: 'auto', display: 'block', width: 'fit-content'}"
+            @on-change = "changePage"/>
+        </div>
+      </div>
       <div
         v-else
         class = "coc-text-title center">
@@ -454,7 +466,7 @@ export default {
       this.$axios({
         method: 'get',
         url: '/move',
-        params: { ...this.formattedQuery, stats: 'yes' }
+        params: { ...this.formattedQuery }
       }).then(res => {
         this.move = res.data
         this.config.drawer = false
@@ -542,6 +554,10 @@ export default {
     formatQuery(input = this.input) {
       this.formattedQuery = this.encodedQuery(input)
       this.getMove()
+    },
+    changePage(e) {
+      this.input.page = e
+      this.formatQuery()
     },
     importMove(move, factor = 1) {
       // some code

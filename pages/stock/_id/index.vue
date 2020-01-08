@@ -12,12 +12,24 @@
             <span slot = "extra">{{ stock.category | CocCapitalizeName }}</span>
           </cell>
           <cell>
-            <span class="coc-text-bold">Price</span>
+            <span class="coc-text-bold">Import Price</span>
+            <span slot = "extra">{{ stock.import_price }} LE</span>
+          </cell>
+          <cell>
+            <span class="coc-text-bold">Export Price</span>
             <span slot = "extra">{{ stock.price }} LE</span>
           </cell>
           <cell>
             <span class="coc-text-bold">Count</span>
             <span slot = "extra">{{ stock.count }}</span>
+          </cell>
+          <cell>
+            <span class="coc-text-bold">Exported Times</span>
+            <span slot = "extra">{{ stock.exports }}</span>
+          </cell>
+          <cell>
+            <span class="coc-text-bold">Imported Times</span>
+            <span slot = "extra">{{ stock.imports }}</span>
           </cell>
         </cell-group>
         <div class = "row  coc-border-hover-bg">

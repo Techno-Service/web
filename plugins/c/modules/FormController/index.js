@@ -37,7 +37,7 @@ export default class FormControl extends Event {
       this.Register()
     }
     this.On('COCFormController', payloads => {
-      console.log('recieving...')
+      // console.log('recieving...')
       // Validate if there's a scope
       if (!this.scope) {
         this.Warn(
