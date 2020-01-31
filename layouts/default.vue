@@ -151,4 +151,14 @@ html {
 .ivu-select-dropdown.ivu-auto-complete {
   max-height: 50vh;
 }
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 </style>
