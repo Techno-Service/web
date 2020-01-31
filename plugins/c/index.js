@@ -1,3 +1,9 @@
+import Vue from 'vue'
+import _ from 'lodash'
+import axios from 'axios'
+import moment from 'moment'
+import 'moment-timezone'
+
 import COC from './modules/Core'
 import Arrays from './modules/Arrays'
 import Queue from './modules/Arrays/queue'
@@ -22,6 +28,7 @@ import CocMouseUp from './directives/CocMouseUp'
 
 // MASTER COMPONENTS
 import CocInput from './components/Forms/CocInput.vue'
+import CocNumberInput from './components/Forms/CocNumberInput.vue'
 import CocSelect from './components/Forms/CocSelect.vue'
 import CocRadio from './components/Forms/CocRadio.vue'
 import CocDate from './components/Forms/CocDate.vue'
@@ -65,12 +72,10 @@ COC.Docker = Docker
 COC.OptionsManager = OptionsManager
 
 COC.Init = options => {
-  COC.axios = options.axios
-  const Vue = options.Vue
-  const lodash = options.lodash
-  const moment = options.moment
+  COC.axios = options.axios | axios
   const components = {
     CocInput,
+    CocNumberInput,
     CocSelect,
     CocRadio,
     CocDate,
@@ -112,6 +117,6 @@ COC.Init = options => {
     Vue.filter(`Coc${key}`, Filters[key])
   })
   Vue.prototype.$moment = moment
-  Vue.prototype.$_ = lodash
+  Vue.prototype.$_ = _
 }
 export default COC

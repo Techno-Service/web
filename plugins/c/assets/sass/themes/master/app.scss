@@ -1,6 +1,4 @@
-.restaurant-card .ivu-card-body{
-  padding: 0 !important;
-}
+@import "./colors.scss";
 @media only screen and (min-width: 993px) {
   .login-dialog .Modal{
   width: 60% !important;
@@ -51,4 +49,67 @@
 }
 html {
   scroll-behavior: smooth;
+}
+.ivu-steps .ivu-steps-title{
+  @extend %coc-background-bg;
+}
+
+.ivu-steps-item.ivu-steps-status-wait .ivu-steps-head-inner {
+  @extend %coc-background-bg;
+}
+
+.ivu-steps .ivu-steps-head {
+  @extend %coc-background-bg;
+}
+
+.ivu-auto-complete.ivu-select-dropdown , .ivu-select .ivu-select-dropdown, .ivu-select-dropdown, .ivu-select-item {
+    @extend %coc-background-bg;
+    @extend %coc-content-text;
+}
+.ivu-select-item:hover,.ivu-select-item-focus, .ivu-select-multiple .ivu-select-item-focus {
+    @extend %coc-primary-bg;
+    @extend %coc-primary-invert-text;
+}
+.ivu-select-multiple .ivu-select-item-selected  {
+  @extend %coc-primary-tint-2-bg;
+  @extend %coc-primary-invert-text;
+}
+// .ivu-card-body {
+//     @extend %coc-background-bg;
+//     @extend %coc-content-text;
+// }
+// .ivu-card-head, .ivu-card-head p{
+//   @extend %coc-content-text;
+//   @extend %coc-background-bg;
+//   @extend %coc-border-border;
+// }
+.ivu-card-bordered, .ivu-drawer-content {
+    @extend %coc-border-border;
+    @extend %coc-content-text;
+    @extend %coc-background-bg;
+}
+.ivu-divider-inner-text {
+  @extend %coc-content-text;
+}
+.ivu-cell {
+  @extend %coc-dark-background-shade-1-bg;
+}
+.ivu-notice-notice {
+  @extend %coc-dark-background-bg;
+  @extend %coc-content-text;
+}
+.ivu-notice-title {
+  @extend %coc-content-text;
+}
+.ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu){
+  @extend %coc-primary-bg;
+  @extend %coc-primary-invert-text;
+}
+.ivu-input-group-append{
+  @extend %coc-border-border;
+  @extend %coc-background-bg;
+  @extend %coc-content-text;
+}
+.ivu-cell.ivu-cell-selected{
+  @extend %coc-dark-background-bg;
 }

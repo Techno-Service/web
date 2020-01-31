@@ -305,12 +305,12 @@ export default {
   computed: {
     eventController() {
       return {
-        type: 'input',
+        type: 'select',
         model: this.model,
         component: {
           placeholder: this.placeholder,
           domId: this.componentId,
-          type: 'input',
+          type: 'select',
           val: this.inputFieldModel
         }
       }
@@ -391,11 +391,12 @@ export default {
         initLoadingIcon: 'ivu-icon ivu-icon-ios-loading coc-spin',
         initIcon: '',
         success:
-          'coc-success-tint-9-bg coc-success-shade-3-text coc-success-focus-box-tint-5-shadow coc-success-border',
+          'coc-success-tint-9-bg coc-success-shade-3-text coc-success-focus-box-tint-5-shadow coc-success-border coc-standard-border-radius',
         error:
-          'coc-error-tint-9-bg coc-error-shade-3-text coc-error-focus-box-tint-5-shadow coc-error-border',
-        mount: 'coc-border-border coc-content-text coc-primary-background-bg',
-        focus: 'coc-primary-section-outline'
+          'coc-error-tint-9-bg coc-error-shade-3-text coc-error-focus-box-tint-5-shadow coc-error-border coc-standard-border-radius',
+        mount:
+          'coc-border-border coc-content-text coc-primary-background-bg coc-standard-border-radius',
+        focus: 'coc-primary-section-outline coc-standard-border-radius'
       }
       return { ...defaults, ...this.statusClasses }
     },

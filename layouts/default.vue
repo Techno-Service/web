@@ -4,12 +4,20 @@
   </div>
 </template>
 <script>
+import config from '~/config'
 export default {
   async created() {
     this.$axios
       .get('/app')
       .then(res => {
         this.$store.dispatch('setApp', res.data)
+        setTimeout(() => {
+          this.$coc.Config.Meta({
+            logo: {
+              primary: `${config.baseURL}/app/background`
+            }
+          })
+        }, 1000)
       })
       .catch(() => {
         // console.log(err)
@@ -25,6 +33,26 @@ export default {
         'Authorization'
       ] = this.$store.state.core.auth.token
     }
+  },
+  mounted() {
+    setTimeout(() => {
+      if (document) {
+        const icon = document.querySelector('#element-icon')
+        if (!icon) {
+          const element = document.createElement('LINK')
+          element.rel = 'icon'
+          element.type = 'image/x-icon'
+          element.href = this.$coc.App.logo.primary
+          element.id = 'element-icon'
+          document.head.appendChild(element)
+        } else {
+          icon.rel = 'icon'
+          icon.type = 'image/x-icon'
+          icon.href = this.$coc.App.logo.primary
+          icon.id = 'element-icon'
+        }
+      }
+    }, 2000)
   }
 }
 </script>
@@ -119,5 +147,8 @@ html {
 .button--grey:hover {
   color: #fff;
   background-color: #35495e;
+}
+.ivu-select-dropdown.ivu-auto-complete {
+  max-height: 50vh;
 }
 </style>

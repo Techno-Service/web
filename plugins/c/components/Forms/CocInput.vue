@@ -37,7 +37,7 @@
       v-if = "!allowAutocomplete"
       ref = "input"
       v-model = "inputFieldModel"
-      :type = "type"
+      :type = "inputType"
       :size = "size"
       :placeholder = "placeholder"
       :maxlength = "maxlength"
@@ -78,7 +78,7 @@
       v-if = "allowAutocomplete"
       ref = "input"
       v-model = "inputFieldModel"
-      :type = "type"
+      :type = "inputType"
       :size = "size"
       :placeholder = "placeholder"
       :maxlength = "maxlength"
@@ -396,7 +396,8 @@ export default {
       autoCompleteRemoteFeeds: [],
       autocompleteRetriever: { loading: false, response: null },
       onReset: false,
-      watchingEnterOnAutocomplete: false
+      watchingEnterOnAutocomplete: false,
+      showPassword: false
     }
   },
   computed: {
@@ -425,7 +426,9 @@ export default {
           reset: this.reset,
           disFire: this.disFire,
           validate: this.getAtomController('validate'),
-          meta: this.getAtomController('handleMeta')
+          meta: this.getAtomController('handleMeta'),
+          localMeta: this.localMeta,
+          togglePassword: this.togglePassword
         },
         meta: {
           valid: this.isValid.valid,
@@ -433,6 +436,7 @@ export default {
           isFired: this.isFired,
           isFocused: this.isFocused,
           id: this.componentId,
+          showPassword: this.showPassword,
           filtered: null
         }
       }
@@ -488,11 +492,12 @@ export default {
         initLoadingIcon: 'ivu-icon ivu-icon-ios-loading coc-spin',
         initIcon: '',
         success:
-          'coc-success-tint-9-bg coc-success-shade-3-text coc-success-focus-box-tint-5-shadow coc-success-border',
+          'coc-success-tint-9-bg coc-success-shade-3-text coc-success-focus-box-tint-5-shadow coc-success-border coc-standard-border-radius',
         error:
-          'coc-error-tint-9-bg coc-error-shade-3-text coc-error-focus-box-tint-5-shadow coc-error-border',
-        mount: 'coc-border-border coc-content-text coc-primary-background-bg',
-        focus: 'coc-primary-section-outline'
+          'coc-error-tint-9-bg coc-error-shade-3-text coc-error-focus-box-tint-5-shadow coc-error-border coc-standard-border-radius',
+        mount:
+          'coc-border-border coc-content-text coc-primary-background-bg coc-standard-border-radius',
+        focus: 'coc-primary-section-outline coc-standard-border-radius'
       }
       return { ...defaults, ...this.statusClasses }
     },
@@ -531,6 +536,11 @@ export default {
     },
     componentId() {
       return this.elementId || `coc-input-${this._uid}`
+    },
+    inputType() {
+      if (this.type !== 'password') return this.type
+      if (this.showPassword) return 'text'
+      return this.type
     }
   },
   watch: {
@@ -576,6 +586,9 @@ export default {
     // Generators
     getAtomController(controller) {
       return this.atomControllers[controller]
+    },
+    async localMeta(meta) {
+      return this.model.meta[meta]
     },
     // General Controllers
     async update(value = '', styleReaction = true) {
@@ -669,13 +682,13 @@ export default {
       this.$emit('coc-autocomplete-error', e)
     },
     handleValue(val) {
-      if (!val) {
+      if (val === false || val === null || val === undefined) {
         return
       }
       if (typeof val === 'object') {
         this.inputFieldModel = val.val
       } else if (typeof val === 'string' || typeof val === 'number') {
-        this.inputFieldModel = val
+        this.inputFieldModel = val.toString()
       }
     },
     handleValidation(e) {
@@ -742,6 +755,10 @@ export default {
     handleAtomFilter(e) {
       this.$emit('filter', e)
       this.model.meta.filtered = e
+    },
+    togglePassword() {
+      if (this.type !== 'password') return
+      this.showPassword = !this.showPassword
     }
   }
 }

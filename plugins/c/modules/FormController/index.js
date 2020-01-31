@@ -57,8 +57,15 @@ export default class FormControl extends Event {
       ) {
         return
       }
-      if (payloads.type !== undefined && payloads.type !== this.type) {
-        return
+      if (payloads.type !== undefined) {
+        // Handle Array Types
+        if (
+          Array.isArray(payloads.type) &&
+          payloads.type.indexOf(this.type) === -1
+        )
+          return
+        else if (typeof payloads !== 'object' && payloads.type !== this.type)
+          return
       }
       //Check Matching
       if (this.scopeArray.IsMatching(payloads.scope)) {

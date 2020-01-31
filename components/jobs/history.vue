@@ -5,8 +5,8 @@
     class = "coc-margin-y-5px">
     <p 
       slot = "title">
-      <icon type = " tcsc-checklist-icon coc-text-md-2"/>
-      <span class="coc-subcolor-text">Client History</span>
+      <icon type = " tcsc-checklist-icon coc-text-md-2 coc-content-text"/>
+      <span class="coc-content-text">Client History</span>
     </p>
     <div class="row">
       <div class="col l4 m6 s12">

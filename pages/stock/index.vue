@@ -1,26 +1,29 @@
 
 <template>
   <master>
-    <div v-if = "user">
+    <div v-if = "user && $utils.roles.hasRole('stocks',user)">
       <div class="row">
         <span class = "coc-text-bold coc-text-md-2">
           Stock
           <span v-if = "stock.stock && !isLoading && !hasError && stock.stock.length && isMounted">({{ stock.stock.length }})</span>
         </span>
-        <Button
+        <coc-button
           icon = "ios-funnel-outline"
           class = "right"
-          @click = "config.drawer = true"/>
-        <Button
+          @clicked = "config.drawer = true"/>
+        <coc-button
           icon = "ios-refresh"
           class = "right coc-margin-x-5px"
-          @click = "formatQuery"/>
+          @clicked = "formatQuery"/>
       </div>
       <Drawer 
         v-model="config.drawer" 
-        title="Filters" 
         width = "80%"
         closable>
+        <p
+          slot = "header">
+          <span class="coc-content-text">Filters</span>
+        </p>
         <div 
           v-if = "config.drawer" 
           class="row coc-house-keeper">
@@ -80,9 +83,8 @@
                 </div>
                 <div class = "col s12 l6">
                   <div class="right">
-                    <i-switch 
+                    <Checkbox 
                       v-model = "input.external"
-                      :disabled = "input.ignore_external" 
                       light-model
                       class = "right coc-margin-top-10px"/>   
                     <span class="coc-padding-x-5px right">
@@ -91,13 +93,13 @@
                     </span>
                   </div>
                   <div class="coc-padding-x-20px">
-                    <i-switch 
-                      v-model = "input.ignore_external" 
+                    <Checkbox 
+                      v-model = "input.non_external" 
                       light-model
                       class = "right coc-margin-top-10px"/>   
                     <span class="coc-padding-x-5px right">
-                      <span>Select All</span><br>
-                      <small class="right">(select all externals and not externals)</small>
+                      <span>None External</span><br>
+                      <small class="right">(Parts, Operations, etc..)</small>
                     </span>
                   </div>
                 </div>
@@ -208,27 +210,27 @@
                     shape = "circle"
                     class = "coc-full-width"
                     long>
-                    <Button
+                    <coc-button
                       :type = "input.desc === 'no' ? 'info' : 'default'"
                       icon = "md-arrow-round-up"
                       style = "width:50%"
-                      @click = "input.desc = 'no'"/>
-                    <Button
+                      @clicked = "input.desc = 'no'"/>
+                    <coc-button
                       :type = "input.desc === 'yes' ? 'info' : 'default'"
                       icon = "md-arrow-round-down"
                       style = "width:50%"
-                      @click = "input.desc = 'yes'"/>
+                      @clicked = "input.desc = 'yes'"/>
                   </button-group>
                 </div>
               </div>
               <div class = "col s12">
-                <Button 
+                <coc-button 
                   type = "primary" 
                   icon = "ios-funnel-outline coc-text-lg"
                   long 
-                  @click = "formatQuery()">
+                  @clicked = "formatQuery()">
                   <span class="coc-text-lg">Filter</span>
-                </Button>
+                </coc-button>
               </div>
             </div>
           </div>
@@ -237,36 +239,62 @@
           class = "coc-margin-y-0" 
           orientation = "right">Search Settings</Divider>
         <p class = "coc-text-md-2">Price Range Maximum</p>
-        <input-number 
+        <coc-number-input 
           v-model = "config.price.max" 
           placeholder = "Price Range Maximum" 
           size = "large"
-          style = "width: 100%" />
+          style = "width: 100%"
+          light-model />
         <p class = "coc-text-md-2">Price Range Step</p>
-        <input-number 
+        <coc-number-input 
           v-model = "config.price.step" 
           placeholder = "Price Range Step" 
           size = "large"
-          style = "width: 100%" />
+          style = "width: 100%"
+          light-model />
       </Drawer>
       <div 
         v-if = "isMounted && stock && stock.stock.length" 
         class="row coc-house-keeper">
+        <Modal 
+          v-model="deleteModal" 
+          width="360">
+          <p 
+            slot="header" 
+            style="color:#f60;text-align:center">
+            <Icon type="ios-information-circle"/>
+            <span>Delete confirmation</span>
+          </p>
+          <div style="text-align:center">
+            <p v-if = "toBeTrashed">After this stock ({{ toBeTrashed.name }}) is deleted, it will be no longer available on stock.</p>
+            <p>Will you delete it?</p>
+          </div>
+          <div slot="footer">
+            <Button 
+              :loading="trashLoading" 
+              type="error" 
+              size="large" 
+              long 
+              @click="excTrashStock(toBeTrashed)">Delete</Button>
+          </div>
+        </Modal>
         <table
-          style = "max-width: 100%;overflow-x: scroll;display: block;"
-          class = "">
-          <tr>
+          style = "max-width: 100%;overflow-x: scroll;min-width: 100%"
+          class = " coc-full-width">
+          <tr class = "coc-full-width">
             <th 
               v-for = "(col, c) in columns" 
               :key = "c"
-              class = "coc-primary-bg coc-padding-y-10px coc-background-text coc-padding-x-5px">
+              class = "coc-primary-bg coc-padding-y-10px coc-background-text coc-padding-x-5px"
+              style = "min-width: 100%">
               {{ col.title }}
             </th>
           </tr>
           <tr 
             v-for = "(stock, s) in stock.stock" 
             :key = "s"
-            class = "coc-border-border center coc-info-hover-tint-8-bg">
+            class = "coc-border-border center coc-dark-background-hover-bg coc-full-width"
+            style = "min-width: 100%">
             <td
               class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px coc-padding-x-4px"
               style = "text-align: left">
@@ -294,13 +322,15 @@
               style=" width: 170px;">
               <collapse
                 v-if = "stock.car_compatibility && stock.car_compatibility.length"
-                class = "coc-border-0"
+                class = "coc-border-0 coc-background-bg"
                 simple>
                 <panel 
                   name = "cars" 
-                  class = "coc-border-0">
+                  class = "coc-border-0 coc-background-bg">
                   ({{ stock.car_compatibility.length }}) Car/s
-                  <cell-group slot = "content">
+                  <cell-group
+                    slot = "content"
+                    class = "coc-background-bg">
                     <cell 
                       v-for = "(car, c) in stock.car_compatibility" 
                       :key = "c" 
@@ -327,29 +357,36 @@
             <td
               class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px center coc-padding-x-7px">
               <Tooltip content = "Export">
-                <Button
+                <coc-button
                   icon = "md-arrow-down coc-error-text"
                   class = "coc-border-0"
-                  @click = "importStock(stock)" />
+                  @clicked = "importStock(stock)" />
               </Tooltip>
               <Tooltip content = "Import">
-                <Button
+                <coc-button
                   icon = "md-arrow-up coc-success-text"
                   class = "coc-border-0"
-                  @click = "importStock(stock, -1)" />
+                  @clicked = "importStock(stock, -1)" />
               </Tooltip>
               <Tooltip content = "Edit">
-                <Button
+                <coc-button
                   icon = " knocks-pen-angled coc-warning-text"
                   class = "coc-border-0"
-                  @click = "editStock(stock)" />
+                  @clicked = "editStock(stock)" />
+              </Tooltip>
+              <Tooltip content = "Trash">
+                <coc-button
+                  icon = "ios-trash coc-error-text"
+                  class = "coc-border-0"
+                  @clicked = "trashStock(stock)" />
               </Tooltip>
               <div class="coc-full-width coc-margin-top-5px">
                 <Tooltip content = "Count">
-                  <input-number
+                  <coc-number-input
                     v-model = "moveCount"
                     :min = "1"
-                    class = "left"/>
+                    class = "left"
+                    light-model/>
                 </Tooltip>
               </div>
             </td>
@@ -379,17 +416,18 @@
         <span class="tcsc-oil-icon"/>
         No Stock Available
         <div class="row">
-          <Button
+          <i-button
             size = "large"
             icon = " tcsc-car-battery-1-icon coc-text-md-2"
-            @click = "addStock">Add New</Button>
+            @click = "addStock">Add New</i-button>
         </div>
       </div>  
       <div
-        v-coc-loading = "true"
         v-if = "isLoading && !hasError"
         style = "height: 40vh"
-        class = "row" />
+        class = "row" >
+        <p v-coc-loading = "isLoading && !hasError">...</p>
+      </div>
       <div
         v-if = "hasError"
         class = "coc-text-title center coc-error-text">
@@ -397,16 +435,16 @@
         Whoops!<br>
         <small class = "coc-text-xs">Something Went Wrong!<br>Try to refresh</small>
         <div class="row">
-          <Button
+          <i-button
             size = "large"
             type = "error"
             icon = "ios-refresh"
             ghost
-            @click = "getStock">Refresh</Button>
+            @click = "getStock">Refresh</i-button>
         </div>
       </div>
     </div>
-    <Card v-else>
+    <Card v-else-if = "!user">
       <p class = "coc-text-title coc-error-text center">
         <Icon type = "ios-alert-outline"/>
         You Are Not Logged In
@@ -414,16 +452,26 @@
       <br>
       <p class="center">
         <button-group>
-          <Button
+          <i-button
             type = "default"
             size = "large"
             shape = "circle"
             style = "width: 120px"
             @click = "askForLogin">
             Login
-          </Button>
+          </i-button>
         </button-group>
       </p>
+    </Card>
+    <Card v-else-if = "user && !$utils.roles.hasRole('stocks',user)">
+      <p class = "coc-text-title green-text text-darken-3 center">
+        <Icon type = " knocksapp-prick3"/>
+        Looks like you're lost
+      </p>
+      <i-button
+        to = "/"
+        size = "large"
+        long>Take Me Home</i-button>
     </Card>
   </master>
 </template>
@@ -432,13 +480,23 @@
 import brands from '~/plugins/brands'
 import Master from '~/components/common/master'
 export default {
-  name: 'Index',
+  name: 'StockIndex',
   components: {
     Master
+  },
+  head() {
+    return {
+      title: this.$store.state.core.app
+        ? `${this.$store.state.core.app.title} | Stock`
+        : 'Stock'
+    }
   },
   data() {
     return {
       brands,
+      toBeTrashed: null,
+      trashLoading: false,
+      deleteModal: false,
       isMounted: false,
       isLoading: true,
       hasError: false,
@@ -487,7 +545,8 @@ export default {
       pagination: null,
       formattedQuery: {},
       input: {
-        ignore_external: true,
+        non_external: true,
+        external: true,
         category: [],
         status: null,
         date: null,
@@ -507,9 +566,10 @@ export default {
     }
   },
   mounted() {
-    this.formatQuery(this.$route.query)
     setTimeout(() => {
+      this.isLoading = true
       this.isMounted = true
+      this.formatQuery(this.$route.query)
     }, 1000)
     this.$root.$on('addStockSuccess', this.formatQuery)
   },
@@ -557,8 +617,8 @@ export default {
       if (final.external !== undefined) {
         final.external = final.external === 'yes'
       }
-      if (final.ignore_external !== undefined) {
-        final.ignore_external = final.ignore_external === 'yes'
+      if (final.non_external !== undefined) {
+        final.non_external = final.non_external === 'yes'
       }
       if (final.page !== undefined) {
         final.page = parseInt(final.page, 10) + 1
@@ -589,8 +649,8 @@ export default {
       if (final.external !== undefined) {
         final.external = final.external ? 'yes' : 'no'
       }
-      if (final.ignore_external !== undefined) {
-        final.ignore_external = final.ignore_external ? 'yes' : 'no'
+      if (final.non_external !== undefined) {
+        final.non_external = final.non_external ? 'yes' : 'no'
       }
       if (final.page !== undefined) {
         final.page = parseInt(final.page, 10)
@@ -662,10 +722,51 @@ export default {
     changePage(e) {
       this.input.page = e
       this.formatQuery()
+    },
+    trashStock(stock) {
+      this.toBeTrashed = stock
+      this.deleteModal = true
+    },
+    rejectTrash() {
+      this.toBeTrashed = null
+      this.deleteModal = false
+    },
+    excTrashStock(stock) {
+      this.trashLoading = false
+      this.$axios({
+        url: `/stock/${stock._id}`,
+        data: {
+          ...stock,
+          trashed: true
+        },
+        method: 'put'
+      })
+        .then(() => {
+          this.formatQuery()
+          this.trashLoading = false
+          this.deleteModal = false
+          this.$Message.success('Deleted Successfully!')
+        })
+        .catch(() => {
+          this.trashLoading = false
+          this.$Message.error('Something Went Wrong')
+        })
     }
   }
 }
 </script>
 
 <style lang="css" scoped>
+tr {
+  width: 100%;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
 </style>

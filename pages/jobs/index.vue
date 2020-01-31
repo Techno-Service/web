@@ -5,30 +5,33 @@
         Jobs
         <span v-if = "jobs && jobs.length">({{ jobs.length }})</span>
       </span>
-      <Button
+      <coc-button
         icon = "ios-funnel-outline"
         class = "right"
-        @click = "config.drawer = true"/>
-      <Button
+        @clicked = "config.drawer = true"/>
+      <coc-button
         icon = "ios-refresh"
         class = "right coc-margin-x-5px"
-        @click = "formatQuery"/>
-      <Button
+        @clicked = "formatQuery"/>
+      <coc-button
         :disabled = "list"
         icon = "ios-list"
         class = "right coc-margin-x-5px"
-        @click = "list = true"/>
-      <Button
+        @clicked = "list = true"/>
+      <coc-button
         :disabled = "!list"
         icon = "ios-grid-outline"
         class = "right coc-margin-x-5px"
-        @click = "list = false"/>
+        @clicked = "list = false"/>
     </div>
     <Drawer 
       v-model="config.drawer" 
-      title="Filters" 
       width = "80%"
       closable>
+      <p
+        slot = "header">
+        <span class="coc-content-text">Filters</span>
+      </p>
       <div 
         v-if = "config.drawer" 
         class="row coc-house-keeper">
@@ -186,43 +189,45 @@
                     shape = "circle"
                     class = "coc-full-width"
                     long>
-                    <Button
+                    <coc-button
                       :type = "input.desc === 'no' ? 'info' : 'default'"
                       icon = "md-arrow-round-up"
                       style = "width:50%"
-                      @click = "input.desc = 'no'"/>
-                    <Button
+                      @clicked = "input.desc = 'no'"/>
+                    <coc-button
                       :type = "input.desc === 'yes' ? 'info' : 'default'"
                       icon = "md-arrow-round-down"
                       style = "width:50%"
-                      @click = "input.desc = 'yes'"/>
+                      @clicked = "input.desc = 'yes'"/>
                   </button-group>
                 </div>
               </div>
               <div class = "col s12">
-                <Button 
+                <coc-button 
                   type = "primary" 
                   icon = "ios-funnel-outline coc-text-lg"
                   long 
-                  @click = "formatQuery()">
+                  @clicked = "formatQuery()">
                   <span class="coc-text-lg">Filter Jobs</span>
-                </Button>
+                </coc-button>
               </div>
             </div>
           </div>
           <Divider orientation = "right">Search Settings</Divider>
           <p class = "coc-text-md-2">Price Range Maximum</p>
-          <input-number 
+          <coc-number-input 
             v-model = "config.price.max" 
             placeholder = "Price Range Maximum" 
             size = "large"
-            style = "width: 100%" />
+            style = "width: 100%"
+            light-model />
           <p class = "coc-text-md-2">Price Range Step</p>
-          <input-number 
+          <coc-number-input 
             v-model = "config.price.step" 
             placeholder = "Price Range Step" 
             size = "large"
-            style = "width: 100%" />
+            style = "width: 100%"
+            light-model />
     </div></div></Drawer>
     <div
       v-coc-loading = "isLoading"
@@ -323,9 +328,13 @@
                         type = "md-checkmark"
                         class = "coc-success-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
                       <icon 
-                        v-if = "!req.done"
+                        v-if = "!req.done && !req.shifted"
                         type = "md-close"
                         class = "coc-error-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
+                      <icon
+                        v-if = "!req.done && req.shifted"
+                        type = " knocks-arrow-right2"
+                        class = "coc-warning-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
                     </nuxt-link>
                   </dropdown-item>
                   <dropdown-item
@@ -444,9 +453,13 @@
                         type = "md-checkmark"
                         class = "coc-success-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
                       <icon 
-                        v-if = "!req.done"
+                        v-if = "!req.done && !req.shifted"
                         type = "md-close"
                         class = "coc-error-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
+                      <icon
+                        v-if = "!req.done && req.shifted"
+                        type = " knocks-arrow-right2"
+                        class = "coc-warning-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
                     </nuxt-link>
                   </dropdown-item>
                   <dropdown-item
@@ -560,9 +573,13 @@
                         type = "md-checkmark"
                         class = "coc-success-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
                       <icon 
-                        v-if = "!req.done"
+                        v-if = "!req.done && !req.shifted"
                         type = "md-close"
                         class = "coc-error-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
+                      <icon
+                        v-if = "!req.done && req.shifted"
+                        type = " knocks-arrow-right2"
+                        class = "coc-warning-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
                     </nuxt-link>
                   </dropdown-item>
                   <dropdown-item
@@ -676,9 +693,13 @@
                         type = "md-checkmark"
                         class = "coc-success-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
                       <icon 
-                        v-if = "!req.done"
+                        v-if = "!req.done && !req.shifted"
                         type = "md-close"
                         class = "coc-error-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
+                      <icon
+                        v-if = "!req.done && req.shifted"
+                        type = " knocks-arrow-right2"
+                        class = "coc-warning-text right coc-text-md-2 coc-margin-top-5px coc-margin-x-5px" />
                     </nuxt-link>
                   </dropdown-item>
                   <dropdown-item
@@ -740,6 +761,13 @@ export default {
   name: 'AllJobsIndex',
   components: {
     Master
+  },
+  head() {
+    return {
+      title: this.$store.state.core.app
+        ? `${this.$store.state.core.app.title} | Jobs`
+        : 'Jobs'
+    }
   },
   data() {
     return {

@@ -6,8 +6,8 @@
         id = "jobs-create">
         <p 
           slot = "title">
-          <icon type = " tcsc-transportation-icon coc-text-md-2"/>
-          <span class="coc-subcolor-text">Create Job</span>
+          <icon type = " tcsc-transportation-icon coc-text-md-2 coc-content-text"/>
+          <span class="coc-content-text">Create Job</span>
         </p>
         <div class="row">
           <div class="col l4 m6 s12">
@@ -206,10 +206,17 @@ import Master from '~/components/common/master'
 import JobsHistory from '~/components/jobs/history.vue'
 import brands from '~/plugins/brands'
 export default {
-  name: 'Index',
+  name: 'HomeIndex',
   components: {
     Master,
     JobsHistory
+  },
+  head() {
+    return {
+      title: this.$store.state.core.app
+        ? `${this.$store.state.core.app.title} | Home`
+        : 'Home'
+    }
   },
   data() {
     return {

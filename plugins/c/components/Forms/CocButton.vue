@@ -5,10 +5,11 @@
     :shape = "circle ? 'circle': null"
     :round = "round"
     :loading = "isLoading"
-    :class = "classes"
+    :class = "computedClasses"
     :icon = "icon"
     :size = "size"
     :long = "long"
+    :to = "to"
     v-bind = "bind"
     :disabled = "disabled"
     @click = "construct()">
@@ -17,7 +18,7 @@
       <template v-if = "placeholder && placeholder.length">{{ placeholder }}</template>
     </slot>
     <coc-axios
-      v-if = "!local"
+      v-if = "!local && request && request.url"
       v-bind = "request"
       v-model = "retriever"
       :scope = "scope"
@@ -40,7 +41,7 @@ export default {
     },
     type: {
       type: String,
-      default: 'primary'
+      default: 'default'
     },
     round: {
       type: Boolean,
@@ -70,9 +71,9 @@ export default {
       type: String,
       default: null
     },
-    local: {
-      type: Boolean,
-      default: false
+    to: {
+      type: [Object, String],
+      default: null
     },
     ignore: {
       type: Boolean,
@@ -102,7 +103,7 @@ export default {
       type: Object,
       default: () => {
         return {
-          body: 'Your have submited successfuly',
+          body: 'Submitted Successfuly',
           title: 'Success',
           type: 'success'
         }
@@ -157,7 +158,9 @@ export default {
                     {
                       class: 'coc-error-text'
                     },
-                    `${instance.errorStack.length} errors was found`
+                    `${instance.errorStack.length} error${
+                      instance.errorStack.length > 1 ? 's' : ''
+                    } ${instance.errorStack.length > 1 ? 'were' : 'was'} found`
                   ),
                   h('br'),
 
@@ -168,8 +171,12 @@ export default {
                       props: {
                         contentSlot: 'default',
                         title: 'Errors',
-                        togglerClass: 'transparent coc-border-0',
-                        regularClass: 'coc-error-text coc-text-heading left',
+                        togglerClass:
+                          'transparent coc-content-class coc-border-0 coc-house-keeper',
+                        regularClass:
+                          'coc-error-text coc-text-heading left coc-house-keeper',
+                        activeClass:
+                          'coc-error-text coc-text-heading left coc-house-keeper',
                         icon: 'ivu-icon'
                       }
                     },
@@ -217,6 +224,10 @@ export default {
     validationTolerenceTime: {
       type: Number,
       default: 750
+    },
+    defaultStyles: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -270,12 +281,36 @@ export default {
           response: this.retriever.response,
           progress: this.retriever.progress,
           xdata: this.xdata,
+          registeration: this.checkedFormMembers,
           retriever: this.retriever
         }
       }
+    },
+    local() {
+      return !this.request
+    },
+    computedClasses() {
+      if (this.defaultStyles) return this.classes
+      let all = []
+      if (Array.isArray(this.classes)) all = [...this.classes]
+      if (this.type === 'text') {
+        return all
+      }
+      all.push(`coc-${this.type}-bg`)
+      all.push(`coc-${this.type}-hover-tint-3-bg`)
+      all.push(`coc-${this.type}-hover-tint4-border`)
+      all.push(`coc-${this.type}-invert-text`)
+      all.push(`coc-${this.type}-tint-1-border`)
+      return all
     }
   },
   watch: {
+    model: {
+      deep: true,
+      handler(val) {
+        this.eventController.SetScope(val)
+      }
+    },
     model: {
       deep: true,
       handler() {
@@ -284,13 +319,14 @@ export default {
     }
   },
   mounted() {
-    // console.log('btn mnt')
     this.exists = true
     this.emit()
     const vm = this
     this.eventController.Start()
     this.eventController.ReceiveMeta('valid', payloads => {
-      if (!vm.exists) return
+      if (!vm.exists || !vm.onSubmit) {
+        return
+      }
       if (payloads.credentials === false || payloads.pennding) {
         vm.errorStack.push(payloads)
       }
@@ -314,12 +350,12 @@ export default {
           vm.emit('coc-validation-passed')
           vm.submit()
         }
+      } else {
       }
     })
     this.eventController.ReceiveScope('COCFormItemRegister', this.register)
   },
   beforeDestroy() {
-    // console.log('btn des')
     this.exists = false
     this.$root.$off([
       'COCFormController',
@@ -354,6 +390,15 @@ export default {
         this.notifi(this.preconditionMessage)
         this.emit('coc-validation-refused', this.errorStack)
         this.onSubmit = false
+        return
+      }
+      if (this.to) {
+        this.onSubmit = false
+        return
+      }
+      if (!this.scope || !this.scope.length) {
+        this.onSubmit = false
+        this.waitingLocalResponse = false
         return
       }
       this.errorStack = []

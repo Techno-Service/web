@@ -4,29 +4,29 @@ export default class Queue extends Arrays {
     super(array)
   }
 
-  get Empty() {
+  get empty() {
     return this.Length ? false : true
   }
 
-  get Front() {
+  get front() {
     return this.val[0]
   }
 
-  get Rear() {
+  get rear() {
     return this.Last
   }
 
-  get Size() {
+  get size() {
     return this.Length
   }
 
   // Methods
 
-  Enqueue(val = 'foo') {
+  enqueue(val = 'foo') {
     this.val.push(val)
   }
 
-  Dequeue() {
+  dequeue() {
     this.val.splice(0, 1)
   }
 }

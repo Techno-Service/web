@@ -13,25 +13,28 @@
           Jobs
           <span v-if = "jobs && jobs.length">({{ jobs.length }})</span>
         </span>
-        <Button
+        <coc-button
           icon = "ios-funnel-outline"
           class = "right"
-          @click = "config.drawer = true"/>
-        <Button
+          @clicked = "config.drawer = true"/>
+        <coc-button
           icon = "ios-refresh"
           class = "right coc-margin-x-5px"
-          @click = "formatQuery"/>
-          <!--         <Button   
+          @clicked = "formatQuery"/>
+          <!--         <coc-button   
           :type = "onPrint ? 'primary' : 'default'"         
           icon = "ios-print-outline"
           class = "right coc-margin-x-5px"
-          @click = "print" /> -->
+          @clicked = "print" /> -->
       </div>
       <Drawer 
         v-model="config.drawer" 
-        title="Filters" 
         width = "80%"
         closable>
+        <p
+          slot = "header">
+          <span class="coc-content-text">Filters</span>
+        </p>
         <div 
           v-if = "config.drawer" 
           class="row coc-house-keeper">
@@ -189,44 +192,46 @@
                     shape = "circle"
                     class = "coc-full-width"
                     long>
-                    <Button
+                    <coc-button
                       :type = "input.desc === 'no' ? 'info' : 'default'"
                       icon = "md-arrow-round-up"
                       style = "width:50%"
-                      @click = "input.desc = 'no'"/>
-                    <Button
+                      @clicked = "input.desc = 'no'"/>
+                    <coc-button
                       :type = "input.desc === 'yes' ? 'info' : 'default'"
                       icon = "md-arrow-round-down"
                       style = "width:50%"
-                      @click = "input.desc = 'yes'"/>
+                      @clicked = "input.desc = 'yes'"/>
                   </button-group>
                 </div>
               </div>
               <div class = "col s12">
-                <Button 
+                <coc-button 
                   type = "primary" 
                   icon = "ios-funnel-outline coc-text-lg"
                   long 
-                  @click = "formatQuery()">
+                  @clicked = "formatQuery()">
                   <span class="coc-text-lg">Filter Jobs</span>
-                </Button>
+                </coc-button>
               </div>
             </div>
           </div>
         </div>
         <Divider orientation = "right">Search Settings</Divider>
         <p class = "coc-text-md-2">Price Range Maximum</p>
-        <input-number 
+        <coc-number-input
           v-model = "config.price.max" 
           placeholder = "Price Range Maximum" 
           size = "large"
-          style = "width: 100%" />
+          style = "width: 100%"
+          light-model />
         <p class = "coc-text-md-2">Price Range Step</p>
-        <input-number 
+        <coc-number-input
           v-model = "config.price.step" 
           placeholder = "Price Range Step" 
           size = "large"
-          style = "width: 100%" />
+          style = "width: 100%"
+          light-model />
       </Drawer>
       <div
         v-if = "jobs && jobs.length"
@@ -331,74 +336,6 @@
           <div id="requirements-time-bar" />
         </div>
         <divider class = "coc-margin-y-10px" />
-        <div 
-          id = "makes" 
-          class="row">
-          <p class = "coc-text-title coc-text-bold">Car Makes</p>
-          <divider />
-          <div
-            v-for = "(make, m) in getSortedCars(jobs)"
-            :key = "m"
-            class="col l4 s12 animated pulse coc-padding-y-10px">
-            <div
-              :style = "`background: url(/snaps/brands/png/${make.split(' ').join('-').toLowerCase()}.png); background-size: cover`"
-              class = "bg-blur" />
-            <i-circle 
-              :percent="jobs.filter(j => j.car.brand === make).length * 100 / jobs.length"
-              :size = "200"
-              :style = "`background:rgba(0,0,0,0.85); border-radius: 50%;`"
-              class = "centerized"
-              stroke-color = "#ed4014">
-              <div
-                class="demo-Circle-inner coc-text-md-1 coc-secondary-text" 
-                style="">
-                <span class = "coc-error-text coc-text-bold coc-padding-bottom-5px">{{ make | CocCapitalizeName }}</span>
-                <p class = "coc-padding-top-5px">
-                  <icon type = "ios-albums-outline" />
-                  Count: {{ jobs.filter(j => j.car.brand === make).length | CocMigaNumber }}
-                </p>
-                <p class = "coc-padding-top-5px">
-                  <icon type = "ios-pie-outline" />
-                  {{ jobs.filter(j => j.car.brand === make).length * 100 / jobs.length | CocToFixedOne }}%
-                </p>
-                <p class = "coc-padding-top-5px">
-                  <tooltip content = "Total Income">
-                    <icon type = "ios-cash-outline" />
-                  </tooltip>
-                  {{ $_.sumBy(jobs.filter(j => j.car.brand === make), o => o.price) | CocMigaNumber }} LE
-                </p>
-                <p class = "coc-padding-top-5px">
-                  <tooltip content = "Total Time Consumption">
-                    <icon type = "ios-clock-outline" />
-                  </tooltip>
-                  {{ ($_.sumBy(jobs.filter(j => j.car.brand === make && j.timeleave), o => $moment(o.timeleave).diff($moment(o.timein),'hours'))) | CocMigaNumber }} H
-                </p>
-                <p class = "coc-padding-top-5px">
-                  <tooltip content = "Time Consumption Average">
-                    <icon type = "ios-stopwatch-outline" />
-                  </tooltip>
-                  ~
-                  {{ 
-                    (($_.sumBy(jobs.filter(j => j.car.brand === make && j.timeleave), o => $moment(o.timeleave).diff($moment(o.timein),'hours')))
-                      / 
-                      jobs.filter(j => j.car.brand === make).length).toFixed(2) 
-                  }} H
-                </p>
-                <p class = "coc-padding-top-5px">
-                  <tooltip content = "Hour Rate">
-                    <icon type = "ios-timer-outline" />
-                  </tooltip>
-                  {{ 
-                    ($_.sumBy(jobs.filter(j => j.car.brand === make), o => o.price)
-                      / 
-                    ($_.sumBy(jobs.filter(j => j.car.brand === make && j.timeleave), o => $moment(o.timeleave).diff($moment(o.timein),'hours')))).toFixed(2)
-                       
-                  }} LE/H
-                </p>
-              </div>
-            </i-circle>
-          </div>
-        </div>
       </div>
     </div>
     <Card v-else>
@@ -409,14 +346,14 @@
       <br>
       <p class="center">
         <button-group>
-          <Button
+          <coc-button
             type = "default"
             size = "large"
             shape = "circle"
             style = "width: 120px"
-            @click = "askForLogin">
+            @clicked = "askForLogin">
             Login
-          </Button>
+          </coc-button>
         </button-group>
       </p>
     </Card>
@@ -432,6 +369,13 @@ export default {
   components: {
     Master,
     JobsStatsCharts
+  },
+  head() {
+    return {
+      title: this.$store.state.core.app
+        ? `${this.$store.state.core.app.title} | Jobs Analytics`
+        : 'Jobs Analytics'
+    }
   },
   data() {
     return {
@@ -532,16 +476,16 @@ export default {
         })
     },
     boundLogos(time = 500) {
-      setTimeout(() => {
-        if (document) {
-          const logos = document.getElementsByClassName('bg-blur')
-          let i
-          for (i = 0; i < logos.length; i += 1) {
-            logos[i].style.left = `${logos[i].parentElement.offsetWidth / 2 -
-              85}px`
-          }
-        }
-      }, time)
+      // setTimeout(() => {
+      //   if (document) {
+      //     const logos = document.getElementsByClassName('bg-blur')
+      //     let i
+      //     for (i = 0; i < logos.length; i += 1) {
+      //       logos[i].style.left = `${logos[i].parentElement.offsetWidth / 2 -
+      //         85}px`
+      //     }
+      //   }
+      // }, time)
     },
     encodedQuery(input = this.input) {
       const final = this.$_.cloneDeep(input)

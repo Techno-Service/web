@@ -101,19 +101,22 @@
         </Radio>
       </radio-group>
     </div>
-    <coc-button
-      v-if = "init"
-      :scope = "['edit-users']"
-      :request = "{
-        method: 'put',
-        xdata: $_.pick(userForm, ['name', 'phone', 'gender', 'points', 'whishlist', 'roles', '_id', 'email', 'is_verified', 'blocked']),
-        url: `/users/${init._id}`
-      }"
-      size = "large"
-      classes = "right"
-      class = "row"
-      placeholder = "Submit"
-      @coc-submit-accepted = "$emit('success', $event)"/>
+    <div
+      class="row coc-house-keeper">
+      <coc-button
+        v-if = "init"
+        :scope = "['edit-users']"
+        :request = "{
+          method: 'put',
+          xdata: $_.pick(userForm, ['name', 'phone', 'gender', 'points', 'whishlist', 'roles', '_id', 'email', 'is_verified', 'blocked']),
+          url: `/users/${init._id}`
+        }"
+        size = "large"
+        classes = "right"
+        class = "row"
+        placeholder = "Submit"
+        @coc-submit-accepted = "$emit('success', $event)"/>
+    </div>
   </div>
 </template>
 

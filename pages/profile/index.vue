@@ -58,14 +58,17 @@
           </div>
         </div>
         <div class="col s12 coc-section">
-          <i-button
+          <coc-button
             v-if = "$utils.roles.dashboarder(user)"
-            to = "/users">Manage Users</i-button>
+            to = "/users">Manage Users</coc-button>
+          <coc-button
+            v-if = "$utils.roles.dashboarder(user)"
+            to = "/app">App Configurations</coc-button>
           <Tabs v-model = "activeTab">
             <TabPane 
               label="My Info" 
               name="info">
-              <div class="row white coc-border-border coc-border-1 coc-standard-border-radius coc-margin-x-5px">
+              <div class="row coc-light-background-bg coc-border-border coc-border-1 coc-standard-border-radius coc-margin-x-5px">
                 <coc-input
                   v-model = "input.name"
                   :scope = "['user-form']"

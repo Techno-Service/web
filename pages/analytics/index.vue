@@ -35,6 +35,7 @@
               v-if = "isMatchedSearch(cell)"
               :key = "c"
               :to = "cell.url"
+              :class = "card.cellsClass"
               class = "coc-background-text coc-content-hover-text animated pulse">
               <icon :type = "cell.icon" />
               <span>{{ cell.label }}</span>
@@ -95,7 +96,13 @@ export default {
   components: {
     Master
   },
-
+  head() {
+    return {
+      title: this.$store.state.core.app
+        ? `${this.$store.state.core.app.title} | Analytics`
+        : 'Analytics'
+    }
+  },
   data() {
     return {
       input: {

@@ -197,6 +197,7 @@ export default {
           recursion_time: this.recursion_time,
           recursion_precondition: this.recursion_precondition
         },
+        scope: this.scope,
         scopeRetrive: this.remoteRetrive,
         retrieve: this.retrieve,
         abort: this.abort

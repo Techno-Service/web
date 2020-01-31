@@ -83,7 +83,8 @@ export default class Arrays {
     return COC.BinarySearch(this.Sorted.get, args[0])
   }
 
-  IsMatching(array) {
+  IsMatching(array, all = false) {
+    if (all) return this.IsFullyMatched(array)
     if (!this.Length || !array.length) {
       return false
     }
@@ -94,6 +95,24 @@ export default class Arrays {
       }
     }
     return false
+  }
+
+  IsFullyMatched(array) {
+    if (!this.Length || !array.length) {
+      return false
+    }
+    let i
+    for (i = 0; i < array.length; i += 1) {
+      if (!this.Includes(array[i])) {
+        return false
+      }
+    }
+    for (i = 0; i < this.val.length; i += 1) {
+      if (array.indexOf(this.val[i]) === -1) {
+        return false
+      }
+    }
+    return true
   }
 
   FindAll(...args) {

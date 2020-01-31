@@ -1,64 +1,14 @@
 <template>
-  <coc-nav :classes = "classes">
+  <coc-nav :classes = "computedClasses">
     <slot 
       slot = "title" 
-      name = "nav-title">
-      <nuxt-link
-        to="/"
-        class="text-super text-code coc-primary-text coc-nav-brand col coc-padding-0"
-      >
-        <coc-avatar
-          v-coc-mouse-over="'jello'"
-          v-coc-mouse-leave="'rubberBand'"
-          :source="$coc.App.logo.primary"
-          scale = "40px"
-          class="logo col coc-padding-0 animated"/>
-        <span
-          class="name col coc-padding-x-15px coc-padding-y-0 coc-margin-0"
-        >{{ $coc.App.brandName }}</span>
-      </nuxt-link>
-    </slot>
+      name = "nav-title" />
     <slot 
       slot = "middle" 
-      name = "nav-middle">
-      <coc-input
-        v-model="cocPureInput"
-        :status-classes = "{
-          initHolder: 'house-keepe col s12'
-        }"
-        placeholder = "Search"
-        size = "large"
-        class = "coc-padding-y-18px"
-        icon = "ivu-icon ivu-icon-ios-search"
-      />
-    </slot>
+      name = "nav-middle" />
     <slot 
       slot = "actions" 
-      name = "nav-actions">
-      <div 
-        v-if = "actions" 
-        class="row house-keeper right">
-        <Dropdown 
-          v-for = "(action, a) in actions" 
-          :key = "a"
-          @on-click = "excuteCallback(action, $event)">
-          <Button
-            type="text"
-            size = "large"
-            style = "height: 70px; border-radius: 0">
-            {{ action.label }}
-            <Icon type="ios-arrow-down"/>
-          </Button>
-          <DropdownMenu slot="list">
-            <DropdownItem 
-              v-for = "(item, i) in action.items"
-              :name = "item.label"
-              :key = "i">{{ item.label }}
-            </dropdownitem>
-          </DropdownMenu>
-        </Dropdown>
-      </div>
-    </slot>
+      name = "nav-actions" />
   </coc-nav>
 </template>
 
@@ -73,19 +23,25 @@ export default {
     classes: {
       type: Object,
       default: () => {
-        return {
-          nav:
-            'transparent coc-main-nav coc-primary-text coc-primary-hover-text row house-keeper',
-          title: 'left col l3 s8 coc-nav-section house-keeper',
-          middle: 'col l5 coc-nav-section hide-on-med-and-down house-keeper',
-          actions: 'right col l3 s4 coc-nav-section house-keeper'
-        }
+        return {}
       }
     }
   },
   data() {
     return {
       cocPureInput: null
+    }
+  },
+  computed: {
+    computedClasses() {
+      return {
+        nav:
+          'coc-main-nav coc-primary-text coc-primary-hover-text row house-keeper coc-z-index-3 coc-background-bg',
+        title: 'left col l3 s8 coc-nav-section house-keeper',
+        middle: 'col l5 coc-nav-section hide-on-med-and-down house-keeper',
+        actions: 'right col l3 s4 coc-nav-section house-keeper',
+        ...this.classes
+      }
     }
   },
   methods: {
@@ -111,23 +67,7 @@ export default {
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 123;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08) !important;
-}
-.coc-nav-brand {
-  margin-left: 15px;
-  margin-top: 15px;
-  margin-bottom: 15px;
-  height: 40px;
-}
-.coc-nav-brand .logo {
-  width: 40px !important;
-  height: 40px !important;
-  background-color: transparent;
-}
-.coc-nav-brand .name {
-  height: 40px !important;
-  line-height: 40px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
 }
 .coc-nav-section {
   height: 70px;

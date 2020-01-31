@@ -8,20 +8,23 @@
       v-coc-loading = "isLoading"
       v-if = "user">
       <div class="row">
-        <Button
+        <coc-button
           icon = "ios-funnel-outline"
           class = "right"
-          @click = "config.drawer = true"/>
-        <Button
+          @clicked = "config.drawer = true"/>
+        <coc-button
           icon = "ios-refresh"
           class = "right coc-margin-x-5px"
-          @click = "formatQuery"/>
+          @clicked = "formatQuery"/>
       </div>
       <Drawer 
         v-model="config.drawer" 
-        title="Filters" 
         width = "80%"
         closable>
+        <p
+          slot = "header">
+          <span class="coc-content-text">Filters</span>
+        </p>
         <div 
           v-if = "config.drawer" 
           class="row coc-house-keeper">
@@ -163,44 +166,46 @@
                     shape = "circle"
                     class = "coc-full-width"
                     long>
-                    <Button
+                    <coc-button
                       :type = "input.desc === 'no' ? 'info' : 'default'"
                       icon = "md-arrow-round-up"
                       style = "width:50%"
-                      @click = "input.desc = 'no'"/>
-                    <Button
+                      @clicked = "input.desc = 'no'"/>
+                    <coc-button
                       :type = "input.desc === 'yes' ? 'info' : 'default'"
                       icon = "md-arrow-round-down"
                       style = "width:50%"
-                      @click = "input.desc = 'yes'"/>
+                      @clicked = "input.desc = 'yes'"/>
                   </button-group>
                 </div>
               </div>
               <div class = "col s12">
-                <Button 
+                <coc-button 
                   type = "primary" 
                   icon = "ios-funnel-outline coc-text-lg"
                   long 
-                  @click = "formatQuery()">
+                  @clicked = "formatQuery()">
                   <span class="coc-text-lg">Filter Jobs</span>
-                </Button>
+                </coc-button>
               </div>
             </div>
           </div>
         </div>
         <Divider orientation = "right">Search Settings</Divider>
         <p class = "coc-text-md-2">Price Range Maximum</p>
-        <input-number 
+        <coc-number-input 
           v-model = "config.price.max" 
           placeholder = "Price Range Maximum" 
           size = "large"
-          style = "width: 100%" />
+          style = "width: 100%"
+          light-model />
         <p class = "coc-text-md-2">Price Range Step</p>
-        <input-number 
+        <coc-number-input
           v-model = "config.price.step" 
           placeholder = "Price Range Step" 
           size = "large"
-          style = "width: 100%" />
+          style = "width: 100%"
+          light-model />
       </Drawer>
       <div
         v-if = "jobs && jobs.length && !onRender"
@@ -232,14 +237,14 @@
               <button-group
                 size = "small"
                 class = "right">
-                <i-button
+                <coc-button
                   :disabled = "timePresentation.days === 'line'"
                   icon = " knocks-chart-line"
-                  @click = "$route.query.scroll = 'daily-count'; timePresentation.days = 'line'" />
-                <i-button
+                  @clicked = "$route.query.scroll = 'daily-count'; timePresentation.days = 'line'" />
+                <coc-button
                   :disabled = "timePresentation.days === 'radar'"
                   icon = " knocks-point2"
-                  @click = "$route.query.scroll = 'daily-count'; timePresentation.days = 'radar'" />
+                  @clicked = "$route.query.scroll = 'daily-count'; timePresentation.days = 'radar'" />
               </button-group>
             </tooltip>
           </div>
@@ -261,14 +266,14 @@
               <button-group
                 size = "small"
                 class = "right">
-                <i-button
+                <coc-button
                   :disabled = "timePresentation.months === 'line'"
                   icon = " knocks-chart-line"
-                  @click = "$route.query.scroll = 'monthly-count'; timePresentation.months = 'line'" />
-                <i-button
+                  @clicked = "$route.query.scroll = 'monthly-count'; timePresentation.months = 'line'" />
+                <coc-button
                   :disabled = "timePresentation.months === 'radar'"
                   icon = " knocks-point2"
-                  @click = "$route.query.scroll = 'monthly-count'; timePresentation.months = 'radar'" />
+                  @clicked = "$route.query.scroll = 'monthly-count'; timePresentation.months = 'radar'" />
               </button-group>
             </tooltip>
           </div>
@@ -290,14 +295,14 @@
               <button-group
                 size = "small"
                 class = "right">
-                <i-button
+                <coc-button
                   :disabled = "timePresentation.years === 'line'"
                   icon = " knocks-chart-line"
-                  @click = "$route.query.scroll = 'annual-count'; timePresentation.years = 'line'" />
-                <i-button
+                  @clicked = "$route.query.scroll = 'annual-count'; timePresentation.years = 'line'" />
+                <coc-button
                   :disabled = "timePresentation.years === 'radar'"
                   icon = " knocks-point2"
-                  @click = "$route.query.scroll = 'annual-count'; timePresentation.years = 'radar'" />
+                  @clicked = "$route.query.scroll = 'annual-count'; timePresentation.years = 'radar'" />
               </button-group>
             </tooltip>
           </div>
@@ -386,14 +391,14 @@
       <br>
       <p class="center">
         <button-group>
-          <Button
+          <coc-button
             type = "default"
             size = "large"
             shape = "circle"
             style = "width: 120px"
-            @click = "askForLogin">
+            @clicked = "askForLogin">
             Login
-          </Button>
+          </coc-button>
         </button-group>
       </p>
     </Card>
@@ -408,6 +413,13 @@ export default {
   components: {
     Master,
     JobsStatsCharts
+  },
+  head() {
+    return {
+      title: this.$store.state.core.app
+        ? `${this.$store.state.core.app.title} | Automobiles Analytics`
+        : 'Automobiles Analytics'
+    }
   },
   data() {
     return {

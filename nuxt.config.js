@@ -13,7 +13,6 @@ module.exports = {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/snaps/tservice.png' },
       { rel: 'stylesheet', href: '/knocks/style.css' },
       { rel: 'stylesheet', href: '/knocksapp/style.css' },
       { rel: 'stylesheet', href: '/tcsc/style.css' }

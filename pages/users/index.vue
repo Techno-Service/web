@@ -1,4 +1,4 @@
-<template>
+ff<template>
   <master>
     <div
       v-if = "auth"
@@ -56,10 +56,6 @@
                           class = "email-wrapper">{{ userInfo.email }}</span>
                       </Tooltip>
                     </p>
-                    <p class = "coc-primary-text coc-text-heading">
-                      <span class = "coc-primary-tint-3-text">Points: </span>
-                      {{ userInfo.points }}
-                    </p>
                   </div>
                 </div>
               </div>
@@ -80,7 +76,7 @@
           </p>
           <edit-user
             :init = "userOnEdit"
-            class = "coc-margin-y-20px"
+            class = "coc-margin-top-20px"
             @success = "handleUserUpdate"/>
         </Modal>
         <div class="col s12 l3 coc-padding-y-5px">

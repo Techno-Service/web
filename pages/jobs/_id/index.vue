@@ -21,15 +21,15 @@
         <button-group
           v-if = "!onPrint"
           class = "right">
-          <Button   
+          <coc-button   
             :type = "onPrint ? 'primary' : 'default'"         
             :size = "onPrint ? 'small' : 'large'"
             icon = "ios-print-outline"
-            @click = "print" />
-          <Button
+            @clicked = "print" />
+          <coc-button
             :size = "onPrint ? 'small' : 'large'"
             icon = "ios-refresh"
-            @click = "getJob" />
+            @clicked = "getJob" />
         </button-group>
       </div>
       <div 
@@ -42,9 +42,10 @@
         :is = "onPrint ? 'DIV' : 'Card'">
         <p 
           v-if = "!onPrint" 
-          slot = "title">
-          <icon :type = "onPrint ? 'ios-information-circle-outline' : 'ios-create'"/>
-          <span class="coc-subcolor-text">{{ onPrint ? 'Job Details' : 'Edit Job' }}</span>
+          slot = "title"
+          class = "coc-content-text">
+          <icon :type = "onPrint ? 'ios-information-circle-outline coc-content-text' : 'ios-create coc-content-text'"/>
+          <span class="coc-content-text">{{ onPrint ? 'Job Details' : 'Edit Job' }}</span>
         </p>
         <div class="row">
           <div class="col s6">
@@ -186,7 +187,9 @@
               type = "textarea"
               light-model />
           </div>
-          <div class="col s12">
+          <div
+            :class = "{ hidden: onPrint }"
+            class="col s12">
             <label class="coc-subcolor-text coc-text-small">Working Status</label>
             <coc-select
               v-model = "input.status"
@@ -200,11 +203,13 @@
           </div>
           <Divider 
             v-if = "!onPrint" 
-            orientation = "left">Time Entry</Divider>
+            orientation = "left"><span class="coc-content-text">Time Entry</span></Divider>
           <div 
             v-if = "!onPrint"
             class="col s12 animated slideInUp">
-            <table class = "full-width coc-border-1 coc-border-border coc-light-background-bg">
+            <table
+              :class = "[ { white: onPrint }, { 'black-text': onPrint } ]"
+              class = "full-width coc-border-1 coc-border-border coc-light-background-bg">
               <tr class = "coc-border-bg coc-content-text">
                 <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Entry Time</th>
                 <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Departure Time</th>
@@ -235,9 +240,9 @@
           </div>
           <Divider 
             v-if = "!onPrint"
-            orientation = "left">Requirements</Divider>
-          <div
             id = "requirements"
+            orientation = "left"><span class="coc-content-text">Requirements</span></Divider>
+          <div
             class="col s12">
             <div
               :class = "[
@@ -245,23 +250,23 @@
                 { 'coc-margin-y-3px coc-padding-y-3px coc-padding-x-0': onPrint } ]"
               class="col s12">
               <p 
-                v-if = "!input.requirements.length"
+                v-if = "!input.requirements.length && !onPrint"
                 class = "coc-text-body">No Requirements</p>
               <p 
-                v-if = "onPrint"
+                v-if = "onPrint && input.requirements.length"
                 class = "coc-text-body">Requirements</p>
               <div 
                 v-for = "(required, i) in input.requirements" 
                 :key = "i"
                 class="row coc-padding-y-3px coc-margin-y-3px coc-border-bottom-1 coc-border-0 coc-border-border animated slideInLeft">
-                <div class = "col s6">
+                <div :class = "[{'col s6': !onPrint}, { 'col s10': onPrint }]">
                   <i-input
                     v-model = "input.requirements[i].name"
                     size = "small"
                     placeholder = "Name"
                     @input = "input.requirements[i].created_at = $moment()"/>
                 </div>
-                <div class = "col s6">
+                <div :class = "[{'col s6': !onPrint}, { 'col s2': onPrint }]">
                   <Button
                     :class = "{ hidden: onPrint }"
                     icon = "ios-trash"
@@ -300,9 +305,13 @@
                 <p 
                   class = "coc-text-subtitle">Add Requirements</p>
                 <div class = "col s6">
-                  <i-input
+                  <coc-input
                     v-model = "requirements.name"
-                    placeholder = "Name"/>
+                    :autocomplete-remote = "model => ({ method: 'get', url: '/job', params: { requirements: model.meta.query, limit: 5 } } )"
+                    :autocomplete-map-response = "(res) => $_.uniqBy( $coc.CielChilds(res.jobs, r => r.requirements) , j => j.name).map(j => j.name)"
+                    placeholder = "Name"
+                    allow-autocomplete
+                    light-model/>
                 </div>
                 <div class = "col s6">
                   <Button
@@ -328,9 +337,63 @@
               </div>
             </div>
           </div>
+          <div 
+            v-if = "!onPrint" 
+            class="col s12 animated slideInUp">
+            <Divider 
+              :class = "{ hidden: 'onPrint' }"
+              orientation = "left"><span class="coc-content-text">Payments</span></Divider>
+            <div class="row">
+              <div class="col s12 coc-margin-y-10px coc-padding-y-10px coc-background-bg coc-border-border coc-border-1 coc-standard-border-radius">
+                <p 
+                  class = "coc-text-subtitle">
+                  Payments Settings
+                  <small class = "coc-text-small">(This section will not appear in printed view)</small>
+                </p>
+                <div class="col l4 s12">
+                  <br>
+                  <div class = "center">
+                    <b>Apply Vat</b>
+                    <i-switch
+                      v-model = "input.apply_vat" />
+                  </div>
+                </div>
+                <div class="col l4 s12">
+                  <coc-input
+                    v-model = "input.applied_vat"
+                    :rules = "{ HasValue: true, IsNumericString: true, NumberGreaterThan: -1 }"
+                    :scope = "['create-edit-job']"
+                    :disabled = "!input.apply_vat"
+                    placeholder = "Applied Vat"
+                    icon = " knocks-percent"
+                    labeled
+                    light-model />
+                </div>
+                <div
+                  v-if = "$store.state.core.app && $store.state.core.app.promotions"
+                  class="col l4 s12">
+                  <coc-select
+                    v-model = "input.promotion"
+                    :rules = "{}"
+                    :scope = "['create-edit-job']"
+                    placeholder = "Promotion"
+                    icon = " knocks-percent"
+                    labeled
+                    clearable
+                    light-model >
+                    <i-option
+                      v-for = "(promotion, p) in $store.state.core.app.promotions"
+                      :key = "p"
+                      :value = "promotion.name"
+                      :label = "promotion.name" />
+                  </coc-select>
+                </div>
+              </div>
+            </div>
+          </div>
           <Divider 
             v-if = "!onPrint"
-            orientation = "left">Operations / Parts</Divider>
+            orientation = "left"><span class="coc-content-text">Operations / Parts</span></Divider>
           <div class="col s12">
             <div
               :class = "[
@@ -403,7 +466,7 @@
                 class="col l4 s12">
                 <coc-input
                   v-model = "externalInput.fees"
-                  :rules = "{ IsNumericString: true, NumberGreaterThan: -1 }"
+                  :rules = "{ HasInput: true, IsNumericString: true, NumberGreaterThan: -1 }"
                   :scope = "['add-part']"
                   :hide-status = "onPrint"
                   placeholder = "Labor"
@@ -424,11 +487,15 @@
                       </small>
                     </label>
                     <br>
-                    <input-number
+                    <coc-number-input
                       v-model = "externalInput.count" 
                       :min = "1"
+                      :rules = "{ HasValue: true }"
+                      :scope = "['add-part']"
                       :class = "[{ 'coc-full-width': partAutocompleteResponse && externalInput.name.length }]"
-                      placeholder = "Count" />
+                      :reset-to = "1"
+                      placeholder = "Count"
+                      light-model />
                   </div>
                   <div 
                     v-if = "!partAutocompleteResponse && externalInput.name.length" 
@@ -438,7 +505,7 @@
                       v-model = "externalInput.boughtPrice"
                       :min = "1"
                       :class = "[{ 'coc-full-width': partAutocompleteResponse && externalInput.name.length }]"
-                      placeholder = "Count" />
+                      placeholder = "Bought Price" />
                   </div>
                 </div>
                 <div class = "col l4 s12">
@@ -460,7 +527,6 @@
                     placeholder = "Add"
                     icon = "ios-add-circle"
                     class = "right coc-padding-y-4px coc-margin-y-10px"
-                    local
                     reset
                     @coc-validation-passed = "handleAddPart" />
                   <Button
@@ -475,15 +541,19 @@
                 class="col s12 animated slideInUp">
                 <Divider 
                   v-if = "!onPrint" 
-                  orientation = "left">Operations / Installed Parts</Divider>
+                  orientation = "left"><span class="coc-content-text">Operations / Installed Parts</span></Divider>
                 <label 
                   v-else 
                   class="coc-subcolor-text coc-text-small block">Operations / Installed Parts</label>
-                <table class = "full-width coc-border-1 coc-border-border coc-light-background-bg">
-                  <tr class = "coc-border-bg coc-content-text">
+                <table
+                  :class = "[ { 'white black-text grey-border border-lighten-1': onPrint }, { 'coc-border-border coc-light-background-bg': !onPrint } ]"
+                  class = "full-width coc-border-1">
+                  <tr
+                    :class = "[ { 'blue-grey lighten-4 black-text': onPrint }, { 'coc-border-bg coc-content-text': !onPrint } ]"
+                    class = "">
                     <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Part</th>
                     <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Price</th>
-                    <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Labors</th>
+                    <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Labor</th>
                     <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Count</th>
                     <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Total</th>
                     <th
@@ -493,7 +563,7 @@
                   <tr 
                     v-for = "(operation, o) in input.operations" 
                     :key = "o"
-                    class = "coc-primary-hover-bg coc-secondary-hover-text coc-smooth-bg-color full-width center coc-border-bottom-1 animated slideInLeft">
+                    class = "coc-primary-hover-bg coc-primary-invert-hover-text coc-smooth-bg-color full-width center coc-border-bottom-1 animated slideInLeft">
                     <td>
                       <Button
                         v-if = "operation.makeMove"
@@ -503,13 +573,15 @@
                             part: operation.name
                           }
                         }"
+                        :class = "[{ 'black-text': onPrint }]"
+                        class = "coc-content-text"
                         type = "text">{{ operation.name }}</Button>
                       <span v-else> {{ operation.name }} </span>
                     </td>
-                    <td> {{ operation.price | CocTrimExtraZeros }} LE</td>
-                    <td> {{ operation.fees | CocTrimExtraZeros }} LE</td>
+                    <td> {{ operation.price | CocTrimExtraZeros }} {{ $store.state.core.app.currency }}</td>
+                    <td> {{ operation.fees | CocTrimExtraZeros }} {{ $store.state.core.app.currency }}</td>
                     <td> {{ operation.count | CocTrimExtraZeros }}</td>
-                    <td> {{ ((operation.price + operation.fees) * operation.count) | CocTrimExtraZeros }} LE</td>
+                    <td> {{ ((operation.price + operation.fees) * operation.count) | CocTrimExtraZeros }} {{ $store.state.core.app.currency }}</td>
                     <td v-if = "!onPrint">
                       <Button
                         icon = "ios-add-circle-outline coc-success-text coc-text-lg"
@@ -530,28 +602,128 @@
                     </td>
                   </tr>
                 </table>
-                <table class = "full-width coc-border-1 coc-border-border coc-light-background-bg">
-                  <tr class="center full-width coc-border-bg coc-content-text">
+                <table
+                  :class = "[ { 'white black-text grey-border border-lighten-1': onPrint }, { 'coc-border-border coc-light-background-bg coc-border-border': !onPrint } ]"
+                  class = "full-width coc-border-1">
+                  <tr
+                    :class = "[ { 'blue-grey lighten-4 black-text': onPrint }, { 'coc-border-bg coc-content-text': !onPrint } ]"
+                    class="center full-width">
                     <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Total Prices</th>
-                    <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Total Labors</th>
+                    <!-- <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Total Labors</th> -->
+                    <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Subtotal</th>
+                    <th 
+                      v-if = "input.apply_vat" 
+                      :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}, 'animated slideInLeft']">VAT</th>
                     <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">Total</th>
                   </tr>
                   <tr class="center full-width">
-                    <td :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">
-                      {{ $_.sumBy(input.operations, operation => ((operation.price) * operation.count)) | CocTrimExtraZeros }} LE
+                    <td
+                      style = "max-width: 80px">
+                      <div
+                        :class = "[
+                          'full-width',
+                          'col s12',
+                          'coc-border-1',
+                          'coc-house-keeper',
+                          { 'coc-light-background-bg coc-border-border': !onPrint },
+                          { 'white black-text grey-border border-lighten-1': onPrint },
+                      ]">
+                        <div class="center full-width coc-border-border coc-border-0 coc-border-bottom-1 col s12 coc-house-keeper">
+                          <div class="col s6 coc-house-keeper coc-border-tint-4-bg">
+                            <b 
+                              :class="[
+                                'left coc-padding-left-5px'
+                            ]">Parts / Operations</b>
+                          </div>
+                          <div class="col s6 coc-house-keeper">
+                            <span class = "right coc-padding-right-5px">
+                              {{ $_.sumBy(input.operations, operation => ((operation.price) * operation.count)) | CocTrimExtraZeros }} {{ $store.state.core.app.currency }}
+                            </span>
+                          </div>
+                        </div>
+                        <div class="center full-width col s12 coc-house-keeper">
+                          <div class="col s6 coc-house-keeper coc-border-tint-4-bg">
+                            <b 
+                              :class="[
+                                'left coc-padding-left-5px'
+                            ]">Labors</b>
+                          </div>
+                          <div class="col s6 coc-house-keeper">
+                            <span class = "right coc-padding-right-5px">
+                              {{ $_.sumBy(input.operations, operation => ((operation.fees) * operation.count)) | CocTrimExtraZeros }} {{ $store.state.core.app.currency }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </td>
-                    <td :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">
-                      {{ $_.sumBy(input.operations, operation => ((operation.fees) * operation.count)) | CocTrimExtraZeros }} LE
+                    <!-- <td :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">
+                      {{ $_.sumBy(input.operations, operation => ((operation.fees) * operation.count)) | CocTrimExtraZeros }} {{ $store.state.core.app.currency }}
+                    </td> -->
+                    <td
+                      :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]"
+                      class = "animated slideInLeft">
+                      <span v-if = "!input.promotion">
+                        {{ finalResources | CocToFixedTwo }} {{ $store.state.core.app.currency }}
+                      </span>
+                      <span v-if = "input.promotion">
+                        <span class="coc-error-text scratched-text">
+                          {{ 
+                            finalValues | CocToFixedTwo
+                          }}
+
+                          {{ $store.state.core.app.currency }}
+                        </span><br>
+                        <span class="coc-success-text">
+                          {{ finalResources | CocToFixedTwo }} {{ $store.state.core.app.currency }}
+                        </span>
+                      </span>
+                    </td>
+                    <td
+                      v-if = "input.apply_vat"
+                      :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]"
+                      class = "animated slideInLeft">
+                      {{ vat| CocToFixedTwo }} {{ $store.state.core.app.currency }}
                     </td>
                     <td
                       :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]"
-                      class = "coc-text-bold">
-                      {{
-                        $_.sumBy(input.operations, operation => ((operation.price + operation.fees) * operation.count))
-                      | CocTrimExtraZeros }} LE
+                      class = "">
+                      <span
+                        v-if = "!input.promotion"
+                        class = "coc-text-bold">
+                        {{ finalPrice| CocToFixedTwo }} {{ $store.state.core.app.currency }}
+                      </span>
+                      <span v-if = "input.promotion">
+                        <span class="coc-error-text scratched-text">
+                          {{ 
+                            finalValues +
+                              calculateVat( finalValues , applyedVat)
+                          }}
+
+                          {{ $store.state.core.app.currency }}
+                        </span><br>
+                        <span class="coc-success-text coc-text-bold">
+                          {{ finalPrice| CocToFixedTwo }} {{ $store.state.core.app.currency }}
+                        </span>
+                      </span>
                     </td>
                   </tr>
                 </table>
+                <!-- <table
+                  v-if = "input.promotion"
+                  class = "full-width coc-border-1 coc-border-border coc-light-background-bg">
+                  <tr class="center full-width coc-border-bg coc-content-text">
+                    <th :class="[{'coc-padding-y-10px': !onPrint}, {'coc-padding-y-4px': onPrint}]">
+                      Prmotion
+                    </th>
+                  </tr>
+                  <tr class = "center">
+                    <td>
+                      <b>{{ input.promotion | CocCapitalizeName }}</b> Promotion
+                      {{ renderPromotion(input.promotion, finalValues).discount | CocToFixedTwo | CocTrimExtraZeros }}
+                      {{ $store.state.core.app.currency }} Off
+                    </td>
+                  </tr>
+                </table> -->
               </div>
             </div>
           </div>
@@ -567,6 +739,7 @@
               class = "right coc-margin-top-3px"
               @coc-submit-accepted = "handleResult"/>
             <checkbox
+              v-if = "!onPrint"
               v-model = "printSwitch"
               class = "right">Print</checkbox>
           </div>
@@ -622,11 +795,13 @@ export default {
         price: '',
         fees: '',
         count: 1,
-        makeMove: false
+        makeMove: false,
+        boughtPrice: 1
       },
       input: {
         notes: '',
         complain: '',
+        promotion: '',
         reciptionist: '',
         requirements: [],
         car: {
@@ -644,6 +819,31 @@ export default {
     }
   },
   computed: {
+    finalResources() {
+      const actualPrice = this.finalValues
+      if (this.input.promotion)
+        return this.renderPromotion(this.input.promotion, actualPrice).after
+      else return actualPrice
+    },
+    finalValues() {
+      return this.$_.sumBy(
+        this.input.operations,
+        operation => (operation.price + operation.fees) * operation.count
+      )
+    },
+    applyedVat() {
+      if (!this.input.apply_vat || !this.input.applied_vat) return 0
+      return parseFloat(this.input.applied_vat, 10)
+    },
+    vat() {
+      return this.calculateVat(this.finalResources, this.applyedVat)
+    },
+    finalPrice() {
+      return this.calculateFinalPrice(this.finalResources, this.vat)
+    },
+    appInstance() {
+      return this.$store.state.core.app
+    },
     importFromStockEnabled() {
       const ename = this.externalInput.name
       if (
@@ -672,6 +872,36 @@ export default {
     }
   },
   methods: {
+    calculateVat(subtotal, vat) {
+      return (subtotal / 1) * (vat / 100)
+    },
+    calculateFinalPrice(subtotal, vat) {
+      return subtotal + vat
+    },
+    renderPromotion(promotionName, before) {
+      let promotion = { type: 'fixed', amount: 0 }
+      if (this.input.promotion_data) {
+        promotion = this.input.promotion_data
+      } else if (
+        this.$store.state.core.app &&
+        this.$store.state.core.app.promotions
+      ) {
+        const filtered = this.$store.state.core.app.promotions.filter(
+          p => p.name === promotionName
+        )
+        if (filtered.length) promotion = filtered[0]
+      }
+      let discount = 0
+      let after = 0
+      if (promotion.type === 'fixed') {
+        after = Math.max(before - promotion.amount, 0)
+        discount = promotion.amount
+      } else if (promotion.type === 'percentage') {
+        discount = (before / 1) * (promotion.amount / 100)
+        after = before - discount
+      }
+      return { before, after, discount }
+    },
     handleStatusChange(e) {
       this.printSwitch = e && e.toLowerCase() === 'finished'
     },
@@ -684,6 +914,13 @@ export default {
           this.input = this.$_.cloneDeep(res.data)
           this.input.notes = this.input.notes ? this.input.notes : ' '
           this.input.complain = this.input.complain ? this.input.complain : ' '
+          setTimeout(() => {
+            this.$root.$emit('COCFormController', {
+              scope: ['create-edit-job'],
+              type: 'select',
+              controller: 'validate'
+            })
+          }, 500)
           document.title = `Techno-Service | Job #${res.data.job_no}`
           if (this.$route.query.scroll) {
             setTimeout(() => {
@@ -745,16 +982,42 @@ export default {
     formatInput() {
       const temp = this.$_.cloneDeep(this.input)
       temp.operations = temp.operations.map(o => this.processExternalInput(o))
-      return this.$_.pick(temp, [
-        'car',
-        'client',
-        'requirements',
-        'reciptionist',
-        'complain',
-        'notes',
-        'status',
-        'operations'
-      ])
+      if (temp.applied_vat) temp.applied_vat = parseFloat(temp.applied_vat, 10)
+      let promotion_data = null
+      if (temp.promotion_data) {
+        promotion_data = temp.promotion_data
+      } else if (
+        this.input.promotion &&
+        this.$store.state.core.app &&
+        this.$store.state.core.app.promotions
+      ) {
+        const filtered = this.$store.state.core.app.promotions.filter(
+          p => p.name === this.input.promotion
+        )
+        if (filtered.length) promotion_data = filtered[0]
+        promotion_data = {
+          ...promotion_data,
+          ...this.renderPromotion(this.input.promotion, this.finalValues)
+        }
+      }
+      return {
+        ...this.$_.pick(temp, [
+          'car',
+          'client',
+          'requirements',
+          'reciptionist',
+          'complain',
+          'notes',
+          'status',
+          'operations',
+          'vat',
+          'apply_vat',
+          'applied_vat',
+          'promotion'
+        ]),
+        price: this.finalPrice,
+        promotion_data
+      }
     },
     handleAutocompleteSelect(e) {
       const response = this.$refs.clientPhone.autocompleteRetriever.response.jobs.filter(
@@ -781,10 +1044,13 @@ export default {
           this.externalInput = {
             priceOnStock: response[0].price,
             ...response[0],
-            count: 1
+            count: 0
           }
           this.externalInput.countOnStock = response[0].count
           this.externalInput.makeMove = true
+          setTimeout(() => {
+            this.externalInput.count = 1
+          }, 200)
         } else {
           this.partAutocompleteResponse = null
           this.externalInput = {
@@ -840,7 +1106,8 @@ export default {
           external: 'false',
           name: this.externalInput.name,
           count: this.externalInput.count,
-          price: this.externalInput.boughtPrice,
+          price: this.externalInput.price,
+          import_price: this.externalInput.boughtPrice,
           category: this.externalInput.name,
           points: 0,
           car_compatibility: [this.job.car],
@@ -874,4 +1141,7 @@ export default {
 </script>
 
 <style lang="css" scoped>
+.scratched-text{
+  text-decoration: line-through;
+}
 </style>

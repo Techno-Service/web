@@ -20,6 +20,7 @@ export default class Validator {
     this.Rules = [
       // Existance
       'HasValue',
+      'HasInput',
       // Direct Comparisons
       'SameAs',
       // Data Types
@@ -301,6 +302,30 @@ export default class Validator {
   // Has Value
 
   HasValue() {
+    if (!this.Val && typeof val !== 'number') {
+      return false
+    }
+    if (
+      typeof this.Val === 'object' &&
+      Array.isArray(this.Val) &&
+      !this.Val.length
+    ) {
+      return false
+    }
+    if (typeof this.Val === 'string' && !this.Val.length) {
+      return false
+    }
+    if (
+      typeof this.Val === 'string' &&
+      !this.Val.split(' ').filter(m => m.length).length
+    ) {
+      return false
+    }
+    return true
+  }
+
+  HasInput() {
+    if (typeof this.Val === 'number') return true
     if (!this.Val && typeof val !== 'number') {
       return false
     }

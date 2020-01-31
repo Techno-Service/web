@@ -6,20 +6,23 @@
           Move
           <span v-if = "move.move && move.move.length">({{ move.move.length }})</span>
         </span>
-        <Button
+        <coc-button
           icon = "ios-funnel-outline"
           class = "right"
-          @click = "config.drawer = true"/>
-        <Button
+          @clicked = "config.drawer = true"/>
+        <coc-button
           icon = "ios-refresh"
           class = "right coc-margin-x-5px"
-          @click = "formatQuery"/>
+          @clicked = "formatQuery"/>
       </div>
       <Drawer 
         v-model="config.drawer" 
-        title="Filters" 
         width = "80%"
         closable>
+        <p
+          slot = "header">
+          <span class="coc-content-text">Filters</span>
+        </p>
         <div 
           v-if = "config.drawer" 
           class="row coc-house-keeper">
@@ -209,27 +212,27 @@
                     shape = "circle"
                     class = "coc-full-width"
                     long>
-                    <Button
+                    <coc-button
                       :type = "input.desc === 'no' ? 'info' : 'default'"
                       icon = "md-arrow-round-up"
                       style = "width:50%"
-                      @click = "input.desc = 'no'"/>
-                    <Button
+                      @clicked = "input.desc = 'no'"/>
+                    <coc-button
                       :type = "input.desc === 'yes' ? 'info' : 'default'"
                       icon = "md-arrow-round-down"
                       style = "width:50%"
-                      @click = "input.desc = 'yes'"/>
+                      @clicked = "input.desc = 'yes'"/>
                   </button-group>
                 </div>
               </div>
               <div class = "col s12">
-                <Button 
+                <coc-button 
                   type = "primary" 
                   icon = "ios-funnel-outline coc-text-lg"
                   long 
-                  @click = "formatQuery()">
+                  @clicked = "formatQuery()">
                   <span class="coc-text-lg">Filter</span>
-                </Button>
+                </coc-button>
               </div>
             </div>
           </div>
@@ -238,17 +241,19 @@
           class = "coc-margin-y-0" 
           orientation = "right">Search Settings</Divider>
         <p class = "coc-text-md-2">Price Range Maximum</p>
-        <input-number 
+        <coc-number-input 
           v-model = "config.price.max" 
           placeholder = "Price Range Maximum" 
           size = "large"
-          style = "width: 100%" />
+          style = "width: 100%"
+          light-model />
         <p class = "coc-text-md-2">Price Range Step</p>
-        <input-number 
+        <coc-number-input 
           v-model = "config.price.step" 
           placeholder = "Price Range Step" 
           size = "large"
-          style = "width: 100%" />
+          style = "width: 100%"
+          light-model />
       </Drawer>
       <div v-if = "isMounted && move && move.move.length">
         <table
@@ -289,29 +294,32 @@
             <td class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px">{{ move.count }}</td>
             <td
               class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px center">
-              <Tooltip content = "Export">
-                <Button
+              <Tooltip :content = "move.item.hidden ? 'You can not export promotion': 'Export'">
+                <coc-button
+                  :disabled = "move.item.hidden"
                   icon = "md-arrow-down coc-error-text"
                   class = "coc-border-0"
-                  @click = "importMove(move)" />
+                  @clicked = "importMove(move)" />
               </Tooltip>
-              <Tooltip content = "Import">
-                <Button
+              <Tooltip :content = "move.item.hidden ? 'You can not import promotion': 'Import'">
+                <coc-button
+                  :disabled = "move.item.hidden"
                   icon = "md-arrow-up coc-success-text"
                   class = "coc-border-0"
-                  @click = "importMove(move, -1)" />
+                  @clicked = "importMove(move, -1)" />
               </Tooltip>
               <!--             <Tooltip content = "Trash">
-              <Button
+              <coc-button
                 icon = "ios-trash coc-error-text"
                 class = "coc-border-0"
                 @importMove = "(move, -1)" />
             </Tooltip> -->
               <div class="coc-full-width coc-margin-top-5px">
                 <Tooltip content = "Count">
-                  <input-number
+                  <coc-number-input
                     v-model = "moveCount"
-                    :min = "1"/>
+                    :min = "1"
+                    light-model/>
                 </Tooltip>
               </div>
             </td>
@@ -341,10 +349,10 @@
         <span class="tcsc-oil-icon"/>
         No Move Available
         <div class="row">
-          <Button
+          <coc-button
             size = "large"
             icon = " tcsc-car-battery-1-icon coc-text-md-2"
-            @click = "addMove">Add New</Button>
+            @clicked = "addMove">Add New</coc-button>
         </div>
       </div>
     </div>
@@ -356,14 +364,14 @@
       <br>
       <p class="center">
         <button-group>
-          <Button
+          <coc-button
             type = "default"
             size = "large"
             shape = "circle"
             style = "width: 120px"
-            @click = "askForLogin">
+            @clicked = "askForLogin">
             Login
-          </Button>
+          </coc-button>
         </button-group>
       </p>
     </Card>
@@ -376,6 +384,13 @@ export default {
   name: 'Index',
   components: {
     Master
+  },
+  head() {
+    return {
+      title: this.$store.state.core.app
+        ? `${this.$store.state.core.app.title} | Stock Moves`
+        : 'Stock Moves'
+    }
   },
   data() {
     return {

@@ -21,6 +21,9 @@ export default {
       HasValue: {
         message: 'This field is required'
       },
+      HasInput: {
+        message: 'This field is required'
+      },
       SameAs: {
         message: 'This field must be identical with |*args*|'
       },

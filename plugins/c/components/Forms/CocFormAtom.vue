@@ -38,7 +38,7 @@ export default {
       required: true
     },
     val: {
-      type: [Object, String, Number, Array],
+      type: [Object, String, Number, Array, Boolean],
       default: null
     },
     validate: {

@@ -1,11 +1,13 @@
 <template>
-  <card :title = "mode === 'post' ? 'Add To Stock' : 'Edit Stock'">
+  <card
+    v-if = "$utils.roles.hasRole('stocks',user)"
+    :title = "mode === 'post' ? 'Add To Stock' : 'Edit Stock'">
     <divider orientation = "left">Item</divider>
     <div class="row">
       <div class="col s12 l4 m6">
         <coc-input
           v-model = "input.name"
-          :scope = "[`add-stock-${_uid}`]"
+          :scope = "['add-stock']"
           :rules = "{ HasValue: true }"
           labeled 
           light-model
@@ -14,7 +16,7 @@
       <div class="col s12 l4 m6">
         <coc-input
           v-model = "input.category"
-          :scope = "[`add-stock-${_uid}`]"
+          :scope = "['add-stock']"
           :rules = "{ HasValue: true }"
           labeled
           light-model
@@ -22,8 +24,8 @@
       </div>
       <div class="col s12 l4 m6">
         <coc-input
-          ref = "price"
-          :scope = "[`add-stock-${_uid}`]"
+          ref = "import_price"
+          :scope = "['add-stock']"
           :rules = "{
             HasValue: true,
             IsNumericString: true,
@@ -37,7 +39,7 @@
       <div class="col s12 l4 m6">
         <coc-input
           ref = "price"
-          :scope = "[`add-stock-${_uid}`]"
+          :scope = "['add-stock']"
           :rules = "{
             HasValue: true,
             IsNumericString: true,
@@ -71,8 +73,9 @@
       <div class="col s12 l4 m6">
         <coc-input
           v-model = "input.vendor.name"
-          :scope = "input.external ? null : ['add-stock']"
-          :rules = "input.external ? null : { HasValue: true }"
+          :scope = "['add-stock']"
+          :hide-status = "input.external"
+          :rules = "input.external ? {} : { HasValue: true }"
           labeled 
           light-model
           placeholder = "Provider Name" />        	
@@ -80,8 +83,9 @@
       <div class="col s12 l4 m6">
         <coc-input
           v-model = "input.vendor.phone"
-          :scope = "input.external ? null : ['add-stock']"
-          :rules = "input.external ? null : { HasValue: true }"
+          :scope = "['add-stock']"
+          :hide-status = "input.external"
+          :rules = "input.external ? {} : { HasValue: true }"
           labeled  
           light-model
           placeholder = "Provider Phone" />        	
@@ -89,8 +93,9 @@
       <div class="col s12 l4 m6">
         <coc-input
           v-model = "input.vendor.address"
-          :scope = "input.external ? null : ['add-stock']"
-          :rules = "input.external ? null : { HasValue: true }"
+          :scope = "['add-stock']"
+          :hide-status = "input.external"
+          :rules = "input.external ? {} : { HasValue: true }"
           labeled 
           light-model
           placeholder = "Provider Address" />        	
@@ -102,8 +107,9 @@
         <coc-input
           v-coc-loading.ivu-icon.ivu-icon-ios-checkmark-circle.coc-success-text.text-md-2 = "input.external"
           ref = "points"
-          :scope = "input.external ? null : ['add-stock']"
-          :rules = "input.external ? null : {
+          :scope = "['add-stock']"
+          :hide-status = "input.external"
+          :rules = "input.external ? {} : {
             HasValue: true,
             IsNumericString: true
           }" 
@@ -118,8 +124,9 @@
         <coc-input
           v-coc-loading.ivu-icon.ivu-icon-ios-checkmark-circle.coc-success-text.text-md-2 = "input.external"
           ref = "count"
-          :scope = "input.external ? null : ['add-stock']"
-          :rules = "input.external ? null : {
+          :scope = "['add-stock']"
+          :hide-status = "input.external"
+          :rules = "input.external ? {} : {
             HasValue: true,
             IsNumericString: true
           }" 
@@ -144,7 +151,7 @@
             <coc-input
               v-if = "isMounted"
               v-model = "externalInput.car.brand"
-              :scope = "[`add-car-${_uid}`]"
+              :scope = "['add-car']"
               :rules = "{ HasValue: true }"
               :data = "brands"
               :icon = "externalInput.car.brand && externalInput.car.brand.length ? null : 'ios-color-filter'"
@@ -164,7 +171,7 @@
           <div class="col l3 s12">
             <coc-input
               v-model = "externalInput.car.model"
-              :scope = "[`add-car-${_uid}`]"
+              :scope = "['add-car']"
               :rules = "{ HasValue: true }"
               labeled
               placeholder = "Car Model"
@@ -174,7 +181,7 @@
           <div class="col l3 s12">
             <coc-select
               v-model = "externalInput.car.release"
-              :scope = "[`add-car-${_uid}`]"
+              :scope = "['add-car']"
               :rules = "{ HasValue: true }"
               :data = "generateYears()"
               labeled
@@ -186,7 +193,7 @@
           </div>
           <div class="col s12 l2">
             <coc-button
-              :scope = "[`add-car-${_uid}`]"
+              :scope = "['add-car']"
               type = "default"
               placeholder = "Add"
               icon = "ios-add-circle"
@@ -237,7 +244,7 @@
     </div>
     <div class="row">
       <coc-button
-        :scope = "[`add-stock-${_uid}`]"
+        :scope = "['add-stock']"
         :request = "{ url: init && init._id && mode === 'put' ? `/stock/${init._id}` : '/stock', method: mode, xdata: formatInput() }"
         placeholder = "Submit"
         class = "right"
@@ -278,7 +285,7 @@ export default {
   },
   data() {
     return {
-      filterBased: ['price', 'count', 'points'],
+      filterBased: ['price', 'count', 'points', 'import_price'],
       isMounted: false,
       brands,
       externalInput: {
@@ -290,6 +297,11 @@ export default {
       },
       cars: [],
       input
+    }
+  },
+  computed: {
+    user() {
+      return this.$store.state.core.auth
     }
   },
   watch: {
@@ -309,6 +321,7 @@ export default {
       immediate: true,
       handler(val) {
         if (this.mode === 'put' && val) {
+          console.log(val)
           // Clean First
           this.input = input
           setTimeout(() => {
@@ -324,7 +337,9 @@ export default {
             let i
             for (i = 0; i < this.filterBased.length; i += 1)
               if (this.$refs[this.filterBased[i]])
-                this.$refs[this.filterBased[i]].update(val[this.filterBased[i]])
+                this.$refs[this.filterBased[i]].update(
+                  val[this.filterBased[i]] || '0'
+                )
             this.cars = val.car_compatibility
             this.input = temp
           }, 1000)

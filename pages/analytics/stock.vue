@@ -6,20 +6,23 @@
     coc-loader-text = "Rendering...">
     <div v-if = "user">
       <div class="row">
-        <Button
+        <coc-button
           icon = "ios-funnel-outline"
           class = "right"
-          @click = "config.drawer = true"/>
-        <Button
+          @clicked = "config.drawer = true"/>
+        <coc-button
           icon = "ios-refresh"
           class = "right coc-margin-x-5px"
-          @click = "formatQuery"/>
+          @clicked = "formatQuery"/>
       </div>
       <Drawer 
         v-model="config.drawer" 
-        title="Filters" 
         width = "80%"
         closable>
+        <p
+          slot = "header">
+          <span class="coc-content-text">Filters</span>
+        </p>
         <div 
           v-if = "config.drawer" 
           class="row coc-house-keeper">
@@ -214,16 +217,16 @@
                     shape = "circle"
                     class = "coc-full-width"
                     long>
-                    <Button
+                    <coc-button
                       :type = "input.desc === 'no' ? 'info' : 'default'"
                       icon = "md-arrow-round-up"
                       style = "width:50%"
-                      @click = "input.desc = 'no'"/>
-                    <Button
+                      @clicked = "input.desc = 'no'"/>
+                    <coc-button
                       :type = "input.desc === 'yes' ? 'info' : 'default'"
                       icon = "md-arrow-round-down"
                       style = "width:50%"
-                      @click = "input.desc = 'yes'"/>
+                      @clicked = "input.desc = 'yes'"/>
                   </button-group>
                 </div>
               </div>
@@ -244,17 +247,19 @@
           class = "coc-margin-y-0" 
           orientation = "right">Search Settings</Divider>
         <p class = "coc-text-md-2">Price Range Maximum</p>
-        <input-number 
+        <coc-number-input
           v-model = "config.price.max" 
           placeholder = "Price Range Maximum" 
           size = "large"
-          style = "width: 100%" />
+          style = "width: 100%"
+          light-model />
         <p class = "coc-text-md-2">Price Range Step</p>
-        <input-number 
+        <coc-number-input
           v-model = "config.price.step" 
           placeholder = "Price Range Step" 
           size = "large"
-          style = "width: 100%" />
+          style = "width: 100%"
+          light-model />
       </Drawer>
       <div 
         v-if = "isMounted && stock && stock.stock.length" 
@@ -350,10 +355,11 @@
         </div>
         <div class="col right">
           <p class = "right coc-text-sm">Page Size</p><br>
-          <input-number 
+          <coc-number-input
             v-model = "pagination.limit" 
             size = "small"
-            class = ""/>
+            class = ""
+            light-model/>
         </div>
         <div
           id = "general-stock"
@@ -477,10 +483,10 @@
         <span class="tcsc-oil-icon"/>
         No Stock Available
         <div class="row">
-          <Button
+          <coc-button
             size = "large"
             icon = " tcsc-car-battery-1-icon coc-text-md-2"
-            @click = "addStock">Add New</Button>
+            @clicked = "addStock">Add New</coc-button>
         </div>
       </div>  
       <div
@@ -495,12 +501,12 @@
         Whoops!<br>
         <small class = "coc-text-xs">Something Went Wrong!<br>Try to refresh</small>
         <div class="row">
-          <Button
+          <coc-button
             size = "large"
             type = "error"
             icon = "ios-refresh"
             ghost
-            @click = "getStock">Refresh</Button>
+            @clicked = "getStock">Refresh</coc-button>
         </div>
       </div>
     </div>
@@ -512,14 +518,14 @@
       <br>
       <p class="center">
         <button-group>
-          <Button
+          <coc-button
             type = "default"
             size = "large"
             shape = "circle"
             style = "width: 120px"
-            @click = "askForLogin">
+            @clicked = "askForLogin">
             Login
-          </Button>
+          </coc-button>
         </button-group>
       </p>
     </Card>
@@ -683,6 +689,13 @@ export default {
   name: 'Index',
   components: {
     Master
+  },
+  head() {
+    return {
+      title: this.$store.state.core.app
+        ? `${this.$store.state.core.app.title} | Stock Analytics`
+        : 'Stock Analytics'
+    }
   },
   data() {
     return {

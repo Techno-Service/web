@@ -33,14 +33,14 @@
           <div class="col s12 coc-border-1 coc-standard-border-radius coc-padding-y-10px">
             <icon type = "md-arrow-round-up" />
             Outgoing<br>
-            {{ stockImports }} LE
+            {{ stockImports }} {{ $store.state.core.app.currency }}
           </div>
         </div>
         <div class="col l3 s12 coc-success-shade-3-text center coc-text-lg-1 coc-text-bold">
           <div class="col s12 coc-border-1 coc-standard-border-radius coc-padding-y-10px">
             <icon type = "md-arrow-round-down" />
             Incoming<br>
-            {{ stockExports + labors }} LE
+            {{ stockExports + labors }} {{ $store.state.core.app.currency }}
           </div>
         </div>
         <div
@@ -52,7 +52,7 @@
           <div class="col s12 coc-border-1 coc-standard-border-radius coc-padding-y-10px">
             <icon type = " knocks-moneybag" />
             Profit<br>
-            {{ totalProfit }} LE
+            {{ totalProfit }} {{ $store.state.core.app.currency }}
           </div>
         </div>
         <div
@@ -79,7 +79,7 @@
                 Spare Parts Overhead
                 <br><small>Total cost you spent for resailable spare parts.</small>
               </div>
-              <div class = "right col"> {{ stockImports - externals }} LE</div>
+              <div class = "right col"> {{ stockImports - externals }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
           <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
@@ -89,9 +89,9 @@
               </div>
               <div class="col">
                 Utilities & External Overhead
-                <br><small>Taxes, salaries and other operations costs.</small>
+                <br><small>Promotions, Taxes, salaries and other operational costs.</small>
               </div>
-              <div class = "right col"> {{ externals }} LE</div>
+              <div class = "right col"> {{ externals }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
           <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
@@ -106,7 +106,7 @@
                   All the spent money during this period <small style="font-weight: 200 !important">(Spare Parts, Taxes, Salaries, ...etc)</small>
                 </small>
               </div>
-              <div class = "right col"> {{ stockImports }} LE</div>
+              <div class = "right col"> {{ stockImports }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
           <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
@@ -119,7 +119,7 @@
                 <br>
                 <small>Total revenue for stock.</small>
               </div>
-              <div class = "right col"> {{ stockExports }} LE</div>
+              <div class = "right col"> {{ stockExports }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
           <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
@@ -131,7 +131,7 @@
                 Labors
                 <br><small>All the labors for each operation.</small>
               </div>
-              <div class = "right col"> {{ labors }} LE</div>
+              <div class = "right col"> {{ labors }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
           <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
@@ -143,7 +143,7 @@
                 Out Sourced Parts
                 <br><small>Spare Parts that were brought from outside your inventory.</small>
               </div>
-              <div class = "right col"> {{ outSourcedParts }} LE</div>
+              <div class = "right col"> {{ outSourcedParts }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
           <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
@@ -155,7 +155,7 @@
                 Jobs Revenue
                 <br><small>Total customers payments for jobs.</small>
               </div>
-              <div class = "right col"> {{ jobsWithOutSourcedParts }} LE</div>
+              <div class = "right col"> {{ jobsWithOutSourcedParts }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
           <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
@@ -167,7 +167,7 @@
                 Locale Jobs Profits
                 <br><small>Total customer payments for your locale parts and labors.</small>
               </div>
-              <div class = "right col"> {{ jobsWithOutSourcedParts - outSourcedParts }} LE</div>
+              <div class = "right col"> {{ jobsWithOutSourcedParts - outSourcedParts }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
           <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
@@ -179,7 +179,7 @@
                 Total Profits
                 <br><small>Stock revenue compined with labors.</small>
               </div>
-              <div class = "right col"> {{ totalProfit }} LE</div>
+              <div class = "right col"> {{ totalProfit }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
         </div>
@@ -198,7 +198,13 @@ export default {
   components: {
     Master
   },
-
+  head() {
+    return {
+      title: this.$store.state.core.app
+        ? `${this.$store.state.core.app.title} | Financial Analytics`
+        : 'Financial Analytics'
+    }
+  },
   data() {
     return {
       isLoading: false,
@@ -318,7 +324,7 @@ export default {
       this.stockExports = this.$_.sumBy(this.stock, s => s.item.price)
       this.externals = this.$_.sumBy(
         this.stock.filter(s => s.item.external),
-        s => s.item.price
+        s => s.price
       )
       this.labors = this.$_.sumBy(
         this.$coc.CielChilds(this.jobs, j => j.operations),

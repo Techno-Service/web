@@ -2,55 +2,55 @@ import Queue from './queue.js'
 export default class CircularQueue extends Queue {
   constructor(queue) {
     super(queue)
-    this.Cursor = 0
-    this.Shifts = 0
+    this.cursor = 0
+    this.shifts = 0
   }
 
-  get CursorElement() {
-    return this.val[this.Cursor]
+  get cursorElement() {
+    return this.val[this.cursor]
   }
 
-  get NextIndex() {
-    return this.GetCursorAfter(1)
+  get nextIndex() {
+    return this.getCursorAfter(1)
   }
 
-  get PreviousIndex() {
-    return this.GetCursorAfter(-1)
+  get previousIndex() {
+    return this.getCursorAfter(-1)
   }
 
-  get Rounds() {
-    return this.GetRoundsAfter(this.Shifts, 0)
+  get rounds() {
+    return this.getRoundsAfter(this.shifts, 0)
   }
 
-  Next() {
-    this.Shifts += 1
-    this.Cursor = this.NextIndex
+  next() {
+    this.shifts += 1
+    this.cursor = this.nextIndex
   }
 
-  Back() {
-    this.Shifts -= 1
-    this.Cursor = this.PreviousIndex
+  back() {
+    this.shifts -= 1
+    this.cursor = this.previousIndex
   }
 
-  Move(shifts = 2) {
+  move(shifts = 2) {
     if (!shifts || typeof shifts !== 'number') {
       return
     }
-    this.Shifts += shifts
-    this.Cursor = this.GetCursorAfter(parseInt(shifts, 10))
+    this.shifts += shifts
+    this.cursor = this.getCursorAfter(parseInt(shifts, 10))
   }
 
-  GetCursorAfter(moves = 12, cursor = this.Cursor) {
+  getCursorAfter(moves = 12, cursor = this.cursor) {
     const forwardCursor = parseInt((moves + cursor) % this.Length, 10)
     return moves >= 0 || forwardCursor >= 0
       ? forwardCursor
       : forwardCursor + this.Length
   }
 
-  GetRoundsAfter(turns = 12, cursor = this.Cursor) {
+  getRoundsAfter(turns = 12, cursor = this.cursor) {
     return Math.abs(parseInt((turns + cursor) / this.Length, 10))
   }
-  SetCursor(index = 0, reset = false) {
+  setCursor(index = 0, reset = false) {
     if (
       !index ||
       !typeof index === 'number' ||
@@ -60,12 +60,12 @@ export default class CircularQueue extends Queue {
       return
     }
     if (reset) {
-      this.ResetCircularQueue()
+      this.resetCircularQueue()
     }
-    this.Move(index - this.Cursor)
+    this.move(index - this.cursor)
   }
-  ResetCircularQueue() {
-    this.Cursor = 0
-    this.Shifts = 0
+  resetCircularQueue() {
+    this.cursor = 0
+    this.shifts = 0
   }
 }

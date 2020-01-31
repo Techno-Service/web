@@ -1,16 +1,18 @@
 <template>
-  <div class="layout">
+  <div :class="['layout', { print: onPrint }]">
     <drawer
       v-model = "addStockModal"
       width = "90%"
+      class = "coc-background-bg coc-padding-0"
       footer-hide>
       <add-stock
         v-bind = "stockData"
-        class = "coc-margin-top-25px"
+        class = "coc-margin-top-25px coc-background-bg"
         @success = "handleAddSuccess" />
     </drawer>
     <Modal
       v-model = "authModal"
+      class = "coc-background-bg"
       footer-hide>
       <div class = "coc-margin-top-30px coc-margin-bottom-0">
         <h3 class="text-title coc-primary-text center">
@@ -47,44 +49,56 @@
           v-model="isCollapsed"
           :collapsed-width="78" 
           :class = "[{hidden: onPrint}]"
-          class = "coc-secondary-bg coc-border-0 coc-border-right-1 coc-border-border"
+          class = "coc-background-bg coc-border-0 coc-border-right-1 coc-border-border"
           hide-trigger 
           collapsible>
           <Menu 
             :class="menuitemClasses"
             active-name="jobs" 
             theme="light" 
-            width="auto" 
+            width="auto"
+            class = "coc-background-bg coc-content-text" 
             @on-select = "handleSidebarSelect">
-            <menu-item name="jobs">
+            <menu-item
+              v-if = "$utils.roles.hasRole('jobs',user)"
+              name="jobs">
               <i class="tcsc-transportation-icon" />
               <span>Running</span>
             </menu-item>
-            <menu-item name="stock">
+            <menu-item
+              v-if = "$utils.roles.hasRole('stocks',user)"
+              name="stock">
               <i class="tcsc-inventory-1-icon" />
               <span>Add Stock</span>
             </menu-item>
-            <menu-item name="moves">
+            <menu-item
+              v-if = "$utils.roles.hasRole('stocks',user)"
+              name="moves">
               <i class="tcsc-stock-icon" />
               <span>Moves</span>
             </menu-item>
           </Menu>
           <div 
-            v-if = "!isCollapsed && sidebarActive === 'jobs' && user" 
+            v-if = "!isCollapsed && sidebarActive === 'jobs' && user && $utils.roles.hasRole('jobs',user)" 
             class = "row coc-margin-top-30px">
             <Card 
               :padding="0" 
-              title="Running Jobs" 
-              icon="ios-options" 
+              class = "coc-background-bg coc-content-text"
               shadow 
               style="width: 100%;">
-              <div class="row coc-divider-bg coc-margin-y-0 coc-padding-y-3px">
+              <p
+                slot = "title"
+                class = "coc-content-text">
+                <icon type = " coc-content-text tcsc-transportation-icon" />
+                <span class = "coc-content-text">Running Jobs</span>
+              </p>
+              <div class="row coc-primary-background-bg coc-margin-y-0 coc-padding-y-3px">
                 <div class="col s12 coc-padding-x-5px">
-                  <Input
+                  <coc-input
                     v-model = "input.job.search"
                     placeholder = "Search.."
                     icon = "ios-search"
-                    class = "coc-divider-bg" ></Input> <!-- eslint-disable-line -->  
+                    light-model />
                 </div>
               </div>
               <CellGroup
@@ -137,14 +151,16 @@
                     <coc-avatar
                       v-coc-mouse-over="'pulse'"
                       v-coc-mouse-leave="'jello'"
-                      :source="$coc.App.logo.invert"
+                      :source="$coc.App.logo.primary"
                       scale = "40px"
                       class="logo col coc-padding-0 animated"/>
                   </nuxt-link>
                 </div>
               </div>
               <div class="layout-nav">
-                <menu-item name="1">
+                <menu-item
+                  v-if = "$utils.roles.hasRole('jobs',user)"
+                  name="1">
                   <nuxt-link
                     to = "/jobs"
                     class = "coc-secondary-text">
@@ -152,7 +168,9 @@
                     Jobs
                   </nuxt-link>
                 </menu-item>
-                <menu-item name="2">
+                <menu-item
+                  v-if = "$utils.roles.hasRole('stocks',user)"
+                  name="2">
                   <nuxt-link
                     to = "/stock"
                     class = "coc-secondary-text">
@@ -160,7 +178,9 @@
                     Stock
                   </nuxt-link>
                 </menu-item>
-                <menu-item name="3">
+                <menu-item
+                  v-if = "$utils.roles.dashboarder(user)"
+                  name="3">
                   <nuxt-link
                     to = "/analytics"
                     class = "coc-secondary-text">
@@ -190,15 +210,44 @@
                         class = "coc-primary-tint-9-bg coc-primary-tint-7-text coc-margin-y-0" />
                     </Button>
                     <DropdownMenu slot="list">
-                      <DropdownItem style = "min-width: 150px">
+                      <DropdownItem
+                        class = "coc-border-0 coc-border-bottom-1 coc-border-border"
+                        style = "min-width: 150px">
                         <nuxt-link
-                          class = "coc-primary-text coc-primary-hover-shade-4-text coc-text-normal-1 text coc-text-hover-normal-2 coc-smooth-font-size center full-width block"
-                          to = "/profile">Profile</nuxt-link>
+                          class = "coc-primary-shade-2-text coc-primary-hover-shade-4-text coc-text-normal-1 text coc-text-hover-normal-2 coc-smooth-font-size full-width block"
+                          to = "/profile">
+                          <icon type = " knocks-user2" />
+                          Profile
+                        </nuxt-link>
+                      </DropdownItem>
+                      <DropdownItem
+                        v-if = "$utils.roles.dashboarder(user)"
+                        class = "coc-border-0 coc-border-bottom-1 coc-border-border">
+                        <nuxt-link
+                          class = "coc-primary-shade-2-text coc-primary-hover-shade-4-text coc-text-normal-1 text coc-text-hover-normal-2 coc-smooth-font-size  full-width block"
+                          to = "/users">
+                          <icon type = " knocks-users" />
+                          Manage Users
+                        </nuxt-link>
+                      </DropdownItem>
+                      <DropdownItem
+                        v-if = "$utils.roles.dashboarder(user)"
+                        class = "coc-border-0 coc-border-bottom-1 coc-border-border">
+                        <nuxt-link
+                          class = "coc-primary-shade-2-text coc-primary-hover-shade-4-text coc-text-normal-1 text coc-text-hover-normal-2 coc-smooth-font-size  full-width block"
+                          to = "/app">
+                          <icon 
+                            type = " knocks-cogs" />
+                          App Configurations
+                        </nuxt-link>
                       </DropdownItem>
                       <DropdownItem style = "min-width: 150px">
                         <a
-                          class = "coc-primary-text coc-primary-hover-shade-4-text coc-text-normal-1 text coc-text-hover-normal-2 coc-smooth-font-size center full-width block"
-                          @click = "logout">Logout</a>
+                          class = "coc-primary-shade-2-text coc-primary-hover-shade-4-text coc-text-normal-1 text coc-text-hover-normal-2 coc-smooth-font-size  full-width block"
+                          @click = "logout">
+                          <icon type = " knocks-log-out" />
+                          Logout
+                        </a>
                       </DropdownItem>
                     </DropdownMenu>
                   </Dropdown>
@@ -206,41 +255,60 @@
               </div>
             </Menu>
           </Header>
-          <Content :style="{padding: '0 50px'}">
+          <Content
+            :style="{padding: '0 50px'}"
+            :class = "[ { white: onPrint }, { 'black-text': onPrint } ]"
+            class = "coc-primary-background-bg coc-content-text">
             <Breadcrumb
               v-if = "!onPrint"
               :style="{margin: '20px 0'}">
               <BreadcrumbItem 
                 v-for = "(crumb, c) in analysisBreadcrump()" 
                 :key = "c"
-                :to = "`/${ analysisBreadcrump(false).splice( 0, c ).join('/') }`">
-                {{ crumb | CocCapitalizeName }}
+                :to = "`/${ analysisBreadcrump(false).splice( 0, c ).join('/') }`"
+                class = "coc-content-text">
+                <span class="coc-content-text">{{ crumb | CocCapitalizeName }}</span>
               </BreadcrumbItem>
             </Breadcrumb>
             <Card 
               v-else 
-              class = "row coc-margin-top-5px animated fadeIn">
-              <p class="coc-text-lg-1 coc-text-bold coc-margin-y-0 coc-padding-y-0">
+              class = "row coc-margin-top-5px animated fadeIn coc-border-0 coc-border-bottom-2 white black-text coc-none-border-radius">
+              <p
+                v-if = "$store.state.core.app"
+                class="coc-text-lg-1 coc-text-bold coc-margin-y-0 coc-padding-y-0">
                 <coc-avatar
                   :source = "$coc.App.logo.primary"
                   scale = "50px"
                   class = "col coc-margin-right-10px coc-margin-y-0 coc-padding-y-0"/>
-                Techno-Service
+                {{ $store.state.core.app.title }}
+                <small 
+                  v-if = "$store.state.core.app.subtitle" 
+                  class = "coc-text-thin">{{ $store.state.core.app.subtitle }}</small>
                 <small class="right coc-text-body"> {{ $moment().format('D/M/YYYY h:m A') }} </small>
               </p>
-              <p class="left">
-                <span class="coc-text-md-2"><Icon type= "ios-call"/> 01008645544</span><br>
-                <span class="coc-text-md-1"><Icon type= "ios-navigate"/> 9 Mohamed Refaat, El nozha el gededa</span>
+              <p
+                v-if = "$store.state.core.app"
+                class="left">
+                <span
+                  v-for = "(phone, p) in $store.state.core.app.phones"
+                  :key = "p">
+                  <span class="coc-text-md-2"><Icon type= "ios-call"/> {{ phone }}</span><br>
+                </span>
+                <span class="coc-text-md-1"><Icon type= "ios-navigate"/>{{ $store.state.core.app.address }}</span>
               </p>
             </Card>
-            <Card>
+            <Card :class = "[ { white: onPrint }, { 'black-text coc-border-0': onPrint } ]">
               <div style="min-height: 70vh;">
                 <slot />
               </div>
             </Card>
           </Content>
-          <Footer class="layout-footer-center">
-            <span class = "">{{ $coc.App.brandName }} by {{ $coc.App.author }} {{ $moment().format('YYYY') }} &copy; </span>
+          <Footer
+            :class = "[ { white: onPrint }, { 'black-text': onPrint } ]"
+            class="layout-footer-center coc-primary-background-bg">
+            <span 
+              v-if = "$store.state.core.app" 
+              class = "">{{ $store.state.core.app.title }} by {{ $coc.App.author }} {{ $moment().format('YYYY') }} &copy; </span>
             <span v-if = "onPrint">
               <br>
               <icon 
@@ -361,7 +429,7 @@ export default {
       addStock(e) {
         if (e) {
           vm.stockData = e
-        } else stockData = null
+        } else vm.stockData = null
         vm.addStockModal = true
       }
     })
@@ -442,6 +510,9 @@ export default {
   border-radius: 4px;
   overflow: hidden;
 }
+.layout.print {
+  background-color: white !important;
+}
 .layout-header-bar {
   background: #fff;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
@@ -511,5 +582,9 @@ export default {
   white-space: nowrap;
   overflow: hidden !important;
   text-overflow: ellipsis;
+}
+.ivu-layout-header,
+.ivu-menu-dark {
+  background-color: #171d22;
 }
 </style>
