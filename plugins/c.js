@@ -71,7 +71,8 @@ export default ({ app: { router, $axios }, env }, inject) => {
       'coc-content-text'
     ],
     placeholder: '',
-    placeholderClass: 'coc-content-text text-lg block'
+    placeholderClass: 'coc-content-text text-lg block',
+    backgroundColor: 'rgba(0,0,0,0.8)'
   }
   COC.Config.Defaults({ Docker, Loader })
   inject('coc', COC)

@@ -197,6 +197,9 @@
    .coc-#{$color}-section-outline {
     @extend %coc-#{$color}-section-outline;
    }
+   .coc-#{$color}-section-hover-outline:hover {
+    @extend %coc-#{$color}-section-outline;
+   }
    .coc-#{$color}-section-outline:focus {
     @extend %coc-#{$color}-box-tint-7-shadow;
    }
@@ -211,6 +214,9 @@
    .coc-#{$color}-section-dark {
      @extend %coc-#{$color}-section-dark;
    }
+   .coc-#{$color}-section-hover-dark:hover {
+     @extend %coc-#{$color}-section-dark;
+   }
 
    %coc-#{$color}-section-light {
       @extend %coc-#{$color}-bg;
@@ -221,6 +227,9 @@
     @extend %coc-#{$color}-box-tint-7-shadow;
    }
    .coc-#{$color}-section-light {
+     @extend %coc-#{$color}-section-light;
+   }
+   .coc-#{$color}-section-hover-light:hover {
      @extend %coc-#{$color}-section-light;
    }
 

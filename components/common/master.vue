@@ -1,5 +1,6 @@
 <template>
   <div :class="['layout', { print: onPrint }]">
+    <coc-watch-my-window v-model = "win" />
     <drawer
       v-model = "addStockModal"
       width = "90%"
@@ -48,10 +49,18 @@
           ref="side1" 
           v-model="isCollapsed"
           :collapsed-width="78" 
-          :class = "[{hidden: onPrint}]"
+          :class = "[{hidden: onPrint}, { responsivesider: win && win.isSmall && !isCollapsed }]"
           class = "coc-background-bg coc-border-0 coc-border-right-1 coc-border-border"
           hide-trigger 
           collapsible>
+          <div
+            v-if = "win && win.isSmall && !isCollapsed"
+            class = "coc-primary-text coc-padding-y-10px coc-padding-x-5px"
+            @click = "isCollapsed = !isCollapsed">
+            <i
+              class="ivu-icon ivu-icon-ios-menu" />
+            <span>Hide Menu</span>
+          </div>
           <Menu 
             :class="menuitemClasses"
             active-name="jobs" 
@@ -160,6 +169,7 @@
               <div class="layout-nav">
                 <menu-item
                   v-if = "$utils.roles.hasRole('jobs',user)"
+                  class = "hide-on-small-only"
                   name="1">
                   <nuxt-link
                     to = "/jobs"
@@ -170,6 +180,7 @@
                 </menu-item>
                 <menu-item
                   v-if = "$utils.roles.hasRole('stocks',user)"
+                  class = "hide-on-small-only"
                   name="2">
                   <nuxt-link
                     to = "/stock"
@@ -180,6 +191,7 @@
                 </menu-item>
                 <menu-item
                   v-if = "$utils.roles.dashboarder(user)"
+                  class = "hide-on-small-only"
                   name="3">
                   <nuxt-link
                     to = "/analytics"
@@ -221,6 +233,36 @@
                         </nuxt-link>
                       </DropdownItem>
                       <DropdownItem
+                        v-if = "$utils.roles.hasRole('jobs',user)"
+                        class = "hide-on-med-and-up coc-border-0 coc-border-bottom-1 coc-border-border">
+                        <nuxt-link
+                          to = "/jobs"
+                          class = "coc-primary-shade-2-text coc-primary-hover-shade-4-text coc-text-normal-1 text coc-text-hover-normal-2 coc-smooth-font-size full-width block">
+                          <Icon type="ios-build" />
+                          Jobs
+                        </nuxt-link>
+                      </DropdownItem>
+                      <DropdownItem
+                        v-if = "$utils.roles.hasRole('stocks',user)"
+                        class = "hide-on-med-and-up coc-border-0 coc-border-bottom-1 coc-border-border">
+                        <nuxt-link
+                          to = "/stock"
+                          class = "coc-primary-shade-2-text coc-primary-hover-shade-4-text coc-text-normal-1 text coc-text-hover-normal-2 coc-smooth-font-size full-width block">
+                          <Icon type="ios-archive" />
+                          Stock
+                        </nuxt-link>
+                      </DropdownItem>
+                      <DropdownItem
+                        v-if = "$utils.roles.dashboarder(user)"
+                        class = "coc-border-0 coc-border-bottom-1 coc-border-border hide-on-med-and-up">
+                        <nuxt-link
+                          to = "/analytics"
+                          class = "coc-primary-shade-2-text coc-primary-hover-shade-4-text coc-text-normal-1 text coc-text-hover-normal-2 coc-smooth-font-size full-width block">
+                          <Icon type="ios-analytics" />
+                          Analytics
+                        </nuxt-link>
+                      </DropdownItem>
+                      <DropdownItem
                         v-if = "$utils.roles.dashboarder(user)"
                         class = "coc-border-0 coc-border-bottom-1 coc-border-border">
                         <nuxt-link
@@ -256,8 +298,8 @@
             </Menu>
           </Header>
           <Content
-            :style="{padding: '0 50px'}"
-            :class = "[ { white: onPrint }, { 'black-text': onPrint } ]"
+            :style="{padding: '0 2vw'}"
+            :class = "[ { 'white content-print': onPrint }, { 'black-text': onPrint } ]"
             class = "coc-primary-background-bg coc-content-text">
             <Breadcrumb
               v-if = "!onPrint"
@@ -304,17 +346,26 @@
             </Card>
           </Content>
           <Footer
+            v-if = "!onPrint"
             :class = "[ { white: onPrint }, { 'black-text': onPrint } ]"
             class="layout-footer-center coc-primary-background-bg">
             <span 
-              v-if = "$store.state.core.app" 
-              class = "">{{ $store.state.core.app.title }} by {{ $coc.App.author }} {{ $moment().format('YYYY') }} &copy; </span>
-            <span v-if = "onPrint">
-              <br>
+              class = "">
+              <b style="font-family: jura; font-weight: bold; font-size: 120%">TUATARA</b> <span style="font-family: jura;" >GMS </span> by
               <icon 
                 type = "logo-twitter" 
-                class = "blue-text" /> @mamr_moussa
-            </span>
+                class = "blue-text" /> @mamr_moussa 2019&copy; </span>
+          </Footer>
+          <Footer
+            v-else
+            :class = "[ { white: onPrint }, { 'black-text': onPrint } ]"
+            class="layout-footer-center coc-primary-background-bg print-footer">
+            <span 
+              class = "">
+              <b style="font-family: jura; font-weight: bold; font-size: 120%">TUATARA</b> <span style="font-family: jura;" >GMS </span> by
+              <icon 
+                type = "logo-twitter" 
+                class = "blue-text" /> @mamr_moussa 2019 &copy; </span>
           </Footer>
         </Layout>
       </Layout>
@@ -348,6 +399,9 @@ export default {
       stockData: {
         mode: 'post',
         init: null
+      },
+      win: {
+        isSmall: false
       },
       loaders: { jobs: false },
       events: new this.$coc.Event({ api: this.$root }),
@@ -404,6 +458,17 @@ export default {
     isCollapsed(e) {
       this.$emit('collapse', e)
       this.$emit(e ? 'sider-on' : 'sider-off')
+    },
+    onPrint(v) {
+      if (process.browser) {
+        const body = document.body
+        if (v) {
+          if (!body.classList.contains('white')) {
+            body.classList.add('white')
+          }
+        } else if (body.classList.contains('white'))
+          body.classList.remove('white')
+      }
     }
   },
   mounted() {
@@ -433,6 +498,7 @@ export default {
         vm.addStockModal = true
       }
     })
+    if (this.win && this.win.isSmall) this.isCollapsed = true
   },
   methods: {
     getJobs() {
@@ -505,6 +571,18 @@ export default {
 }
 </script>
 <style scoped>
+@font-face {
+  font-family: 'jura';
+  src: url('/fonts/Jura/Jura-Regular.ttf');
+  font-weight: 250;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'jura';
+  src: url('/fonts/Jura/Jura-Bold.ttf');
+  font-weight: bold;
+  font-style: normal;
+}
 .layout {
   position: relative;
   border-radius: 4px;
@@ -512,6 +590,10 @@ export default {
 }
 .layout.print {
   background-color: white !important;
+  min-height: 100vh;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: 0px solid #fff !important;
 }
 .layout-header-bar {
   background: #fff;
@@ -586,5 +668,20 @@ export default {
 .ivu-layout-header,
 .ivu-menu-dark {
   background-color: #171d22;
+}
+.responsivesider {
+  position: fixed;
+  z-index: 999;
+  min-height: 100vh;
+}
+.print-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100px;
+}
+.content-print {
+  padding-bottom: 103px !important;
 }
 </style>

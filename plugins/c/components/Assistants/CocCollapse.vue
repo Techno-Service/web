@@ -13,8 +13,7 @@
             <span :class = "[icon , statusClass, 'col coc-line-height-title' ]"/>
             <span :class = "[ statusClass , 'col' ]"> {{ title }} </span>
             <span :class = "['right col coc-line-height-title' , statusClass , {'ivu-icon ivu-icon-ios-arrow-up' : isActive } , {'ivu-icon ivu-icon-ios-arrow-down' : !isActive}]"/>
-          </p>
-          </a>
+          </p></a>
           <small 
             v-if = "comment" 
             :class = "[commentClass]"> {{ comment }} </small>

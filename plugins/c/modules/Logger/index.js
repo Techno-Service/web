@@ -18,9 +18,14 @@ export default class {
     if (
       !process.browser ||
       !window ||
-      !COC.Mode ||
-      COC.Mode !== 'development'
+      !COC.App.mode ||
+      COC.App.mode !== 'development'
     ) {
+      // console.log('logger is off')
+      // console.log({
+      //   process: process.browser,
+      //   mode: !COC.Mode
+      // })
       return
     }
     $nuxt.$Message.warning({

@@ -1,6 +1,7 @@
 import Event from '../Events'
 import Arrays from '../Arrays'
 import Logger from '../Logger'
+import Core from '../Core'
 export default class FormControl extends Event {
   constructor(event) {
     super(event)
@@ -34,9 +35,18 @@ export default class FormControl extends Event {
   }
   Start() {
     if (!this.isReciever) {
+      // console.log(this.scope.toString(), 'is recievalable')
       this.Register()
     }
     this.On('COCFormController', payloads => {
+      if (
+        this.component &&
+        this.component._id &&
+        Core.__des__.indexOf(this.component._uid) !== -1
+      ) {
+        // console.log('destroyed')
+        return
+      }
       // console.log('recieving...')
       // Validate if there's a scope
       if (!this.scope) {
@@ -57,15 +67,8 @@ export default class FormControl extends Event {
       ) {
         return
       }
-      if (payloads.type !== undefined) {
-        // Handle Array Types
-        if (
-          Array.isArray(payloads.type) &&
-          payloads.type.indexOf(this.type) === -1
-        )
-          return
-        else if (typeof payloads !== 'object' && payloads.type !== this.type)
-          return
+      if (payloads.type !== undefined && payloads.type !== this.type) {
+        return
       }
       //Check Matching
       if (this.scopeArray.IsMatching(payloads.scope)) {
@@ -99,6 +102,7 @@ export default class FormControl extends Event {
     const defaults = {
       scope: this.scope
     }
+    // console.log('sending: ', eventName, { ...defaults, ...options }, this.scope)
     this.Emit(eventName, { ...defaults, ...options })
   }
 
@@ -143,6 +147,9 @@ export default class FormControl extends Event {
     this.On(event, payloads => {
       if (this.MatchedEvent(payloads)) {
         callback(payloads)
+        // console.log('scope register accepted ', this.scope)
+      } else {
+        // console.log('scope register rejected ', this.scope)
       }
     })
   }

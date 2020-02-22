@@ -927,6 +927,6 @@ export default {
 <style lang="css" scoped>
 .job-status-section {
   max-height: 70vh;
-  overflow-y: scroll
+  overflow-y: auto
 }
 </style>

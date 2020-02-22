@@ -1,4 +1,4 @@
-import Defaults from './defaults'
+import Defaults from './defaults/index.js'
 const COC = {}
 
 // Loggers =====================================================
@@ -30,6 +30,8 @@ COC.GetAlignment = (instance = COC) => {
       instance.App.Defaults.Design.Alignment === 'left' ? 'right' : 'left'
   }
 }
+
+COC.__des__ = []
 
 // Info Loggers
 
@@ -83,6 +85,7 @@ COC.IsMatchedArrays = (arrayOne, arrayTwo) => {
 COC.CielChilds = (array, mappingFunction) => {
   if (!Array.isArray(array)) {
     console.error('COC > CielChild: array argument must be an array')
+    console.error('COC > CielChild, Given is', array)
     return []
   }
   const mapped =
@@ -93,7 +96,10 @@ COC.CielChilds = (array, mappingFunction) => {
       firstLevelElement.forEach(secondLevelElement => {
         result.push(secondLevelElement)
       })
-    } else console.warn('COC > CielChild: array childs must be arrays')
+    } else {
+      console.warn('COC > CielChild: array childs must be arrays')
+      console.error('COC > CielChild, Given is', array)
+    }
   })
   return result
 }
@@ -232,6 +238,25 @@ COC.HasValue = val => {
 }
 // COC VALIDATORS
 COC.Validate = {}
+COC.Validate.ObjectTree = (object, tree) => {
+  if (!object) return false
+  if (typeof tree === 'string') {
+    if (!object[tree]) {
+      console.log(`Object Tree: ${tree} property is required`)
+      return false
+    } else return true
+  }
+  let temp = object
+  let i
+  for (i = 0; i < tree.length; i += 1) {
+    if (!temp[tree[i]]) {
+      console.log(`Object Tree: ${tree[i]} property is required`)
+      return false
+    }
+    temp = temp[tree[i]]
+  }
+  return true
+}
 COC.Validate.HasValue = (...args) => COC.HasValue(args[0].val)
 COC.Validate.InMaxRange = (...args) => {
   if (!COC.HasValue(args[0].val)) return true
@@ -347,6 +372,15 @@ COC.App = {
     }
   }
 }
+
+COC.Forms = {}
+COC.Forms.resolveValue = (val, fallback = '') => {
+  const result = val && val.val ? val.val : fallback
+  result.__proto__.control = val.control
+  result.__proto__.meta = val.meta
+  return result
+}
+
 COC.Config = {
   Meta(options) {
     COC.App = { ...COC.App, ...options }

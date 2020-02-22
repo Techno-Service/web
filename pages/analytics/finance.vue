@@ -1,6 +1,6 @@
 <template>
   <master v-coc-loading = "isLoading">
-    <div v-if = "user && user.roles.indexOf('admin') !== -1">
+    <div v-if = "user && $store.state.core.app && user.roles.indexOf('admin') !== -1">
       <div class="row">
         <p class="coc-text-bold coc-text-md-2 coc-padding-y-10px">Select Time Range</p>
         <div 
@@ -85,13 +85,39 @@
           <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
             <div class = "row coc-text-bold coc-text-lg">
               <div class="col coc-margin-top-15px">
+                <span class = "knocksapp-divide coc-text-lg-1" />
+              </div>
+              <div class="col">
+                VAT
+                <br><small>Total VAT calculated all over the jobs.</small>
+              </div>
+              <div class = "right col"> {{ vat | CocToFixedTwo }} {{ $store.state.core.app.currency }}</div>
+            </div>
+          </div>
+          <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
+            <div class = "row coc-text-bold coc-text-lg">
+              <div class="col coc-margin-top-15px">
                 <span class = "tcsc-car-7-icon coc-text-lg-1" />
               </div>
               <div class="col">
                 Utilities & External Overhead
-                <br><small>Promotions, Taxes, salaries and other operational costs.</small>
+                <br><small>VAT, Promotions, Taxes, salaries and other operational costs.</small>
+                <div
+                  style = "margin-left: -2% !important"
+                  class="row coc-house-keeper">
+                  <div class="col s12 coc-text-sm-1">
+                    <div class = "col coc-info-section-outline coc-info-section-hover-dark coc-border-1 coc-tiny-border-radius">
+                      Promotions | {{ promotionsOverhead | CocToFixedTwo }} {{ $store.state.core.app.currency }}
+                    </div>
+                    <div class = "col coc-warning-section-outline coc-warning-section-hover-dark coc-border-1 coc-tiny-border-radius coc-margin-x-4px">
+                      Operation | {{ stockExternals - promotionsOverhead | CocToFixedTwo }} {{ $store.state.core.app.currency }}
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class = "right col"> {{ externals }} {{ $store.state.core.app.currency }}</div>
+              <div class = "right col">
+                <span class = "right">{{ externals | CocToFixedTwo }} {{ $store.state.core.app.currency }}</span><br>
+              </div>
             </div>
           </div>
           <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
@@ -212,6 +238,9 @@ export default {
       stockImports: 0,
       stockExports: 0,
       externals: 0,
+      stockExternals: 0,
+      promotionsOverhead: 0,
+      vat: 0,
       labors: 0,
       totalProfit: 0,
       profitPercentage: 0,
@@ -276,12 +305,6 @@ export default {
     },
     encodedQuery(dateLabel = 'created_at', input = this.input) {
       const final = this.$_.cloneDeep(input)
-      // if (final.external !== undefined) {
-      //   final.external = final.external ? 'yes' : 'no'
-      // }
-      // if (final.ignore_external !== undefined) {
-      //   final.ignore_external = final.ignore_external ? 'yes' : 'no'
-      // }
       if (final.page > 0) {
         final.page = final.page - 1
       }
@@ -319,13 +342,24 @@ export default {
       return final
     },
     handleGetDataSuccess() {
-      console.log('seeeya')
-      this.stockImports = this.$_.sumBy(this.stock, s => s.item.import_price)
-      this.stockExports = this.$_.sumBy(this.stock, s => s.item.price)
-      this.externals = this.$_.sumBy(
-        this.stock.filter(s => s.item.external),
+      this.stockImports = this.$_.sumBy(
+        this.stock.filter(m => m.type === 'import'),
         s => s.price
       )
+      this.stockExports = this.$_.sumBy(
+        this.stock.filter(m => m.type === 'export'),
+        s => s.price
+      )
+      this.promotionsOverhead = this.$_.sumBy(
+        this.stock.filter(m => m.item.category === 'Automated Promotion'),
+        s => s.price
+      )
+      this.vat = this.$_.sumBy(this.jobs, o => o.vat)
+      this.stockExternals = this.$_.sumBy(
+        this.stock.filter(s => s.item.external),
+        x => x.price
+      )
+      this.externals = this.stockExternals + this.vat
       this.labors = this.$_.sumBy(
         this.$coc.CielChilds(this.jobs, j => j.operations),
         o => o.fees

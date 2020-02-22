@@ -21,7 +21,12 @@ export default class Event {
 
   //Single Listener
   On(event, callback) {
-    this.api[this.listener](event, callback)
+    // this.api[this.listener](event, callback)
+    // console.log('scope register accepted ', this.scope)
+    this.api[this.listener](event, p => {
+      // console.log('recieving..', event, p)
+      callback(p)
+    })
   }
   // Many Events, Same Callback
   OnMultiple(events, callback) {

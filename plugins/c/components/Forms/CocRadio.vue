@@ -460,11 +460,17 @@ export default {
       immediate: true,
       deep: true,
       handler(val) {
-        this.$emit('input', this.lightModel ? val.val : val)
+        this.$emit(
+          'input',
+          this.$coc.Forms.resolveValue(val, this.multiple ? [] : '')
+        )
       }
     },
     hideStatus() {
       this.handleStyles()
+    },
+    multiple(val) {
+      this.inputFieldModel = this.multiple ? [] : ''
     }
   },
   mounted() {

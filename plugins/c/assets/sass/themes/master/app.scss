@@ -66,7 +66,7 @@ html {
     @extend %coc-background-bg;
     @extend %coc-content-text;
 }
-.ivu-select-item:hover,.ivu-select-item-focus, .ivu-select-multiple .ivu-select-item-focus {
+.ivu-select-item:hover,.ivu-select-item-focus, .ivu-select-multiple .ivu-select-item-focus, .ivu-select-item.ivu-select-item-focus {
     @extend %coc-primary-bg;
     @extend %coc-primary-invert-text;
 }

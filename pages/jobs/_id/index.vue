@@ -1,12 +1,14 @@
 <template>
   <master
+    v-if = "this.$store.state.core.app"
     :on-print = "onPrint">
     <div 
       v-coc-loading = "(!job && !fetchError)" 
       class="row"
       style="min-height: 40vh">
       <div 
-        v-if = "job" 
+        v-if = "job"
+        :class = "[ { 'coc-house-keeper': onPrint } ]"
         class = "row">
         <coc-avatar
           v-if = "job.car.brand && job.car.brand.length"
@@ -16,24 +18,47 @@
         <span 
           :class = "onPrint ? 'coc-text-md' : 'coc-text-title'"
           :style="onPrint ? 'margin-top: 10px; font-weight: bold' : 'margin-top: 20px'" 
-          class="col coc-margin-x-0px">{{ `${ job.car.brand } / ${ job.car.model }` | CocCapitalizeName }}</span>
+          class="col coc-margin-x-0px">
+          {{ `${ job.car.brand } / ${ job.car.model }` | CocCapitalizeName }}
+          <span v-if = "job && onPrint">(Invoice #{{ job.job_no }})</span>
+        </span>
         <br>
         <button-group
           v-if = "!onPrint"
           class = "right">
+          <coc-button
+            :size = "onPrint ? 'small' : 'large'"
+            :to = "`/jobs/${job.job_no}/quotation`">
+            <tooltip content = "Job Quotation">
+              <icon type = "ios-list" />
+            </tooltip>
+          </coc-button>
+          <coc-button
+            :size = "onPrint ? 'small' : 'large'"
+            :to = "`/jobs/${job.job_no}/card`">
+            <tooltip content = "Job Card">
+              <icon type = "ios-card-outline" />
+            </tooltip>
+          </coc-button>
           <coc-button   
             :type = "onPrint ? 'primary' : 'default'"         
             :size = "onPrint ? 'small' : 'large'"
-            icon = "ios-print-outline"
-            @clicked = "print" />
+            @clicked = "print">
+            <tooltip content = "Print">
+              <icon type = "ios-print-outline" />
+            </tooltip>
+          </coc-button>
           <coc-button
             :size = "onPrint ? 'small' : 'large'"
-            icon = "ios-refresh"
-            @clicked = "getJob" />
+            @clicked = "getJob">
+            <tooltip content = "Refresh">
+              <icon type = "ios-refresh" />
+            </tooltip>
+          </coc-button>
         </button-group>
       </div>
       <div 
-        v-if = "job" 
+        v-if = "job && !onPrint" 
         class="row coc-house-keeper coc-text-bold">
         <p>Job #{{ job.job_no }}</p>
       </div>
@@ -48,7 +73,7 @@
           <span class="coc-content-text">{{ onPrint ? 'Job Details' : 'Edit Job' }}</span>
         </p>
         <div class="row">
-          <div class="col s6">
+          <div :class = "[ { 'col s6': !onPrint }, { 'col s3': onPrint } ]">
             <label class="coc-subcolor-text coc-text-small">Client Phone</label>
             <coc-input
               ref = "clientPhone"
@@ -66,7 +91,7 @@
               @coc-enter = "handleAutocompleteSelect"
               @coc-select = "handleAutocompleteSelect" />
           </div>
-          <div class="col s6">
+          <div :class = "[ { 'col s6': !onPrint }, { 'col s3': onPrint } ]">
             <label class="coc-subcolor-text coc-text-small">Client Name</label>
             <coc-input
               v-model = "input.client.name"
@@ -78,7 +103,7 @@
               icon = "ios-person"
               light-model />
           </div>
-          <div class="col s6">
+          <div :class = "[ { 'col s6': !onPrint }, { 'col s3': onPrint } ]">
             <label class="coc-subcolor-text coc-text-small">Car Make</label>
             <coc-input
               v-model = "input.car.brand"
@@ -100,7 +125,7 @@
               :scale = "onPrint ? '20px' : '30px'"
               class = "col coc-margin-left-4px coc-margin-top-5px"/>
           </div>
-          <div class="col s6">
+          <div :class = "[ { 'col s6': !onPrint }, { 'col s3': onPrint } ]">
             <label class="coc-subcolor-text coc-text-small">Car Model</label>
             <coc-input
               v-model = "input.car.model"
@@ -112,7 +137,7 @@
               icon = "ios-car"
               light-model />
           </div>
-          <div class="col s6">
+          <div :class = "[ { 'col s6': !onPrint }, { 'col s3': onPrint } ]">
             <label class="coc-subcolor-text coc-text-small">Car Release Year</label>
             <coc-select
               v-model = "input.car.release"
@@ -127,7 +152,7 @@
               clearable
               light-model />
           </div>
-          <div class="col s6">
+          <div :class = "[ { 'col s6': !onPrint }, { 'col s3': onPrint } ]">
             <label class="coc-subcolor-text coc-text-small">Car Kilometers</label>
             <coc-input
               v-model = "input.car.kilometers"
@@ -139,7 +164,7 @@
               icon = "ios-speedometer"
               light-model />
           </div>
-          <div class="col s6">
+          <div :class = "[ { 'col s6': !onPrint }, { 'col s3': onPrint } ]">
             <label class="coc-subcolor-text coc-text-small">Car Chase Number</label>
             <coc-input
               v-model = "input.car.chase"
@@ -151,7 +176,7 @@
               icon = "ios-barcode"
               light-model />
           </div>
-          <div class="col s6">
+          <div :class = "[ { 'col s6': !onPrint }, { 'col s3': onPrint } ]">
             <label class="coc-subcolor-text coc-text-small">Reciptionist</label>
             <coc-input
               v-model = "input.reciptionist"
@@ -227,8 +252,7 @@
           </div>
           <div 
             v-if = "onPrint"
-            class="col s12 coc-margin-top-5px">
-            <label class="coc-subcolor-text coc-text-small block">Timing</label>
+            class="col s12 coc-margin-top-5px coc-padding-x-0 coc-margin-x-0">
             <div class="col s6">
               <div class = "coc-padding-y-3px coc-margin-y-0">Entry Time: <small>{{ $moment(job.timein).format('D/M/YYYY h:m A') }}</small></div>
             </div>
@@ -257,6 +281,7 @@
                 class = "coc-text-body">Requirements</p>
               <div 
                 v-for = "(required, i) in input.requirements" 
+                :class = "[{ 'hidden': onPrint }]"
                 :key = "i"
                 class="row coc-padding-y-3px coc-margin-y-3px coc-border-bottom-1 coc-border-0 coc-border-border animated slideInLeft">
                 <div :class = "[{'col s6': !onPrint}, { 'col s10': onPrint }]">
@@ -299,6 +324,25 @@
                     class = "coc-error-text" />
                 </div>
               </div>
+              <ul
+                v-if = "onPrint"
+                style = "list-style: none;">
+                <li
+                  v-for = "(required, i) in input.requirements"
+                  :key = "i">
+                  <icon 
+                    v-if = "job.requirements[i].done"
+                    type = "md-checkmark"
+                    class = "coc-success-text" />
+                  <icon 
+                    v-if = "!job.requirements[i].done"
+                    type = "md-close"
+                    class = "coc-error-text" />
+                  <span>
+                    {{ input.requirements[i].name }}
+                  </span>
+                </li>
+              </ul>
               <div 
                 :class = "{ hidden: onPrint }"
                 class="row coc-padding-y-3px coc-margin-y-3px">
@@ -311,10 +355,11 @@
                     :autocomplete-map-response = "(res) => $_.uniqBy( $coc.CielChilds(res.jobs, r => r.requirements) , j => j.name).map(j => j.name)"
                     placeholder = "Name"
                     allow-autocomplete
-                    light-model/>
+                    light-model
+                    @coc-enter = "addRequirement"/>
                 </div>
                 <div class = "col s6">
-                  <Button
+                  <i-button
                     icon = "ios-add-circle"
                     type = "info"
                     shape = "circle"
@@ -375,12 +420,11 @@
                   <coc-select
                     v-model = "input.promotion"
                     :rules = "{}"
-                    :scope = "['create-edit-job']"
+                    :scope = "[]"
                     placeholder = "Promotion"
                     icon = " knocks-percent"
                     labeled
-                    clearable
-                    light-model >
+                    clearable>
                     <i-option
                       v-for = "(promotion, p) in $store.state.core.app.promotions"
                       :key = "p"
@@ -603,7 +647,11 @@
                   </tr>
                 </table>
                 <table
-                  :class = "[ { 'white black-text grey-border border-lighten-1': onPrint }, { 'coc-border-border coc-light-background-bg coc-border-border': !onPrint } ]"
+                  :class = "[
+                    { 'white black-text grey-border border-lighten-1': onPrint },
+                    { 'coc-border-border coc-light-background-bg coc-border-border': !onPrint },
+                    { 'coc-margin-top-4rem': onPrint && input && input.operations && input.operations.length > 10 && input.operations.length < 15 }
+                  ]"
                   class = "full-width coc-border-1">
                   <tr
                     :class = "[ { 'blue-grey lighten-4 black-text': onPrint }, { 'coc-border-bg coc-content-text': !onPrint } ]"
@@ -983,8 +1031,10 @@ export default {
       const temp = this.$_.cloneDeep(this.input)
       temp.operations = temp.operations.map(o => this.processExternalInput(o))
       if (temp.applied_vat) temp.applied_vat = parseFloat(temp.applied_vat, 10)
+      temp.promotion =
+        temp.promotion && temp.promotion.length ? temp.promotion : null
       let promotion_data = null
-      if (temp.promotion_data) {
+      if (temp.promotion_data && temp.promotion && temp.promotion.length) {
         promotion_data = temp.promotion_data
       } else if (
         this.input.promotion &&
@@ -1000,6 +1050,7 @@ export default {
           ...this.renderPromotion(this.input.promotion, this.finalValues)
         }
       }
+      temp.vat = temp.apply_vat ? this.vat : 0
       return {
         ...this.$_.pick(temp, [
           'car',

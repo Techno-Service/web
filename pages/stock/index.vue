@@ -14,7 +14,7 @@
         <coc-button
           icon = "ios-refresh"
           class = "right coc-margin-x-5px"
-          @clicked = "formatQuery"/>
+          @clicked = "formatQuery()"/>
       </div>
       <Drawer 
         v-model="config.drawer" 
@@ -44,7 +44,7 @@
                     class = "coc-house-keeper"
                     allow-autocomplete
                     clearable
-                    light-model />
+                  />
                 </div>
                 <div class = "col s12 l6">
                   <coc-select
@@ -54,7 +54,7 @@
                     placeholder = "Category.."
                     labeled
                     filterable
-                    light-model
+                    
                     multiple
                     allow-autocomplete
                     clearable />
@@ -85,7 +85,7 @@
                   <div class="right">
                     <Checkbox 
                       v-model = "input.external"
-                      light-model
+                      
                       class = "right coc-margin-top-10px"/>   
                     <span class="coc-padding-x-5px right">
                       <span>External Resources</span><br>
@@ -95,7 +95,7 @@
                   <div class="coc-padding-x-20px">
                     <Checkbox 
                       v-model = "input.non_external" 
-                      light-model
+                      
                       class = "right coc-margin-top-10px"/>   
                     <span class="coc-padding-x-5px right">
                       <span>None External</span><br>
@@ -119,7 +119,7 @@
                     class = "coc-house-keeper"
                     allow-autocomplete
                     clearable
-                    light-model />
+                  />
                 </div>
                 <div class = "col s12 l6">
                   <coc-input
@@ -132,7 +132,7 @@
                     class = "coc-house-keeper"
                     allow-autocomplete
                     clearable
-                    light-model />
+                  />
                 </div>
               </div>
               <Divider 
@@ -153,7 +153,7 @@
                     clearable
                     filterable
                     multiple
-                    light-model />
+                  />
                 </div>
                 <div class = "col s12 l6">
                   <coc-input
@@ -165,7 +165,7 @@
                     clearable
                     filterable
                     multiple
-                    light-model />
+                  />
                 </div>
                 <div class="col s12 l6">
                   <coc-select
@@ -178,7 +178,7 @@
                     filterable
                     clearable
                     multiple
-                    light-model />
+                  />
                 </div>
               </div>
               <Divider 
@@ -190,7 +190,7 @@
                     v-model = "input.sort"
                     labeled
                     placeholder = "Sort By.."
-                    light-model>
+                  >
                     <template slot-scope = "{options}">
                       <Option
                         value = "created_at"
@@ -244,14 +244,14 @@
           placeholder = "Price Range Maximum" 
           size = "large"
           style = "width: 100%"
-          light-model />
+        />
         <p class = "coc-text-md-2">Price Range Step</p>
         <coc-number-input 
           v-model = "config.price.step" 
           placeholder = "Price Range Step" 
           size = "large"
           style = "width: 100%"
-          light-model />
+        />
       </Drawer>
       <div 
         v-if = "isMounted && stock && stock.stock.length" 
@@ -358,15 +358,16 @@
               class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px center coc-padding-x-7px">
               <Tooltip content = "Export">
                 <coc-button
-                  icon = "md-arrow-down coc-error-text"
+                  :disabled = "stock.count - moveCount < 0"
+                  icon = "md-arrow-up coc-error-text"
                   class = "coc-border-0"
-                  @clicked = "importStock(stock)" />
+                  @clicked = "importStock(stock, -1)" />
               </Tooltip>
               <Tooltip content = "Import">
                 <coc-button
-                  icon = "md-arrow-up coc-success-text"
+                  icon = "md-arrow-down coc-success-text"
                   class = "coc-border-0"
-                  @clicked = "importStock(stock, -1)" />
+                  @clicked = "importStock(stock, 1)" />
               </Tooltip>
               <Tooltip content = "Edit">
                 <coc-button
@@ -385,8 +386,7 @@
                   <coc-number-input
                     v-model = "moveCount"
                     :min = "1"
-                    class = "left"
-                    light-model/>
+                    class = "left" />
                 </Tooltip>
               </div>
             </td>
@@ -690,6 +690,9 @@ export default {
     },
     formatQuery(input = this.input) {
       this.formattedQuery = this.encodedQuery(input)
+      Object.keys(input).forEach((k, i) => {
+        if (this.input[i] !== undefined) this.input[i] = k
+      })
       this.getStock()
     },
     importStock(stock, factor = 1) {
@@ -708,9 +711,9 @@ export default {
           this.isLoading = false
           this.$Message.success('Done')
         })
-        .catch(() => {
+        .catch(err => {
           this.isLoading = false
-          this.$Message.error('Stock Not Found')
+          this.$Message.error(err && err.data ? err.data : 'Stock Not Found')
         })
     },
     editStock(stock) {

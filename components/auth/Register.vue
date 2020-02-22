@@ -19,8 +19,7 @@
       :scope = "['register']"
       :rules = "{
         HasValue: { active: true },
-        MinLength: { args: 8 },
-        PreConditions: { args: [ nameExists, includesName ], message : 'Whoops!, |*args*|' }
+        MinLength: { args: 8 }
       }"
       size = "large"
       icon = "ios-lock-outline"
@@ -35,9 +34,9 @@
       v-model = "button"
       :scope = "['register']"
       :request = "{ url : '/users', xdata: {
-        email: handleEmail(input.email.val),
-        name: input.name.val,
-        password: input.password.val,
+        email: handleEmail(input.email),
+        name: input.name,
+        password: input.password,
       }}"
       :resolve-success-message = "() => 'Welcome on board!'"
       placeholder = "Register"
@@ -54,9 +53,9 @@ export default {
   data() {
     return {
       input: {
-        name: { val: '' },
-        email: { val: '' },
-        password: { val: '' }
+        name: '',
+        email: '',
+        password: ''
       },
       rules: {
         name: {
@@ -66,20 +65,21 @@ export default {
         },
         email: model => {
           return {
-            IsEmail: { active: true },
-            Remote: {
-              args: {
-                options: {
-                  url: '/users/email/available',
-                  method: 'get',
-                  params: { email: model.val }
-                }
-              },
-              message: {
-                message: 'This email is already taken.',
-                icon: 'ivu-icon ivu-icon-ios-person'
-              }
-            }
+            IsEmail: { active: true }
+            // Remote: {
+            //   args: {
+            //     options: {
+            //       url: '/users/email/available',
+            //       method: 'get',
+            //       params: { email: model },
+            //       agent: this.$axios
+            //     }
+            //   },
+            //   message: {
+            //     message: 'This email is already taken.',
+            //     icon: 'ivu-icon ivu-icon-ios-person'
+            //   }
+            // }
           }
         }
       },
@@ -90,7 +90,7 @@ export default {
     passwordStrength() {
       let percent = 1
       let status = 'wrong'
-      if (!this.input.password || !this.input.password.val) {
+      if (!this.input.password || !this.input.password) {
         percent = 1
         status = 'wrong'
       } else if (
@@ -117,21 +117,24 @@ export default {
   },
   methods: {
     nameExists() {
-      return (
-        (this.input.name.val && this.input.name.meta.valid) ||
-        'You must complete your Full Name First'
-      )
+      // return (
+      //   (this.input.name && this.input.name.meta.valid) ||
+      //   'You must complete your Full Name First'
+      // )
+      return true
     },
     handleEmail(email) {
+      if (!email || !email.length) return ''
       return email
         .split(' ')
         .join('')
         .toLowerCase()
     },
     includesName(val) {
+      if (!val || !val.length) return ''
       return (
-        (this.input.name.val &&
-          this.input.name.val.length &&
+        (this.input.name &&
+          this.input.name.length &&
           !val.toLowerCase().includes(
             this.input.name.val
               .toLowerCase()

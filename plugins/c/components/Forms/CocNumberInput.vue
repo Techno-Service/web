@@ -356,10 +356,6 @@ export default {
     parser: {
       type: Function,
       default: null
-    },
-    resetTo: {
-      type: Number,
-      default: undefined
     }
   },
   data() {
@@ -376,14 +372,13 @@ export default {
       autoCompleteRemoteFeeds: [],
       autocompleteRetriever: { loading: false, response: null },
       onReset: false,
-      watchingEnterOnAutocomplete: false,
-      showPassword: false
+      watchingEnterOnAutocomplete: false
     }
   },
   computed: {
     eventController() {
       return {
-        type: 'number',
+        type: 'input',
         model: this.model,
         component: {
           placeholder: this.placeholder,
@@ -406,8 +401,7 @@ export default {
           reset: this.reset,
           disFire: this.disFire,
           validate: this.getAtomController('validate'),
-          meta: this.getAtomController('handleMeta'),
-          togglePassword: this.togglePassword
+          meta: this.getAtomController('handleMeta')
         },
         meta: {
           valid: this.isValid.valid,
@@ -415,7 +409,6 @@ export default {
           isFired: this.isFired,
           isFocused: this.isFocused,
           id: this.componentId,
-          showPassword: this.showPassword,
           filtered: null
         }
       }
@@ -518,8 +511,6 @@ export default {
       return this.elementId || `coc-input-${this._uid}`
     },
     inputType() {
-      if (this.type !== 'password') return this.type
-      if (this.showPassword) return 'text'
       return this.type
     }
   },
@@ -544,7 +535,7 @@ export default {
       immediate: true,
       deep: true,
       handler(val) {
-        this.$emit('input', this.lightModel ? val.val : val)
+        this.$emit('input', this.$coc.Forms.resolveValue(val, 0))
       }
     },
     allowAutocomplete(val) {
@@ -561,9 +552,6 @@ export default {
     const vm = this
     this.handleStyles()
     if (this.allowAutocomplete) this.handleEnterOnAutocomplete()
-    if (this.resetTo !== undefined) {
-      this.inputFieldModel = this.resetTo
-    }
   },
   methods: {
     // Generators
@@ -586,7 +574,7 @@ export default {
     },
     async reset() {
       this.onReset = true
-      this.update(this.resetTo | 0, false).then(() => {
+      this.update(0, false).then(() => {
         this.isFired = false
         this.handleStyles()
         this.onReset = false
@@ -735,10 +723,6 @@ export default {
     handleAtomFilter(e) {
       this.$emit('filter', e)
       this.model.meta.filtered = e
-    },
-    togglePassword() {
-      if (this.type !== 'password') return
-      this.showPassword = !this.showPassword
     }
   }
 }

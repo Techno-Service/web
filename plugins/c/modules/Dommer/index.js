@@ -39,7 +39,7 @@ export default class $ extends Events {
       if (css && typeof css[i] === 'string' && css[i].length) {
         if (
           !searchFirst ||
-          (searchFirst && this.domer.classList.contains(css[i]) === -1)
+          (searchFirst && !this.domer.classList.contains(css[i]))
         ) {
           this.domer.classList.add(css[i])
         }

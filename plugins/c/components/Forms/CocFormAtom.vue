@@ -77,7 +77,7 @@ export default {
         type: this.cocEventController.type,
         scope: this.scope,
         model: this.generateModel(this.cocEventController.model),
-        component: this.cocEventController.component
+        component: { ...this.cocEventController.component, _uid: this._uid }
       })
     }
   },
@@ -144,12 +144,13 @@ export default {
   },
   methods: {
     stopListening() {
-      this.$root.$off([
-        'COCFormController',
-        'COCFormMeta',
-        'COCFormAskForRegister',
-        'COCFormItemRegister'
-      ])
+      // this.$root.$off([
+      //   'COCFormController',
+      //   'COCFormMeta',
+      //   'COCFormAskForRegister',
+      //   'COCFormItemRegister'
+      // ])
+      this.$coc.__des__.push(this._uid)
     },
     applyFilters(filters = this.filters) {
       if (filters) {

@@ -305,12 +305,12 @@ export default {
   computed: {
     eventController() {
       return {
-        type: 'select',
+        type: 'input',
         model: this.model,
         component: {
           placeholder: this.placeholder,
           domId: this.componentId,
-          type: 'select',
+          type: 'input',
           val: this.inputFieldModel
         }
       }
@@ -448,7 +448,10 @@ export default {
       immediate: true,
       deep: true,
       handler(val) {
-        this.$emit('input', this.lightModel ? val.val : val)
+        this.$emit(
+          'input',
+          this.$coc.Forms.resolveValue(val, this.multiple ? [] : '')
+        )
       }
     },
     hideStatus() {

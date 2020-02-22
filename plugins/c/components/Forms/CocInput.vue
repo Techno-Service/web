@@ -155,12 +155,13 @@ export default {
     labelStatusClasses: {
       type: Object,
       default() {
-        return {
-          mount: 'coc-content-text',
-          focus: 'coc-primary-text',
-          success: 'coc-success-shade-3-text',
-          error: 'coc-error-shade-3-text'
-        }
+        return this.$coc.App.Defaults.components.cocInput.props.labelStatusClasses()
+      }
+    },
+    iconStatusClasses: {
+      type: Object,
+      default() {
+        return this.$coc.App.Defaults.components.cocInput.props.iconStatusClasses()
       }
     },
     trim: {
@@ -331,7 +332,7 @@ export default {
     statusClasses: {
       type: Object,
       default() {
-        return {}
+        return this.$coc.App.Defaults.components.cocInput.props.statusClasses()
       }
     },
     lightModel: {
@@ -437,6 +438,7 @@ export default {
           isFocused: this.isFocused,
           id: this.componentId,
           showPassword: this.showPassword,
+          placeholder: this.placeholder,
           filtered: null
         }
       }
@@ -462,9 +464,10 @@ export default {
       }
     },
     computedIcon() {
-      return this.isLoading
+      const init = this.isLoading
         ? this.computedStatusClasses.initLoadingIcon
         : this.icon
+      return [init, this.iconClasses].join(' ')
     },
     isLoading() {
       const loadersArray = []
@@ -484,22 +487,10 @@ export default {
       return [...this.autoCompleteRemoteFeeds, ...this.data]
     },
     computedStatusClasses() {
-      const defaults = {
-        initHolder:
-          'row coc-margin-0 coc-padding-y-3px coc-padding-x-0 coc-smooth-height',
-        initContainer: 'coc-standard-border-radius',
-        initInput: 'coc-standard-border-radius',
-        initLoadingIcon: 'ivu-icon ivu-icon-ios-loading coc-spin',
-        initIcon: '',
-        success:
-          'coc-success-tint-9-bg coc-success-shade-3-text coc-success-focus-box-tint-5-shadow coc-success-border coc-standard-border-radius',
-        error:
-          'coc-error-tint-9-bg coc-error-shade-3-text coc-error-focus-box-tint-5-shadow coc-error-border coc-standard-border-radius',
-        mount:
-          'coc-border-border coc-content-text coc-primary-background-bg coc-standard-border-radius',
-        focus: 'coc-primary-section-outline coc-standard-border-radius'
+      return {
+        ...this.$coc.App.Defaults.components.cocInput.design.statusClasses,
+        ...this.statusClasses
       }
-      return { ...defaults, ...this.statusClasses }
     },
     labelClasses() {
       if (!this.labeled) return null
@@ -514,6 +505,20 @@ export default {
         status = 'error'
       }
       return this.labelStatusClasses[status]
+    },
+    iconClasses() {
+      if (!this.labeled) return null
+      let status = 'mount'
+      if (!this.isFired && !this.isFocused) {
+        status = 'mount'
+      } else if (!this.isFired && this.isFocused) {
+        status = 'focus'
+      } else if (this.isValid.valid) {
+        status = 'success'
+      } else if (!this.isValid.valid && this.rules) {
+        status = 'error'
+      }
+      return this.iconStatusClasses[status]
     },
     inputRef() {
       if (!this.allowAutocomplete) {
@@ -564,7 +569,7 @@ export default {
       immediate: true,
       deep: true,
       handler(val) {
-        this.$emit('input', this.lightModel ? val.val : val)
+        this.$emit('input', this.$coc.Forms.resolveValue(val))
       }
     },
     allowAutocomplete(val) {
@@ -575,12 +580,22 @@ export default {
     hideStatus() {
       this.handleStyles()
     }
+    // ,
+    // lightModel: {
+    //   immediate: true,
+    //   handler(val) {
+    //     console.log(val, this.placeholder)
+    //     this.$emit('input', this.$coc.Forms.resolveValue(this.inputFieldModel), val)
+    //   }
+    // }
   },
   mounted() {
     // On Mount Code
     const vm = this
     this.handleStyles()
     if (this.allowAutocomplete) this.handleEnterOnAutocomplete()
+    // this.$emit('input', this.$coc.Forms.resolveValue(this.handleValue(this.value)))
+    // this.inputFieldModel = this.$coc.Forms.resolveValue(this.inputFieldModel)
   },
   methods: {
     // Generators
@@ -683,13 +698,16 @@ export default {
     },
     handleValue(val) {
       if (val === false || val === null || val === undefined) {
-        return
+        return ''
       }
       if (typeof val === 'object') {
-        this.inputFieldModel = val.val
+        this.inputFieldModel = val.val || ''
+        // this.emitResolved(this.inputFieldModel)
       } else if (typeof val === 'string' || typeof val === 'number') {
         this.inputFieldModel = val.toString()
+        // this.emitResolved(this.inputFieldModel)
       }
+      return this.inputFieldModel
     },
     handleValidation(e) {
       if (e.attemps === 0) {
@@ -719,6 +737,16 @@ export default {
     },
     handleClasses(container, input, status) {
       Object.keys(this.computedStatusClasses).forEach(i => {
+        // Standards
+        if (i.startsWith('standard') && !this.isFired) {
+          if (i.toLowerCase().includes('container')) {
+            // console.log('adding stanadrd container')
+            container.AddClass(this.computedStatusClasses[i], true)
+          } else if (i.toLowerCase().includes('input')) {
+            // console.log('adding stanadrd input')
+            input.AddClass(this.computedStatusClasses[i], true)
+          }
+        }
         if (i.startsWith('init') && !this.isFired) {
           if (i.toLowerCase().includes('container')) {
             container.AddClass(this.computedStatusClasses[i], true)
@@ -726,11 +754,12 @@ export default {
             input.AddClass(this.computedStatusClasses[i], true)
           }
         } else {
-          if (i !== status) {
+          if (i !== status && !i.startsWith('standard')) {
             container.RemoveClass(this.computedStatusClasses[i])
             input.RemoveClass(this.computedStatusClasses[i])
           } else {
             if (this.hideStatus) {
+              // console.log('hiiiiiiide')
               container.RemoveClass(this.computedStatusClasses[status])
               input.RemoveClass(this.computedStatusClasses[status])
             }
@@ -759,6 +788,9 @@ export default {
     togglePassword() {
       if (this.type !== 'password') return
       this.showPassword = !this.showPassword
+    },
+    emitResolved(val, lightModel = this.lightModel, event = 'input') {
+      this.$emit(event, this.$coc.Forms.resolveValue(val, lightModel))
     }
   }
 }

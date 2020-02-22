@@ -273,11 +273,11 @@
             <td>
               <icon 
                 v-if = "move.count > 0"
-                type = "md-arrow-up"
+                type = "md-arrow-down"
                 class = "coc-success-text coc-text-lg" />
               <icon 
                 v-else
-                type = "md-arrow-down"
+                type = "md-arrow-up"
                 class = "coc-error-text coc-text-lg" />
             </td>
             <td class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px">

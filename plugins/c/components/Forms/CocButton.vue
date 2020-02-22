@@ -405,6 +405,7 @@ export default {
       this.checkedFormMembers = {}
       if (!this.ignore) {
         this.waitingLocalResponse = true
+        // console.log('coc button asking for registeration on: ', this.scope)
         this.eventController.Send(null, 'COCFormAskForRegister')
         setTimeout(() => {
           this.eventController.Send({
@@ -521,6 +522,7 @@ export default {
       if (arguments.length > 0) this.$emit(arguments[0], this.model)
     },
     register(e) {
+      // console.log('coc button implementing registeration on: ', this.scope)
       if (!this.checkedFormMembers) this.checkedFormMembers = {}
       this.checkedFormMembers[e.id] = false
     }
