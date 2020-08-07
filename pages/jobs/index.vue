@@ -1,5 +1,5 @@
 <template>
-  <master>
+  <master ref = "master">
     <div class="row">
       <span class = "coc-text-bold coc-text-md-2">
         Jobs
@@ -10,6 +10,7 @@
         class = "right"
         @clicked = "config.drawer = true"/>
       <coc-button
+        :loading = "isLoading"
         icon = "ios-refresh"
         class = "right coc-margin-x-5px"
         @clicked = "formatQuery"/>
@@ -249,7 +250,7 @@
               { 'coc-success-border': job.status === 'finished' },
               { 'coc-warning-border': job.status === 'postponed' },
             ]"
-            class = "animated coc-border-left-2 coc-border-0 coc-margin-y-1px" >
+            class = "animated coc-primary-background-hover-shade-1-bg coc-primary-background-bg coc-border-left-3 coc-border-0 coc-margin-y-1px" >
             <div class = "row coc-house-keeper">
               <coc-avatar
                 :source = "`/snaps/brands/png/${job.car.brand.split(' ').join('-').toLowerCase()}.png`"
@@ -390,7 +391,7 @@
               {'slideInUp coc-background-bg': flashers !== job._id && preflash !== job._id },
               {'pulse coc-info-tint-8-bg': flashers === job._id }
             ]"
-            class = "animated coc-border-left-2 coc-border-0 coc-info-border coc-margin-y-1px" >
+            class = "animated coc-border-left-3 coc-border-0 coc-primary-background-hover-shade-1-bg coc-primary-background-bg coc-info-border coc-margin-y-1px" >
             <div class = "row  coc-house-keeper">
               <coc-avatar
                 :source = "`/snaps/brands/png/${job.car.brand.split(' ').join('-').toLowerCase()}.png`"
@@ -510,7 +511,7 @@
               {'slideInUp coc-background-bg': flashers !== job._id && preflash !== job._id },
               {'pulse coc-info-tint-8-bg': flashers === job._id}
             ]"
-            class = "animated coc-border-left-2 coc-border-0 coc-success-border coc-margin-y-1px" >
+            class = "animated coc-border-left-3 coc-border-0 coc-primary-background-hover-shade-1-bg coc-primary-background-bg coc-success-border coc-margin-y-1px" >
             <div class = "row coc-house-keeper">
               <coc-avatar
                 :source = "`/snaps/brands/png/${job.car.brand.split(' ').join('-').toLowerCase()}.png`"
@@ -630,7 +631,7 @@
               {'slideInUp coc-background-bg': flashers !== job._id && preflash !== job._id },
               {'pulse coc-info-tint-8-bg': flashers === job._id}
             ]"
-            class = "animated coc-border-left-2 coc-border-0 coc-warning-border coc-margin-y-1px" >
+            class = "animated coc-border-left-3 coc-border-0 coc-primary-background-hover-shade-1-bg coc-primary-background-bg coc-warning-border coc-margin-y-1px" >
             <div class = "row coc-house-keeper">
               <coc-avatar
                 :source = "`/snaps/brands/png/${job.car.brand.split(' ').join('-').toLowerCase()}.png`"
@@ -783,15 +784,15 @@ export default {
       config: {
         drawer: false,
         price: {
-          step: 100,
-          max: 7000
+          step: 500,
+          max: 40000
         }
       },
       input: {
         job_no: '',
         status: null,
         date: null,
-        price: [0, 6900],
+        price: [0, 39000],
         phone: '',
         products: [],
         sort: 'job_no',
@@ -813,6 +814,14 @@ export default {
   },
   mounted() {
     this.formatQuery()
+    setTimeout(() => {
+      if (
+        this.$refs.master &&
+        this.$refs.master.win &&
+        this.$refs.master.win.isSmall
+      )
+        this.list = true
+    }, 1000)
   },
   methods: {
     getJobs(cb = null) {

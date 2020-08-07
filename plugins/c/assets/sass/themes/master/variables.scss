@@ -1,13 +1,13 @@
 // Main Theme
 $colors-list: (
 // Primary
-"primary": #ffd54f,
-"primary-invert": #212b31,
+"primary": #007aff,
+"primary-invert": #ffffff,
 "light-primary": #ffe082,
 "primary-alpha-first": rgba(233, 30, 99, 0.2),
 "primary-alpha-half": rgba(233, 30, 99, 0.5),
 "primary-alpha-end": rgba(233, 30, 99, 0.8),
-"dark-primary":#212b31,
+"dark-primary":#000000,
 
 // Secondary
 "secondary":#fff,
@@ -17,57 +17,57 @@ $colors-list: (
 "light-info": #e3f2fd,
 "info":#2db7f5,
 "dark-info": #0d47a1,
-"info-invert":#556d7c,
+"info-invert":#989899,
 
 // Success
 "light-success": #e8f5e9,
-"success":#19be6b,
+"success":#4cd964,
 "dark-success": #388e3c,
 "success-invert":#f9f9f9,
 
 // Warning
 "light-warning": #ffd54f,
-"warning":#ff9900,
+"warning":#ff9500,
 "dark-warning":#ff8f00,
-"warning-invert":#212b31,
+"warning-invert":#000000,
 
 // Error
 "light-error": #ef5350,
-"error":#ed4014,
+"error":#ff3b30,
 "dark-error": #c62828,
 "error-invert":#f9f9f9,
 
 // Default
-"default":#36454f,
-"default-invert":#f9f9f9,
+"default":#F2F2F7,
+"default-invert":#000000,
 
 
 // Typography
 "title":#17233d,
-"content":#B8CDDA,
+"content":#2C2B2E,
 "subcolor":#808695,
 "disabled":#c5c8ce,
 
 // Bounds
-"border":#40525e,
-"dark-border":#9e9e9e,
-"light-border":#fafafa,
+"border":#D1D1D6,
+"dark-border":#636366,
+"light-border":#AEAEB2,
 "divider":#e8eaec,
 "white":#ffffff,
 "black": #000,
 "carbon": #2d2e2e,
-"light-background":#36454f,
-"background":#212b31,
-"dark-background":#171d22,
-"primary-background":#2c3840,
+"light-background":#ffffff,
+"background":#ffffff,
+"dark-background":#E5E5EA,
+"primary-background":#F2F2F7,
 );
 // Borders
 $border-radius: (
 	"none": 0px,
 	"tiny": 3px,
-	"standard": 5px,
-	"rounded": 12px,
-	"bounced" : 15px,
+	"standard": 8px,
+	"rounded": 14px,
+	"bounced" : 16px,
 	"circle": 50%,
 );
 $typography-sizes: (

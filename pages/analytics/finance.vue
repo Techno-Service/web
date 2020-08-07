@@ -68,9 +68,9 @@
           </div>
         </div>
       </div>
-      <div class="row">
-        <div>
-          <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
+      <div class="row coc-primary-background-bg coc-standard-border-radius coc-padding-y-10px">
+        <div class="">
+          <div class = "coc-primary-background-bg coc-primary-background-hover-shade-1-bg finance-menu-item">
             <div class = "row coc-text-bold coc-text-lg">
               <div class="col coc-margin-top-15px">
                 <span class = "tcsc-car-5-icon coc-text-lg-1" />
@@ -79,10 +79,10 @@
                 Spare Parts Overhead
                 <br><small>Total cost you spent for resailable spare parts.</small>
               </div>
-              <div class = "right col"> {{ stockImports - externals }} {{ $store.state.core.app.currency }}</div>
+              <div class = "right col coc-padding-top-10px"> {{ stockImports - externals }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
-          <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
+          <div class = "coc-primary-background-bg coc-primary-background-hover-shade-1-bg finance-menu-item">
             <div class = "row coc-text-bold coc-text-lg">
               <div class="col coc-margin-top-15px">
                 <span class = "knocksapp-divide coc-text-lg-1" />
@@ -91,10 +91,10 @@
                 VAT
                 <br><small>Total VAT calculated all over the jobs.</small>
               </div>
-              <div class = "right col"> {{ vat | CocToFixedTwo }} {{ $store.state.core.app.currency }}</div>
+              <div class = "right col coc-padding-top-10px"> {{ vat | CocToFixedTwo }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
-          <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
+          <div class = "coc-primary-background-bg coc-primary-background-hover-shade-1-bg finance-menu-item">
             <div class = "row coc-text-bold coc-text-lg">
               <div class="col coc-margin-top-15px">
                 <span class = "tcsc-car-7-icon coc-text-lg-1" />
@@ -115,12 +115,12 @@
                   </div>
                 </div>
               </div>
-              <div class = "right col">
+              <div class = "right col coc-padding-top-10px">
                 <span class = "right">{{ externals | CocToFixedTwo }} {{ $store.state.core.app.currency }}</span><br>
               </div>
             </div>
           </div>
-          <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
+          <div class = "coc-primary-background-bg coc-primary-background-hover-shade-1-bg finance-menu-item">
             <div class = "row coc-text-bold coc-text-lg coc-error-shade-2-text">
               <div class="col coc-margin-top-15px">
                 <span class = "tcsc-car-check-icon coc-text-lg-1" />
@@ -132,10 +132,10 @@
                   All the spent money during this period <small style="font-weight: 200 !important">(Spare Parts, Taxes, Salaries, ...etc)</small>
                 </small>
               </div>
-              <div class = "right col"> {{ stockImports }} {{ $store.state.core.app.currency }}</div>
+              <div class = "right col coc-padding-top-10px"> {{ stockImports }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
-          <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
+          <div class = "coc-primary-background-bg coc-primary-background-hover-shade-1-bg finance-menu-item">
             <div class = "row coc-text-bold coc-text-lg">
               <div class="col coc-margin-top-15px">
                 <span class = "tcsc-car-sales-icon coc-text-lg-1" />
@@ -145,10 +145,10 @@
                 <br>
                 <small>Total revenue for stock.</small>
               </div>
-              <div class = "right col"> {{ stockExports }} {{ $store.state.core.app.currency }}</div>
+              <div class = "right col coc-padding-top-10px"> {{ stockExports }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
-          <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
+          <div class = "coc-primary-background-bg coc-primary-background-hover-shade-1-bg finance-menu-item">
             <div class = "row coc-text-bold coc-text-lg">
               <div class="col coc-margin-top-15px">
                 <span class = "tcsc-fix-icon coc-text-lg-1" />
@@ -157,10 +157,10 @@
                 Labors
                 <br><small>All the labors for each operation.</small>
               </div>
-              <div class = "right col"> {{ labors }} {{ $store.state.core.app.currency }}</div>
+              <div class = "right col coc-padding-top-10px"> {{ labors }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
-          <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
+          <div class = "coc-primary-background-bg coc-primary-background-hover-shade-1-bg finance-menu-item">
             <div class = "row coc-text-bold coc-text-lg">
               <div class="col coc-margin-top-15px">
                 <span class = "tcsc-truck-icon coc-text-lg-1" />
@@ -169,10 +169,10 @@
                 Out Sourced Parts
                 <br><small>Spare Parts that were brought from outside your inventory.</small>
               </div>
-              <div class = "right col"> {{ outSourcedParts }} {{ $store.state.core.app.currency }}</div>
+              <div class = "right col coc-padding-top-10px"> {{ outSourcedParts }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
-          <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
+          <div class = "coc-primary-background-bg coc-primary-background-hover-shade-1-bg finance-menu-item">
             <div class = "row coc-text-bold coc-text-lg">
               <div class="col coc-margin-top-15px">
                 <span class = "tcsc-investing-icon coc-text-lg-1" />
@@ -181,10 +181,10 @@
                 Jobs Revenue
                 <br><small>Total customers payments for jobs.</small>
               </div>
-              <div class = "right col"> {{ jobsWithOutSourcedParts }} {{ $store.state.core.app.currency }}</div>
+              <div class = "right col coc-padding-top-10px"> {{ jobsWithOutSourcedParts }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
-          <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
+          <div class = "coc-primary-background-bg coc-primary-background-hover-shade-1-bg finance-menu-item">
             <div class = "row coc-text-bold coc-text-lg">
               <div class="col coc-margin-top-15px">
                 <span class = "tcsc-business-and-finance-icon coc-text-lg-1" />
@@ -193,10 +193,10 @@
                 Locale Jobs Profits
                 <br><small>Total customer payments for your locale parts and labors.</small>
               </div>
-              <div class = "right col"> {{ jobsWithOutSourcedParts - outSourcedParts }} {{ $store.state.core.app.currency }}</div>
+              <div class = "right col coc-padding-top-10px"> {{ jobsWithOutSourcedParts - outSourcedParts }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
-          <div v-coc-mouse-over = "'coc-text-md-2 coc-smooth-font-size'">
+          <div class = "coc-primary-background-bg coc-primary-background-hover-shade-1-bg finance-menu-item">
             <div class = "row coc-text-bold coc-text-lg coc-success-text">
               <div class="col coc-margin-top-15px">
                 <span class = "tcsc-cost-icon coc-text-lg-1" />
@@ -205,7 +205,7 @@
                 Total Profits
                 <br><small>Stock revenue compined with labors.</small>
               </div>
-              <div class = "right col"> {{ totalProfit }} {{ $store.state.core.app.currency }}</div>
+              <div class = "right col coc-padding-top-10px"> {{ totalProfit }} {{ $store.state.core.app.currency }}</div>
             </div>
           </div>
         </div>
@@ -250,16 +250,16 @@ export default {
       jobs: [],
       input: {
         ignore_external: 'yes',
-        category: [],
-        status: null,
-        date: null,
-        price: [0, 6900],
-        phone: '',
-        products: [],
-        sort: 'created_at',
-        desc: 'yes',
-        page: 0,
-        limit: 10
+        // category: [],
+        // status: null,
+        date: null
+        // price: [0, 6900],
+        // phone: '',
+        // products: [],
+        // sort: 'created_at',
+        // desc: 'yes',
+        // page: 0,
+        // limit: 10
       }
     }
   },
@@ -305,39 +305,39 @@ export default {
     },
     encodedQuery(dateLabel = 'created_at', input = this.input) {
       const final = this.$_.cloneDeep(input)
-      if (final.page > 0) {
-        final.page = final.page - 1
-      }
-      if (final.date && final.date.join) {
+      // if (final.page > 0) {
+      //   final.page = final.page - 1
+      // }
+      if (final.date && final.date.length && final.date.join) {
         final.date = final.date.join(',')
       } else {
-        final.date = null
+        delete final.date
       }
-      if (final.category && final.category.join) {
-        final.category = final.category.join(',')
-      } else {
-        final.category = null
-      }
-      if (final.brand && final.brand.join) {
-        final.brand = final.brand.join(',')
-      } else {
-        final.brand = null
-      }
-      if (final.model && final.model.join) {
-        final.model = final.model.join(',')
-      } else {
-        final.model = null
-      }
-      if (final.release && final.release.join) {
-        final.release = final.release.join(',')
-      } else {
-        final.release = null
-      }
-      if (final.price && final.price.join) {
-        final.price = final.price.join(',')
-      } else {
-        final.price = null
-      }
+      // if (final.category && final.category.join) {
+      //   final.category = final.category.join(',')
+      // } else {
+      //   final.category = null
+      // }
+      // if (final.brand && final.brand.join) {
+      //   final.brand = final.brand.join(',')
+      // } else {
+      //   final.brand = null
+      // }
+      // if (final.model && final.model.join) {
+      //   final.model = final.model.join(',')
+      // } else {
+      //   final.model = null
+      // }
+      // if (final.release && final.release.join) {
+      //   final.release = final.release.join(',')
+      // } else {
+      //   final.release = null
+      // }
+      // if (final.price && final.price.join) {
+      //   final.price = final.price.join(',')
+      // } else {
+      //   final.price = null
+      // }
       final.stats = 'yes'
       return final
     },
@@ -362,7 +362,7 @@ export default {
       this.externals = this.stockExternals + this.vat
       this.labors = this.$_.sumBy(
         this.$coc.CielChilds(this.jobs, j => j.operations),
-        o => o.fees
+        o => o.fees * o.count
       )
       this.outSourcedParts = this.$_.sumBy(
         this.$coc
@@ -389,5 +389,8 @@ export default {
   max-height: 130px;
   overflow-y: auto;
   border-top: 2px solid #fff;
+}
+.finance-menu-item {
+  min-height: 90px;
 }
 </style>

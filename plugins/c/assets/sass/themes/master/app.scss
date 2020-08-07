@@ -1,4 +1,5 @@
 @import "./colors.scss";
+@import "./border.scss";
 @media only screen and (min-width: 993px) {
   .login-dialog .Modal{
   width: 60% !important;
@@ -91,12 +92,13 @@ html {
 .ivu-divider-inner-text {
   @extend %coc-content-text;
 }
-.ivu-cell {
-  @extend %coc-dark-background-shade-1-bg;
-}
+// .ivu-cell {
+//   @extend %coc-dark-background-shade-1-bg;
+// }
 .ivu-notice-notice {
   @extend %coc-dark-background-bg;
   @extend %coc-content-text;
+  @extend %coc-standard-border-radius;
 }
 .ivu-notice-title {
   @extend %coc-content-text;
@@ -110,6 +112,6 @@ html {
   @extend %coc-background-bg;
   @extend %coc-content-text;
 }
-.ivu-cell.ivu-cell-selected{
-  @extend %coc-dark-background-bg;
-}
+// .ivu-cell.ivu-cell-selected{
+//   @extend %coc-dark-background-bg;
+// }

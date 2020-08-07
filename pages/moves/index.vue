@@ -269,16 +269,16 @@
           <tr 
             v-for = "(move, s) in move.move" 
             :key = "s"
-            class = "coc-border-border center coc-info-hover-tint-8-bg">
+            class = "coc-border-border center coc-background-hover-tint-1-bg">
             <td>
               <icon 
-                v-if = "move.count > 0"
+                v-if = "move.type === 'import'"
                 type = "md-arrow-down"
-                class = "coc-success-text coc-text-lg" />
+                class = "coc-error-text coc-text-lg" />
               <icon 
                 v-else
                 type = "md-arrow-up"
-                class = "coc-error-text coc-text-lg" />
+                class = "coc-success-text coc-text-lg" />
             </td>
             <td class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px">
               <nuxt-link
@@ -294,14 +294,14 @@
             <td class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px">{{ move.count }}</td>
             <td
               class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px center">
-              <Tooltip :content = "move.item.hidden ? 'You can not export promotion': 'Export'">
+              <Tooltip :content = "move.item.hidden ? 'You can not import promotion': 'Import (Buy)'">
                 <coc-button
                   :disabled = "move.item.hidden"
                   icon = "md-arrow-down coc-error-text"
                   class = "coc-border-0"
                   @clicked = "importMove(move)" />
               </Tooltip>
-              <Tooltip :content = "move.item.hidden ? 'You can not import promotion': 'Import'">
+              <Tooltip :content = "move.item.hidden ? 'You can not export promotion': 'Export (Sell)'">
                 <coc-button
                   :disabled = "move.item.hidden"
                   icon = "md-arrow-up coc-success-text"
@@ -452,7 +452,7 @@ export default {
     }
   },
   mounted() {
-    this.formatQuery(this.$route.query)
+    this.formatQuery()
     setTimeout(() => {
       this.isMounted = true
     }, 1000)
@@ -475,8 +475,8 @@ export default {
     },
     getMove() {
       this.$router.push({
-        path: '/moves',
-        query: this.encodedQuery()
+        path: '/moves'
+        // query: this.encodedQuery()
       })
       this.$axios({
         method: 'get',
@@ -487,10 +487,10 @@ export default {
         this.config.drawer = false
         this.isLoading = false
         this.pagination = this.$_.omit(res.data, ['move'])
-        this.$router.push({
-          path: '/moves',
-          query: this.encodedQuery()
-        })
+        // this.$router.push({
+        //   path: '/moves',
+        //   query: this.encodedQuery()
+        // })
       })
     },
     decodedQuery(query) {
@@ -575,6 +575,10 @@ export default {
       this.formatQuery()
     },
     importMove(move, factor = 1) {
+      if (this.moveCount === 0) {
+        this.$Message.error('Count can not be zero.')
+        return
+      }
       // some code
       this.isLoading = true
       this.$axios({
@@ -582,7 +586,8 @@ export default {
         url: `/stock/${move.item._id}/move`,
         data: {
           item: move.item,
-          count: this.moveCount * factor
+          count: this.moveCount * factor,
+          type: this.moveCount > 0 ? 'import' : 'export'
         }
       })
         .then(() => {

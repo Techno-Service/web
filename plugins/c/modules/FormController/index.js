@@ -20,6 +20,10 @@ export default class FormControl extends Event {
     this.isReciever = event.isReciever || false
     this.pennding = false
     this.Logger = new Logger(`COC ${this.type} | CEFC`)
+    if (event.token) {
+      Core.__reg__[event.token] = true
+      this.token = event.token
+    }
   }
 
   SetScope(scope) {
@@ -39,13 +43,11 @@ export default class FormControl extends Event {
       this.Register()
     }
     this.On('COCFormController', payloads => {
-      if (
-        this.component &&
-        this.component._id &&
-        Core.__des__.indexOf(this.component._uid) !== -1
-      ) {
-        // console.log('destroyed')
+      if (this.component && this.component._id) {
         return
+      }
+      if (this.token) {
+        if (!Core.__reg__[this.token]) return
       }
       // console.log('recieving...')
       // Validate if there's a scope
@@ -192,5 +194,12 @@ export default class FormControl extends Event {
   }
   Warn(message) {
     this.Logger.Warn(message)
+  }
+
+  RemoveToken() {
+    if (this.token) {
+      Core.__reg__[this.token] = false
+      delete Core.__reg__[this.token]
+    }
   }
 }

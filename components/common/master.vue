@@ -49,7 +49,7 @@
           ref="side1" 
           v-model="isCollapsed"
           :collapsed-width="78" 
-          :class = "[{hidden: onPrint}, { responsivesider: win && win.isSmall && !isCollapsed }]"
+          :class = "[{hidden: onPrint}, { 'responsivesider animated slideInLeft': win && win.isSmall && !isCollapsed }, { hidden: win && win.isSmall && isCollapsed }]"
           class = "coc-background-bg coc-border-0 coc-border-right-1 coc-border-border"
           hide-trigger 
           collapsible>
@@ -70,19 +70,22 @@
             @on-select = "handleSidebarSelect">
             <menu-item
               v-if = "$utils.roles.hasRole('jobs',user)"
-              name="jobs">
+              name="jobs"
+              class = "sidebar-menu-item">
               <i class="tcsc-transportation-icon" />
               <span>Running</span>
             </menu-item>
             <menu-item
               v-if = "$utils.roles.hasRole('stocks',user)"
-              name="stock">
+              name="stock"
+              class = "sidebar-menu-item">
               <i class="tcsc-inventory-1-icon" />
               <span>Add Stock</span>
             </menu-item>
             <menu-item
               v-if = "$utils.roles.hasRole('stocks',user)"
-              name="moves">
+              name="moves"
+              class = "sidebar-menu-item">
               <i class="tcsc-stock-icon" />
               <span>Moves</span>
             </menu-item>
@@ -101,7 +104,7 @@
                 <icon type = " coc-content-text tcsc-transportation-icon" />
                 <span class = "coc-content-text">Running Jobs</span>
               </p>
-              <div class="row coc-primary-background-bg coc-margin-y-0 coc-padding-y-3px">
+              <div class="row  coc-margin-y-0 coc-padding-y-3px coc-border-border">
                 <div class="col s12 coc-padding-x-5px">
                   <coc-input
                     v-model = "input.job.search"
@@ -143,13 +146,15 @@
           </div>
         </Sider>
         <Layout>
-          <Header :class = "[{hidden: onPrint}]">
+          <Header :class = "[{hidden: onPrint}, 'master-header']">
             <Menu 
               mode="horizontal" 
               theme="dark" 
               active-name="1">
               <div class="layout-logo">
-                <div class="row">
+                <div
+                  :class = "[{'left-menu-on-small': win && win.isSmall}]"
+                  class="row">
                   <Icon 
                     :class="rotateIcon" 
                     class = "coc-secondary-text col" 
@@ -200,7 +205,9 @@
                     Analytics
                   </nuxt-link>
                 </menu-item>
-                <menu-item name="4">
+                <menu-item
+                  :class = "[{'avatar-item-on-small': win && win.isSmall}]"
+                  name="4">
                   <span 
                     v-if = "!user" 
                     class = " coc-text-normal-1 ivu-icon ivu-icon-ios-log-in hide-on-med-and-up" 
@@ -351,21 +358,34 @@
             class="layout-footer-center coc-primary-background-bg">
             <span 
               class = "">
-              <b style="font-family: jura; font-weight: bold; font-size: 120%">TUATARA</b> <span style="font-family: jura;" >GMS </span> by
-              <icon 
-                type = "logo-twitter" 
-                class = "blue-text" /> @mamr_moussa 2019&copy; </span>
+              <b style="font-family: jura; font-weight: bold; font-size: 120%">TUATARA</b> <b style="font-family: jura;" >GMS</b> 2019&copy;
+              <br>by
+              <a 
+                href = "https://twitter.com/CocDevs" 
+                target="_blank">
+                <icon 
+                  type = "logo-twitter" 
+                  class = "blue-text" />
+                <b>@CocDevs</b>
+              </a>
+            </span>
+            <br><b style="" >V{{ $coc.App.version }}</b>
           </Footer>
           <Footer
             v-else
             :class = "[ { white: onPrint }, { 'black-text': onPrint } ]"
             class="layout-footer-center coc-primary-background-bg print-footer">
             <span 
-              class = "">
-              <b style="font-family: jura; font-weight: bold; font-size: 120%">TUATARA</b> <span style="font-family: jura;" >GMS </span> by
+              style = "font-size: 90%; color: grey">
+              <b style="font-family: jura; font-weight: bold; font-size: 107%">TUATARA</b>
+              <b style="font-family: jura;" > GMS V1.4 </b> 
+              by
               <icon 
                 type = "logo-twitter" 
-                class = "blue-text" /> @mamr_moussa 2019 &copy; </span>
+                class = "blue-text" />
+              <b style="">@CocDevs</b>
+              2019 &copy;
+            </span>
           </Footer>
         </Layout>
       </Layout>
@@ -585,7 +605,6 @@ export default {
 }
 .layout {
   position: relative;
-  border-radius: 4px;
   overflow: hidden;
 }
 .layout.print {
@@ -667,7 +686,7 @@ export default {
 }
 .ivu-layout-header,
 .ivu-menu-dark {
-  background-color: #171d22;
+  background-color: #007aff;
 }
 .responsivesider {
   position: fixed;
@@ -683,5 +702,17 @@ export default {
 }
 .content-print {
   padding-bottom: 103px !important;
+}
+.sidebar-menu-item {
+  height: 64px;
+  border-radius: 0 !important;
+}
+.avatar-item-on-small {
+  margin-right: 3rem;
+  float: right;
+}
+.left-menu-on-small {
+  padding-left: 0 !important;
+  margin-left: -3rem !important;
 }
 </style>

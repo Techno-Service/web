@@ -15,7 +15,7 @@ export default ({ app: { router, $axios }, env }, inject) => {
   // Config app data
   COC.Config.Meta({
     name: pkg.name,
-    brandName: 'Techno Service',
+    brandName: 'Spart',
     version: pkg.version,
     repository: pkg.repository,
     author: pkg.author,
@@ -72,7 +72,7 @@ export default ({ app: { router, $axios }, env }, inject) => {
     ],
     placeholder: '',
     placeholderClass: 'coc-content-text text-lg block',
-    backgroundColor: 'rgba(0,0,0,0.8)'
+    backgroundColor: 'rgba(255,255,255,0.8)'
   }
   COC.Config.Defaults({ Docker, Loader })
   inject('coc', COC)

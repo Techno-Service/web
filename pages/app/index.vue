@@ -15,7 +15,7 @@
           :scope = "['app-form']"
           placeholder = "Title"
           size = "large"
-          icon = "ios-card pink-text"
+          icon = "ios-card"
           light-model
           labeled/>
         <coc-input
@@ -24,7 +24,7 @@
           :scope = "['app-form']"
           placeholder = "Subtitle"
           size = "large"
-          icon = "ios-card-outline pink-text"
+          icon = "ios-card-outline"
           light-model
           labeled/>
         <coc-input
@@ -33,7 +33,7 @@
           :scope = "['app-form']"
           placeholder = "Address"
           size = "large"
-          icon = "ios-navigate pink-text"
+          icon = "ios-navigate"
           light-model
           labeled/>
         <coc-input
@@ -42,7 +42,7 @@
           filters = "ToFloat"
           placeholder = "Vat"
           size = "large"
-          icon = " knocks-percent pink-text"
+          icon = " knocks-percent"
           light-model
           labeled
           @filter = "appForm.vat = $event"/>
@@ -52,7 +52,7 @@
           :scope = "['app-form']"
           placeholder = "Currency"
           size = "large"
-          icon = "ios-cash pink-text"
+          icon = "ios-cash"
           light-model
           labeled/>
         <coc-input
@@ -68,7 +68,7 @@
           filters = "ToInt"
           placeholder = "Jobs Count"
           size = "large"
-          icon = " tcsc-motor-2-icon pink-text"
+          icon = " tcsc-motor-2-icon"
           light-model
           labeled
           @filter = "appForm.jobs_count = $event"/>
@@ -87,7 +87,7 @@
           :scope = "['app-form']"
           placeholder = "Redirect URL.."
           size = "large"
-          icon = "ios-link pink-text"
+          icon = "ios-link"
           light-model/>
         <coc-input
           v-model = "appForm.background_redirect.placeholder"
@@ -95,7 +95,7 @@
           :scope = "['app-form']"
           placeholder = "Redirect Placeholder.."
           size = "large"
-          icon = "md-create pink-text"
+          icon = "md-create"
           light-model/>
         <coc-input
           v-model = "appForm.background_redirect.caption"
@@ -142,7 +142,7 @@
             :scope = "['app-form']"
             placeholder = "Instagram"
             size = "large"
-            icon = "logo-instagram pink-text"
+            icon = "logo-instagram"
             light-model
             labeled/>
         </div>
@@ -163,7 +163,7 @@
               <span class="coc-text-bold">{{ phone }}</span>
               <i-button
                 slot = "extra"
-                icon = "ios-trash-outline coc-error-text"
+                icon = "md-trash coc-error-text"
                 type = "text"
                 @click = "appForm.phones.splice(p, 1)"/>
             </cell>
@@ -209,7 +209,7 @@
               </span>
               <i-button
                 slot = "extra"
-                icon = "ios-trash-outline coc-error-text"
+                icon = "md-trash coc-error-text"
                 type = "text"
                 @click = "appForm.promotions.splice(p, 1)"/>
             </cell>
@@ -376,7 +376,7 @@
                       type = "error"
                       size = "large"
                       class = "coc-padding-x-10px coc-margin-bottom-10px"
-                      icon = "ios-trash-outline coc-text-md-2"
+                      icon = "md-trash coc-text-md-2"
                       long
                       @click = "deleteAvatar">
                       <span class="coc-text-md-2">Remove</span>

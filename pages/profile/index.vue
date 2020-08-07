@@ -77,7 +77,7 @@
                   }"
                   placeholder = "Name.."
                   labeled/>
-                <coc-input
+                <!-- <coc-input
                   v-model = "input.phone"
                   :rules = "{
                     MatchesRegex: { args: /(\+2|002)?(01)[0-9]{9}/, message: 'Invalid Phone Number' }
@@ -102,7 +102,7 @@
                   <Option
                     label = "Other"
                     value = "other"/>
-                </coc-select>
+                </coc-select> -->
                 <coc-button
                   :scope = "['user-form']"
                   :request = "{url: 'users/self/edit', method: 'put', xdata: formatUserForm()}"
@@ -265,9 +265,9 @@ export default {
     return {
       events: new this.$coc.Event({ api: this.$root }),
       input: {
-        name: '',
-        phone: '',
-        gender: ''
+        name: ''
+        // phone: '',
+        // gender: ''
       },
       upload: null,
       imageUrl: '',
@@ -356,6 +356,7 @@ export default {
     //   }
     // }
     this.activeTab = this.$route.query.tab || 'info'
+    this.input = this.$_.pick(this.user, ['name'])
   },
   methods: {
     formatUserForm() {
@@ -363,7 +364,7 @@ export default {
       const result = {}
       const keys = Object.keys(this.input)
       for (i = 0; i < keys.length; i += 1) {
-        if (this.input[keys[i]]) result[keys[i]] = this.input[keys[i]].val
+        if (this.input[keys[i]]) result[keys[i]] = this.input[keys[i]]
       }
       return {
         ...result,

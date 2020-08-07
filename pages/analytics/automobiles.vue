@@ -374,7 +374,7 @@
                   {{ 
                     ($_.sumBy(jobs.filter(j => j.car.brand === make), o => o.price)
                       / 
-                    ($_.sumBy(jobs.filter(j => j.car.brand === make && j.timeleave), o => $moment(o.timeleave).diff($moment(o.timein),'hours')))).toFixed(2)
+                      Math.max($_.sumBy(jobs.filter(j => j.car.brand === make && j.timeleave), o => $moment(o.timeleave).diff($moment(o.timein),'hours')),1)).toFixed(2)
                   }} LE/H
                 </p>
               </div>
@@ -443,8 +443,8 @@ export default {
       config: {
         drawer: false,
         price: {
-          step: 100,
-          max: 7000
+          step: 500,
+          max: 40000
         }
       },
       input: {
@@ -452,7 +452,7 @@ export default {
         status: null,
         date: null,
         brandmlt: [],
-        price: [0, 6900],
+        price: [0, 39900],
         phone: '',
         products: [],
         sort: 'job_no',

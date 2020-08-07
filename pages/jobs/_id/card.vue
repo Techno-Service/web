@@ -521,8 +521,11 @@ export default {
     this.getJob()
     if (window) {
       const vm = this
-      window.onfocus = () => {
+      window.onafterprint = () => {
         vm.onPrint = false
+      }
+      window.onbeforeprint = () => {
+        vm.onPrint = true
       }
     }
   },

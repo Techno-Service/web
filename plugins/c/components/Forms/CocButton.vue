@@ -1,4 +1,4 @@
-<template>
+f<template>
   <Button
     :type = "type"
     :ghost = "plain"
@@ -84,7 +84,7 @@ export default {
       default: false
     },
     denotifi: {
-      type: Boolean,
+      type: [Boolean, String],
       default: false
     },
     sucessAt: {
@@ -121,11 +121,13 @@ export default {
     resolveErrorMessage: {
       type: Function,
       default: err => {
+        let body = 'Request Faild.'
+        if (err && err.response && err.response.data)
+          if (err.response.data.message) body = err.response.data.message
+          else if (typeof err.response.data === 'string')
+            body = err.response.data
         return {
-          body:
-            err.response && err.response.data
-              ? err.response.data
-              : 'Request Faild.',
+          body,
           title: 'Whoops!'
         }
       }
@@ -442,9 +444,10 @@ export default {
     },
     notifi(message) {
       if (this.denotifi) {
-        return
+        if (this.denotifi === true) return
       }
       const type = message.type === undefined ? 'error' : message.type
+      if (this.denotifi === type) return
       if (type === 'success') {
         this.$Notice.success({
           title: message.title === undefined ? 'Whoops!' : message.title,

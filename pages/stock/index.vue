@@ -356,18 +356,18 @@
             </td>
             <td
               class="coc-border-bottom-1 coc-border-0 coc-border-border coc-padding-y-10px center coc-padding-x-7px">
-              <Tooltip content = "Export">
+              <Tooltip content = "Import (Buy)">
                 <coc-button
-                  :disabled = "stock.count - moveCount < 0"
-                  icon = "md-arrow-up coc-error-text"
-                  class = "coc-border-0"
-                  @clicked = "importStock(stock, -1)" />
-              </Tooltip>
-              <Tooltip content = "Import">
-                <coc-button
-                  icon = "md-arrow-down coc-success-text"
+                  icon = "md-arrow-down coc-error-text"
                   class = "coc-border-0"
                   @clicked = "importStock(stock, 1)" />
+              </Tooltip>
+              <Tooltip content = "Export (Sell)">
+                <coc-button
+                  :disabled = "stock.count - moveCount < 0"
+                  icon = "md-arrow-up coc-success-text"
+                  class = "coc-border-0"
+                  @clicked = "importStock(stock, -1)" />
               </Tooltip>
               <Tooltip content = "Edit">
                 <coc-button
@@ -696,6 +696,10 @@ export default {
       this.getStock()
     },
     importStock(stock, factor = 1) {
+      if (this.moveCount === 0) {
+        this.$Message.error('Count can not be zero.')
+        return
+      }
       // some code
       this.isLoading = true
       this.$axios({
@@ -703,7 +707,8 @@ export default {
         url: `/stock/${stock._id}/move`,
         data: {
           item: stock,
-          count: this.moveCount * factor
+          count: this.moveCount * factor,
+          type: this.moveCount > 0 ? 'import' : 'export'
         }
       })
         .then(() => {

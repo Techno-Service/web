@@ -599,7 +599,7 @@ export default class Validator {
     return await agent(args.options)
       .then(res => {
         if (args.callback) {
-          return args.callback(response, this.Val)
+          return args.callback(res, this.Val)
         }
         return true
       })

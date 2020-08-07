@@ -396,15 +396,15 @@ export default {
       config: {
         drawer: false,
         price: {
-          step: 100,
-          max: 7000
+          step: 500,
+          max: 40000
         }
       },
       input: {
         job_no: '',
         status: null,
         date: null,
-        price: [0, 6900],
+        price: [0, 39000],
         phone: '',
         products: [],
         sort: 'job_no',
@@ -602,7 +602,7 @@ export default {
               sum.time += allRequirements[j].updated_at
                 ? this.$moment(allRequirements[j].updated_at).diff(
                     this.$moment(allRequirements[j].created_at),
-                    'hours'
+                    'minutes'
                   )
                 : 0
             }

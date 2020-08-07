@@ -33,6 +33,7 @@
       ref = "input"
       v-model = "inputFieldModel"
       :label = "label"
+      :data = "manualBind ? data : undefined"
       :multiple = "multiple"
       :disabled = "disabled"
       :clearable = "clearable"
@@ -48,24 +49,26 @@
       :placement = "placement"
       :transfer = "transfer"
       :name = "name"
+      :allow-create = "allowCreate"
       :auto-complete = "autoComplete"
       :element-id = "componentId"
       @input = "handleInput"
       @on-clear = "handleClear"
       @on-focus = "handleFocus"
       @on-blur = "handleBlur"
+      @on-create = "$emit('coc-create', $event)"
       @on-open-change = "handleOpenChange">
       <slot
         slot = "default"
         :options = "dropdownOptions"
         name = "default">
-        <template v-if = "cocOptions">
+        <template v-if = "cocOptions && !manualBind">
           <coc-iview-option
             v-for = "(option, index) in dropdownOptions"
             :key = "index"
             :init = "option"/>
         </template>
-        <template v-else>
+        <template v-else-if = "!manualBind">
           <Option 
             v-for = "(option, index) in dropdownOptions"
             v-bind = "new $coc.OptionsManager(option).Resolve()" 
@@ -124,6 +127,10 @@ export default {
       default: ''
     },
     multiple: {
+      type: Boolean,
+      default: false
+    },
+    allowCreate: {
       type: Boolean,
       default: false
     },
@@ -281,6 +288,10 @@ export default {
       default: false
     },
     hideErrors: {
+      type: Boolean,
+      default: false
+    },
+    manualBind: {
       type: Boolean,
       default: false
     }

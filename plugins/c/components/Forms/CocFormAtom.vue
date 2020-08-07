@@ -77,7 +77,10 @@ export default {
         type: this.cocEventController.type,
         scope: this.scope,
         model: this.generateModel(this.cocEventController.model),
-        component: { ...this.cocEventController.component, _uid: this._uid }
+        component: { ...this.cocEventController.component, _uid: this._uid },
+        token: `${this.cocEventController.type}${this.$_.random(1000, 9999)}${
+          this._uid
+        }`
       })
     }
   },
@@ -150,7 +153,8 @@ export default {
       //   'COCFormAskForRegister',
       //   'COCFormItemRegister'
       // ])
-      this.$coc.__des__.push(this._uid)
+      // this.$coc.__des__.push(this._uid)
+      this.eventController.RemoveToken()
     },
     applyFilters(filters = this.filters) {
       if (filters) {

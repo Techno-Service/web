@@ -1,49 +1,48 @@
 <template>
   <div class = "row house-keeper">
-    <Form 
+    <div 
       ref="loginFormInput" 
       :model="loginFormInput" 
       :rules="ruleInline" 
       class = "house-keeper row"
       inline>
-      <FormItem
+      <div
         prop="email"
         class = "col s12 coc-margin-x-0 coc-padding-0 coc-margin-y-10px">
-        <Input 
-          v-model="loginFormInput.email" 
+        <coc-input 
+          v-model="loginFormInput.email"
+          :rules = "{ HasValue: true, IsEmail: true }"
+          :scope = "['login-form']"
           type="text" 
           placeholder="Email"
           size = "large"
-          @on-enter = "handleSubmit('loginFormInput')">
-        <Icon 
-          slot="prepend" 
-          type="ios-person-outline"/>
-        </Input> <!-- eslint-disable-line -->
-      </FormItem>
-      <FormItem
+          icon = "ios-person-outline"
+          @on-enter = "handleSubmit('loginFormInput')" />
+      </div>
+      <div
         class = "col s12 coc-margin-x-0 coc-padding-0 coc-margin-y-10px"
         prop="password">
-        <Input 
+        <coc-input 
           v-model="loginFormInput.password" 
+          :rules = "{ HasValue: true, MinLength: 8 }"
+          :scope = "['login-form']"
           type="password" 
           placeholder="Password"
+          icon = "ios-lock-outline"
           size = "large"
-          @on-enter = "handleSubmit('loginFormInput')">
-        <Icon 
-          slot="prepend" 
-          type="ios-lock-outline"/>
-        </Input> <!-- eslint-disable-line -->
-      </FormItem>
-      <FormItem class = "col s12 coc-margin-x-0 coc-padding-0 coc-margin-top-10px">
-        <Button 
+          @on-enter = "handleSubmit('loginFormInput')" />
+      </div>
+      <div class = "col s12 coc-margin-x-0 coc-padding-0 coc-margin-top-10px">
+        <coc-button 
           :loading = "isLoading"
+          :scope = "['login-form']"
           type="primary"
           size = "large"
-          class = "right"
+          class = "right coc-standard-border-radius"
           long
-          @click="handleSubmit('loginFormInput')">Login</Button>
-      </FormItem>
-    </Form>
+          @coc-validation-passed ="handleSubmit('loginFormInput')">Login</coc-button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -91,45 +90,44 @@ export default {
     },
     async handleSubmit(name) {
       this.isLoading = true
-      this.$refs[name].validate(valid => {
-        if (valid) {
-          // Send Req
-          this.$axios({
-            method: 'post',
-            url: '/auth',
-            data: {
-              ...this.loginFormInput,
-              email: this.handleEmail(this.loginFormInput.email)
-            }
-          })
-            .then(async res => {
-              this.$Message.success(
-                `Welcome, ${this.$coc.Filters.CapitalizeName(res.data.name)}!`
-              )
-              this.$cookies.set('auth', res.data, {
-                path: '/',
-                maxAge: 60 * 60 * 24 * 7
-              })
-              this.$root.$emit('LoggedIn', res.data)
-              this.$axios.defaults.headers.common['Authorization'] =
-                res.data.token
-              this.$store.dispatch('setAuth', res.data)
-              this.$emit('success')
-              this.isLoading = false
-              // if (this.$utils.roles.dashboarder(res.data)) {
-              //   this.$router.push('/dashboard')
-              // }
-            })
-            .catch(err => {
-              this.$Message.error('Login Fail!')
-              this.isLoading = false
-              console.log(err)
-            })
-        } else {
-          this.isLoading = false
-          this.$Message.error('Fail!')
+      // this.$refs[name].validate(valid => {
+      // if (valid) {
+      // Send Req
+      this.$axios({
+        method: 'post',
+        url: '/auth',
+        data: {
+          ...this.loginFormInput,
+          email: this.handleEmail(this.loginFormInput.email)
         }
       })
+        .then(async res => {
+          this.$Message.success(
+            `Welcome, ${this.$coc.Filters.CapitalizeName(res.data.name)}!`
+          )
+          this.$cookies.set('auth', res.data, {
+            path: '/',
+            maxAge: 60 * 60 * 24 * 7
+          })
+          this.$root.$emit('LoggedIn', res.data)
+          this.$axios.defaults.headers.common['Authorization'] = res.data.token
+          this.$store.dispatch('setAuth', res.data)
+          this.$emit('success')
+          this.isLoading = false
+          // if (this.$utils.roles.dashboarder(res.data)) {
+          //   this.$router.push('/dashboard')
+          // }
+        })
+        .catch(err => {
+          this.$Message.error('Login Failed')
+          this.isLoading = false
+          console.log(err)
+        })
+      //   } else {
+      //     this.isLoading = false
+      //     this.$Message.error('Failed')
+      //   }
+      // })
     }
   }
 }

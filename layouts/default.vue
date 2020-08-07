@@ -155,7 +155,7 @@ html {
   width: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(44, 56, 64, 0.6);
+  background: rgba(255, 255, 255, 0.6);
   border-radius: 0px;
 }
 ::-webkit-scrollbar-thumb:hover {

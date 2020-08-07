@@ -23,6 +23,9 @@
 %coc-text-bold{
 	font-weight: bold !important;
 }
+%coc-text-italic{
+    font-style: italic !important;
+}
 %coc-text-thin{
 	font-weight: thin !important;
 }
@@ -37,6 +40,9 @@
 }
 .coc-text-bold{
 	@extend %coc-text-bold;
+}
+.coc-text-italic{
+    @extend %coc-text-italic;
 }
 .coc-text-thin{
 	@extend %coc-text-thin;

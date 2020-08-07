@@ -89,7 +89,7 @@ f<template>
             :hide-status = "input.external"
             :rules = "input.external ? {} : { HasValue: true }"
             :autocomplete-remote = "model => ({ url: '/stock', method: 'get', params: { q: model.meta.query } })"
-            :autocomplete-map-response = "res => $_.uniq(res.stock.map(i => i.vendor.name))"
+            :autocomplete-map-response = "res => $_.uniq(res.stock.filter(v => v.vendor).map(i => i.vendor.name))"
             labeled 
             placeholder = "Provider Name"
             allow-autocomplete />          
@@ -101,7 +101,7 @@ f<template>
             :hide-status = "input.external"
             :rules = "input.external ? {} : { HasValue: true }"
             :autocomplete-remote = "model => ({ url: '/stock', method: 'get', params: { q: model.meta.query } })"
-            :autocomplete-map-response = "res => $_.uniq(res.stock.map(i => i.vendor.phone))"
+            :autocomplete-map-response = "res => $_.uniq(res.stock.filter(v => v.vendor).map(i => i.vendor.phone))"
             labeled  
             placeholder = "Provider Phone"
             allow-autocomplete />         
@@ -113,7 +113,7 @@ f<template>
             :hide-status = "input.external"
             :rules = "input.external ? {} : { HasValue: true }"
             :autocomplete-remote = "model => ({ url: '/stock', method: 'get', params: { q: model.meta.query } })"
-            :autocomplete-map-response = "res => $_.uniq(res.stock.map(i => i.vendor.address))"
+            :autocomplete-map-response = "res => $_.uniq(res.stock.filter(v => v.vendor).map(i => i.vendor.address))"
             labeled 
             placeholder = "Provider Address"
             allow-autocomplete />         

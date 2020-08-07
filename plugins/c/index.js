@@ -71,6 +71,21 @@ COC.Filters = Filters
 COC.Docker = Docker
 COC.OptionsManager = OptionsManager
 
+// COC = {
+//   ...COC,
+//   Objects,
+//   Arrays,
+//   Queue,
+//   CircularQueue
+//   Logger,
+//   Event,
+//   FormController,
+//   Validator,
+//   Filters,
+//   Docker,
+//   OptionsManager
+// }
+
 COC.Init = options => {
   COC.axios = options.axios | axios
   const components = {

@@ -21,7 +21,7 @@
       @catch = "handleAutocompleteError"/>
     <label
       v-if = "labeled"
-      :class = "labelClasses">{{ placeholder }}
+      :class = "labelClasses">{{ label || placeholder }}
       <slot
         v-if = "!hideErrors && !isValid.valid && isValid.message && isFired && rules && Object.keys(rules).length && labeled"
         :error = "isValid"

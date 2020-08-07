@@ -1,9 +1,10 @@
 <template>
   <div
     :style = "{ width: scale, height: scale }"
-    :class = "parentClass">
+    :class = "parentClass"
+    @click = "$emit('click')">
     <span
-      v-if = "icon || onError"
+      v-if = "icon || onError || !source"
       :style = "{ width: scale, height: scale, fontSize: scale }"
       :class = "classes"/>
     <img
@@ -63,7 +64,7 @@ export default {
       if (this.icon) {
         c.push(this.icon)
       }
-      if (this.onError) {
+      if (this.onError || !this.source) {
         c.push(this.fallbackIcon)
       }
       return c

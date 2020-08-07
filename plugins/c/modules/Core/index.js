@@ -32,6 +32,7 @@ COC.GetAlignment = (instance = COC) => {
 }
 
 COC.__des__ = []
+COC.__reg__ = {}
 
 // Info Loggers
 

@@ -1,15 +1,11 @@
 <template>
   <master>
-    <h3>Analyics</h3>
+    <h3 class = "coc-text-title coc-text-bold">Analytics</h3>
     <div class="row">
       <coc-input
-        :status-classes = "{
-          mount: 'coc-border-tint-2-bg coc-standard-border-radius',
-          initInput: 'coc-border-tint-2-bg coc-standard-border-radius',
-          foucs: 'coc-border-tint-2-bg coc-standard-border-radius'
-        }"
         v-model = "input.q"
         placeholder = "Search Analyics.."
+        size = "large"
         icon = "ios-search"
         light-model />
       <div
@@ -70,10 +66,11 @@
           </div>
         </nuxt-link>
       </div>
-      <div style="max-height: 300px; overflow-y: scroll; width: 100%">
+      <!-- <div style="max-height: 300px; overflow-y: scroll; width: 100%;">
         <div
           v-for = "(card, c) in cards"
-          :key = "c">
+          :key = "c"
+          style = "margin-top: 20px !important; padding-left: 10px;">
           <cell
             v-for = "(cell, c) in card.cells"
             v-if = "isMatchedSearch(cell)"
@@ -84,7 +81,7 @@
             <span><b>{{ card.label }}</b> {{ cell.label }}</span>
           </cell>
         </div>
-      </div>
+      </div> -->
     </div>
   </master>
 </template>
