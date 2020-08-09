@@ -252,7 +252,7 @@
 import config from '~/config'
 import Master from '~/components/common/master'
 export default {
-  name: 'Index',
+  name: 'UserProfileIndex',
   components: {
     Master
   },

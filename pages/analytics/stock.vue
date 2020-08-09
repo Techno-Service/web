@@ -686,7 +686,7 @@ const htmlColors = [
   'YellowGreen'
 ]
 export default {
-  name: 'Index',
+  name: 'JobAnalyticsJobs',
   components: {
     Master
   },

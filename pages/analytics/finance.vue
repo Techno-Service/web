@@ -220,7 +220,7 @@
 <script>
 import Master from '~/components/common/master.vue'
 export default {
-  name: 'AnalyticsIndex',
+  name: 'AnalyticsFinance',
   components: {
     Master
   },

@@ -817,7 +817,7 @@
 import Master from '~/components/common/master'
 import brands from '~/plugins/brands'
 export default {
-  name: 'Index',
+  name: 'SingleJobIndex',
   components: {
     Master
   },

@@ -170,7 +170,7 @@ import config from '~/config'
 import Master from '~/components/common/master'
 import EditUser from '~/components/users/EditUsers'
 export default {
-  name: 'Index',
+  name: 'MangeUsersIndex',
   components: {
     Master,
     EditUser

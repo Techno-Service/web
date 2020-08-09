@@ -365,7 +365,7 @@ import Master from '~/components/common/master'
 import JobsStatsCharts from '~/components/jobs/JobsStatsCharts'
 import brands from '~/plugins/brands'
 export default {
-  name: 'JobsAnalyticsIndex',
+  name: 'JobsAnalyticsJobs',
   components: {
     Master,
     JobsStatsCharts

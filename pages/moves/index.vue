@@ -381,7 +381,7 @@
 <script>
 import Master from '~/components/common/master'
 export default {
-  name: 'Index',
+  name: 'MovesIndex',
   components: {
     Master
   },

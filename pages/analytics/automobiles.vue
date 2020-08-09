@@ -409,7 +409,7 @@
 import Master from '~/components/common/master'
 import JobsStatsCharts from '~/components/jobs/JobsStatsCharts'
 export default {
-  name: 'JobsAnalyticsIndex',
+  name: 'JobsAnalyticsAutomobiles',
   components: {
     Master,
     JobsStatsCharts

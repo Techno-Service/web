@@ -408,7 +408,7 @@
 import config from '~/config'
 import Master from '~/components/common/master'
 export default {
-  name: 'Index',
+  name: 'AppIndex',
   head: {
     title: 'Dashboard | Manage App data'
   },
